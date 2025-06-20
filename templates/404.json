@@ -1,13 +1,27 @@
 {
   "sections": {
-    "error-header": {
-      "type": "page-header",
+    "main": {
+      "type": "error-404",
       "settings": {
-        "title": "Page Not Found"
+        "error_code": "404",
+        "error_title": "Page introuvable",
+        "error_message": "La page que vous recherchez n'existe pas ou a été déplacée.",
+        "button_text": "Retour à l'accueil",
+        "button_url": "/",
+        "show_search": true,
+        "search_title": "Rechercher dans notre boutique",
+        "search_placeholder": "Rechercher des produits...",
+        "show_popular_links": true,
+        "popular_links_title": "Pages populaires",
+        "show_categories": true,
+        "categories_title": "Acheter par catégorie",
+        "show_contact_info": true,
+        "contact_title": "Besoin d'aide ?",
+        "contact_message": "Contactez-nous si vous avez besoin d'assistance."
       }
     }
   },
   "order": [
-    "error-header"
+    "main"
   ]
 } 
