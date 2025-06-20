@@ -1,0 +1,964 @@
+{%- comment -%}
+  Footer Section - Taiga Theme Bubbly Style
+  Optimisé selon les règles shopirule pour conversion et confiance
+  Inclut : Logo, Navigation, Newsletter, Réseaux sociaux, Paiements
+{%- endcomment -%}
+
+{%- liquid
+  assign footer_background = section.settings.footer_background | default: settings.footer_background
+  assign footer_text_color = section.settings.footer_text_color | default: settings.footer_text_color
+  assign show_social = section.settings.show_social_icons | default: settings.show_social_icons
+  assign show_payment = section.settings.show_payment_icons | default: settings.show_payment_icons
+-%}
+
+<footer 
+  class="site-footer"
+  role="contentinfo"
+  aria-label="{{ 'accessibility.footer_landmark' | t | default: 'Pied de page du site' }}"
+  style="
+    --footer-background: {{ footer_background }};
+    --footer-text-color: {{ footer_text_color }};
+  "
+>
+  {%- comment -%} Section principale du footer selon shopirule {%- endcomment -%}
+  <div class="footer-main">
+    <div class="page-width">
+      <div class="footer-grid">
+
+        {%- comment -%} Logo et description de la marque {%- endcomment -%}
+        <div class="footer-column footer-column--brand">
+          {%- if section.settings.footer_logo != blank or settings.logo != blank -%}
+            {%- liquid
+              assign footer_logo = section.settings.footer_logo | default: settings.logo
+              assign logo_width = section.settings.footer_logo_width | default: 120
+              assign logo_height = footer_logo.height | divided_by: footer_logo.width | times: logo_width | round
+            -%}
+            
+            <a href="{{ routes.root_url }}" class="footer__logo-link" aria-label="{{ 'sections.footer.logo' | t: shop_name: shop.name }}">
+              {%- if settings.enable_webp_images -%}
+                <picture>
+                  <source srcset="{{ footer_logo | image_url: width: logo_width, format: 'webp' }}" type="image/webp">
+                  <img 
+                    src="{{ footer_logo | image_url: width: logo_width }}"
+                    alt="{{ shop.name }}"
+                    width="{{ logo_width }}"
+                    height="{{ logo_height }}"
+                    class="footer__logo-image"
+                    loading="lazy"
+                  >
+                </picture>
+              {%- else -%}
+                <img 
+                  src="{{ footer_logo | image_url: width: logo_width }}"
+                  alt="{{ shop.name }}"
+                  width="{{ logo_width }}"
+                  height="{{ logo_height }}"
+                  class="footer__logo-image"
+                  loading="lazy"
+                >
+              {%- endif -%}
+            </a>
+          {%- else -%}
+            <a href="{{ routes.root_url }}" class="footer__logo-text">
+              {{ shop.name }}
+            </a>
+          {%- endif -%}
+
+          {%- if section.settings.footer_description != blank -%}
+            <div class="footer__brand-description">
+              {{ section.settings.footer_description }}
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Réseaux sociaux selon shopirule avec accessibilité WCAG 2.1 AA {%- endcomment -%}
+          {%- if show_social -%}
+            <div class="footer__social" role="region" aria-labelledby="social-heading">
+              <h3 id="social-heading" class="footer__social-title">{{ 'sections.footer.follow_us' | t | default: 'Suivez-nous' }}</h3>
+              <nav class="social-icons" aria-label="{{ 'accessibility.social_media_navigation' | t | default: 'Navigation des réseaux sociaux' }}">
+                {%- if settings.social_facebook_link != blank -%}
+                  <a 
+                    href="{{ settings.social_facebook_link }}" 
+                    class="social-icon social-icon--facebook"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="{{ 'sections.footer.social_facebook' | t | default: 'Suivez-nous sur Facebook' }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                  >
+                    <span aria-hidden="true">{%- render 'icon-facebook' -%}</span>
+                    <span class="visually-hidden">Facebook</span>
+                  </a>
+                {%- endif -%}
+                
+                {%- if settings.social_instagram_link != blank -%}
+                  <a 
+                    href="{{ settings.social_instagram_link }}" 
+                    class="social-icon social-icon--instagram"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="{{ 'sections.footer.social_instagram' | t | default: 'Suivez-nous sur Instagram' }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                  >
+                    <span aria-hidden="true">{%- render 'icon-instagram' -%}</span>
+                    <span class="visually-hidden">Instagram</span>
+                  </a>
+                {%- endif -%}
+                
+                {%- if settings.social_twitter_link != blank -%}
+                  <a 
+                    href="{{ settings.social_twitter_link }}" 
+                    class="social-icon social-icon--twitter"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="{{ 'sections.footer.social_twitter' | t | default: 'Suivez-nous sur Twitter' }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                  >
+                    <span aria-hidden="true">{%- render 'icon-twitter' -%}</span>
+                    <span class="visually-hidden">Twitter</span>
+                  </a>
+                {%- endif -%}
+                
+                {%- if settings.social_youtube_link != blank -%}
+                  <a 
+                    href="{{ settings.social_youtube_link }}" 
+                    class="social-icon social-icon--youtube"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="{{ 'sections.footer.social_youtube' | t | default: 'Abonnez-vous à notre chaîne YouTube' }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                  >
+                    <span aria-hidden="true">{%- render 'icon-youtube' -%}</span>
+                    <span class="visually-hidden">YouTube</span>
+                  </a>
+                {%- endif -%}
+                
+                {%- if settings.social_tiktok_link != blank -%}
+                  <a 
+                    href="{{ settings.social_tiktok_link }}" 
+                    class="social-icon social-icon--tiktok"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="{{ 'sections.footer.social_tiktok' | t | default: 'Suivez-nous sur TikTok' }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                  >
+                    <span aria-hidden="true">{%- render 'icon-tiktok' -%}</span>
+                    <span class="visually-hidden">TikTok</span>
+                  </a>
+                {%- endif -%}
+              </nav>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Menus de navigation selon shopirule {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'link_list' -%}
+              <div class="footer-column footer-column--links" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h3 id="footer-nav-{{ block.id }}" class="footer-column__title">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                
+                {%- if block.settings.menu != blank -%}
+                  <nav 
+                    class="footer-nav" 
+                    role="navigation" 
+                    aria-labelledby="footer-nav-{{ block.id }}"
+                    {% unless block.settings.heading %}aria-label="{{ 'accessibility.footer_navigation' | t | default: 'Navigation du pied de page' }}"{% endunless %}
+                  >
+                    <ul class="footer-nav__list" role="list">
+                      {%- for link in block.settings.menu.links -%}
+                        <li class="footer-nav__item" role="listitem">
+                          <a 
+                            href="{{ link.url }}" 
+                            class="footer-nav__link"
+                            {% if link.url == request.path %} aria-current="page"{% endif %}
+                            {%- if link.url contains 'http' -%}
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              aria-label="{{ link.title }} {{ 'accessibility.opens_new_window' | t | default: "(s'ouvre dans une nouvelle fenêtre)" }}"
+                            {%- endif -%}
+                          >
+                            {{ link.title }}
+                            {%- if link.url contains 'http' -%}
+                              <span aria-hidden="true" class="external-link-icon">↗</span>
+                            {%- endif -%}
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </nav>
+                {%- endif -%}
+              </div>
+
+            {%- when 'newsletter' -%}
+              <div class="footer-column footer-column--newsletter" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="footer-column__title">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                
+                {%- if block.settings.description != blank -%}
+                  <div class="footer-newsletter__description">
+                    {{ block.settings.description }}
+                  </div>
+                {%- endif -%}
+
+                {%- comment -%} Formulaire newsletter optimisé selon shopirule {%- endcomment -%}
+                <div class="newsletter-form">
+                  {%- form 'customer', class: 'newsletter-form__form' -%}
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    
+                    <div class="newsletter-form__input-wrapper">
+                      <label for="newsletter-email" class="visually-hidden">
+                        {{ 'sections.footer.newsletter_email' | t }}
+                      </label>
+                      <input 
+                        type="email"
+                        name="contact[email]"
+                        id="newsletter-email"
+                        class="newsletter-form__input"
+                        placeholder="{{ 'sections.footer.newsletter_placeholder' | t }}"
+                        required
+                        aria-describedby="newsletter-form-error"
+                      >
+                      <button 
+                        type="submit" 
+                        class="newsletter-form__submit"
+                        aria-label="{{ 'sections.footer.newsletter_submit' | t }}"
+                      >
+                        {%- render 'icon-arrow-right' -%}
+                      </button>
+                    </div>
+                    
+                    <div class="newsletter-form__error" id="newsletter-form-error" role="alert" aria-live="polite"></div>
+                    <div class="newsletter-form__success" role="status" aria-live="polite"></div>
+                  {%- endform -%}
+                  
+                  {%- if block.settings.offer_text != blank -%}
+                    <div class="newsletter-form__offer">
+                      {{ block.settings.offer_text }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+
+            {%- when 'contact_info' -%}
+              <div class="footer-column footer-column--contact" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="footer-column__title">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                
+                <div class="footer-contact">
+                  {%- if block.settings.address != blank -%}
+                    <div class="footer-contact__item">
+                      <div class="footer-contact__icon">
+                        {%- render 'icon-location' -%}
+                      </div>
+                      <div class="footer-contact__text">
+                        {{ block.settings.address | newline_to_br }}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.phone != blank -%}
+                    <div class="footer-contact__item">
+                      <div class="footer-contact__icon">
+                        {%- render 'icon-phone' -%}
+                      </div>
+                      <div class="footer-contact__text">
+                        <a href="tel:{{ block.settings.phone | replace: ' ', '' }}">
+                          {{ block.settings.phone }}
+                        </a>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.email != blank -%}
+                    <div class="footer-contact__item">
+                      <div class="footer-contact__icon">
+                        {%- render 'icon-email' -%}
+                      </div>
+                      <div class="footer-contact__text">
+                        <a href="mailto:{{ block.settings.email }}">
+                          {{ block.settings.email }}
+                        </a>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+
+            {%- when 'trust_badges' -%}
+              <div class="footer-column footer-column--trust" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="footer-column__title">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                
+                <div class="footer-trust-badges">
+                  {%- if block.settings.badge_1 != blank -%}
+                    <div class="trust-badge">
+                      <img 
+                        src="{{ block.settings.badge_1 | image_url: width: 100 }}"
+                        alt="{{ block.settings.badge_1_alt | default: 'Trust badge' }}"
+                        width="100"
+                        height="auto"
+                        loading="lazy"
+                      >
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.badge_2 != blank -%}
+                    <div class="trust-badge">
+                      <img 
+                        src="{{ block.settings.badge_2 | image_url: width: 100 }}"
+                        alt="{{ block.settings.badge_2_alt | default: 'Trust badge' }}"
+                        width="100"
+                        height="auto"
+                        loading="lazy"
+                      >
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.badge_3 != blank -%}
+                    <div class="trust-badge">
+                      <img 
+                        src="{{ block.settings.badge_3 | image_url: width: 100 }}"
+                        alt="{{ block.settings.badge_3_alt | default: 'Trust badge' }}"
+                        width="100"
+                        height="auto"
+                        loading="lazy"
+                      >
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Footer bottom avec copyright et paiements selon shopirule {%- endcomment -%}
+  <div class="footer-bottom">
+    <div class="page-width">
+      <div class="footer-bottom__content">
+        
+        <div class="footer-bottom__left">
+          <div class="footer__copyright">
+            &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'sections.footer.copyright' | t }}
+          </div>
+          
+          {%- if section.settings.show_policies -%}
+            <div class="footer__policies">
+              {%- for policy in shop.policies -%}
+                {%- if policy != blank -%}
+                  <a href="{{ policy.url }}" class="footer__policy-link">
+                    {{ policy.title }}
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="footer-bottom__right">
+          {%- comment -%} Icônes de paiement selon shopirule {%- endcomment -%}
+          {%- if show_payment -%}
+            <div class="footer__payment">
+              <div class="footer__payment-title">{{ 'sections.footer.payment_methods' | t }}</div>
+              <div class="payment-icons">
+                {%- for type in shop.enabled_payment_types -%}
+                  <div class="payment-icon">
+                    {{ type | payment_type_svg_tag: class: 'payment-icon__svg' }}
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+          
+          {%- comment -%} Badge Shopify selon les meilleures pratiques {%- endcomment -%}
+          {%- if section.settings.show_powered_by -%}
+            <div class="footer__powered-by">
+              {{ powered_by_link }}
+            </div>
+          {%- endif -%}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+{%- comment -%} CSS optimisé pour performance selon shopirule {%- endcomment -%}
+<style>
+  .site-footer {
+    background-color: var(--footer-background, var(--color-background-alt));
+    color: var(--footer-text-color, var(--color-text));
+    margin-top: auto;
+  }
+  
+  .footer-main {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    align-items: start;
+  }
+  
+  .footer-column--brand {
+    grid-column: 1 / span 1;
+  }
+  
+  .footer__logo-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    line-height: 0;
+  }
+  
+  .footer__logo-text {
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-weight-bold);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  
+  .footer__brand-description {
+    margin-bottom: 24px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+  
+  .footer-column__title {
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-weight-semibold);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: var(--color-text);
+  }
+  
+  .footer-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .footer-nav__item {
+    margin-bottom: 12px;
+  }
+  
+  .footer-nav__link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    line-height: 1.5;
+  }
+  
+  .footer-nav__link:hover {
+    color: var(--color-primary);
+  }
+  
+  .footer__social {
+    margin-top: 24px;
+  }
+  
+  .footer__social-title {
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 12px;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .social-icon:hover {
+    transform: translateY(-2px) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .newsletter-form {
+    margin-top: 16px;
+  }
+  
+  .newsletter-form__input-wrapper {
+    position: relative;
+    display: flex;
+    margin-bottom: 12px;
+  }
+  
+  .newsletter-form__input {
+    flex: 1;
+    padding: 14px 16px;
+    padding-right: 50px;
+    border: 2px solid var(--color-border);
+    border-radius: 25px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+    background: var(--color-background);
+  }
+  
+  .newsletter-form__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+  
+  .newsletter-form__submit {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .newsletter-form__submit:hover {
+    background: var(--color-secondary);
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  .newsletter-form__offer {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+  }
+  
+  .footer-contact__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .footer-contact__icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+    margin-top: 2px;
+  }
+  
+  .footer-contact__text {
+    line-height: 1.5;
+  }
+  
+  .footer-contact__text a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-contact__text a:hover {
+    color: var(--color-primary);
+  }
+  
+  .footer-trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .trust-badge img {
+    max-width: 100px;
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+  
+  .trust-badge:hover img {
+    opacity: 1;
+  }
+  
+  .footer-bottom {
+    padding: 20px 0;
+    background: var(--color-background-dark, rgba(0, 0, 0, 0.05));
+  }
+  
+  .footer-bottom__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .footer__copyright {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .footer__policies {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .footer__policy-link {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer__policy-link:hover {
+    color: var(--color-primary);
+  }
+  
+  .footer__payment {
+    text-align: right;
+  }
+  
+  .footer__payment-title {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .payment-icons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  
+  .payment-icon {
+    width: 40px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .payment-icon__svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Mobile responsive selon shopirule */
+  @media (max-width: 990px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    
+    .footer-main {
+      padding: 40px 0 30px;
+    }
+  }
+  
+  @media (max-width: 750px) {
+    .footer-bottom__content {
+      flex-direction: column;
+      text-align: center;
+      gap: 16px;
+    }
+    
+    .footer__payment {
+      text-align: center;
+    }
+    
+    .payment-icons {
+      justify-content: center;
+    }
+    
+    .footer__policies {
+      justify-content: center;
+    }
+    
+    .social-icons {
+      justify-content: center;
+    }
+  }
+</style>
+
+{%- comment -%} JavaScript pour la newsletter selon shopirule {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.querySelector('.newsletter-form__form');
+    
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = this.querySelector('input[type="email"]').value;
+        const errorDiv = this.querySelector('.newsletter-form__error');
+        const successDiv = this.querySelector('.newsletter-form__success');
+        const submitBtn = this.querySelector('.newsletter-form__submit');
+        
+        // Reset states
+        errorDiv.textContent = '';
+        successDiv.textContent = '';
+        submitBtn.disabled = true;
+        
+        // Simulate form submission (replace with actual implementation)
+        fetch(this.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(new FormData(this))
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            successDiv.textContent = '{{ "sections.footer.newsletter_success" | t }}';
+            this.reset();
+          } else {
+            errorDiv.textContent = data.message || '{{ "sections.footer.newsletter_error" | t }}';
+          }
+        })
+        .catch(error => {
+          errorDiv.textContent = '{{ "sections.footer.newsletter_error" | t }}';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+        });
+      });
+    }
+  });
+</script>
+
+{%- comment -%} Schema pour personnalisation dans l'éditeur de thème {%- endcomment -%}
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Footer logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Footer logo"
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_width",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 120
+    },
+    {
+      "type": "richtext",
+      "id": "footer_description",
+      "label": "Brand description"
+    },
+    {
+      "type": "header",
+      "content": "Footer appearance"
+    },
+    {
+      "type": "color",
+      "id": "footer_background",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "footer_text_color",
+      "label": "Text color"
+    },
+    {
+      "type": "header",
+      "content": "Footer options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "label": "Show social media icons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment method icons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policies",
+      "label": "Show policy links",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_powered_by",
+      "label": "Show 'Powered by Shopify'",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "Navigation menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Quick links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "footer"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter signup",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Newsletter"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Subscribe to get special offers and updates</p>"
+        },
+        {
+          "type": "text",
+          "id": "offer_text",
+          "label": "Offer text",
+          "default": "Get 10% off your first order"
+        }
+      ]
+    },
+    {
+      "type": "contact_info",
+      "name": "Contact information",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Contact us"
+        },
+        {
+          "type": "richtext",
+          "id": "address",
+          "label": "Address"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "Phone number"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "Email address"
+        }
+      ]
+    },
+    {
+      "type": "trust_badges",
+      "name": "Trust badges",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Trusted by"
+        },
+        {
+          "type": "image_picker",
+          "id": "badge_1",
+          "label": "Badge 1"
+        },
+        {
+          "type": "text",
+          "id": "badge_1_alt",
+          "label": "Badge 1 alt text"
+        },
+        {
+          "type": "image_picker",
+          "id": "badge_2",
+          "label": "Badge 2"
+        },
+        {
+          "type": "text",
+          "id": "badge_2_alt",
+          "label": "Badge 2 alt text"
+        },
+        {
+          "type": "image_picker",
+          "id": "badge_3",
+          "label": "Badge 3"
+        },
+        {
+          "type": "text",
+          "id": "badge_3_alt",
+          "label": "Badge 3 alt text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "footer"
+          }
+        },
+        {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Newsletter",
+            "description": "<p>Subscribe to get special offers and updates</p>",
+            "offer_text": "Get 10% off your first order"
+          }
+        },
+        {
+          "type": "contact_info",
+          "settings": {
+            "heading": "Contact us"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

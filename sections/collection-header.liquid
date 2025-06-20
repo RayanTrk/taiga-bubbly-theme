@@ -1,0 +1,264 @@
+{{ 'section-collection-header.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign show_image = section.settings.show_collection_image
+  assign show_description = section.settings.show_collection_description
+  assign text_alignment = section.settings.header_text_alignment
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign text_color = section.settings.text_color
+  assign enable_parallax = section.settings.enable_parallax
+  assign enable_breadcrumbs = section.settings.enable_breadcrumbs
+  assign breadcrumb_style = section.settings.breadcrumb_style
+  assign image_height = section.settings.collection_image_height
+  
+  assign collection_image = collection.featured_image | default: collection.image
+-%}
+
+<div class="collection-header collection-header--{{ image_height }}" 
+     data-collection-header
+     {% if enable_parallax and collection_image %}data-parallax{% endif %}>
+  
+  {%- if collection_image and show_image -%}
+    <div class="collection-header__media">
+      <div class="collection-header__media-wrapper">
+        {%- liquid
+          assign image_height_class = 'collection-header__image--' | append: image_height
+          case image_height
+            when 'small'
+              assign height = 300
+            when 'medium' 
+              assign height = 500
+            when 'large'
+              assign height = 700
+            else
+              assign height = 500
+          endcase
+        -%}
+        
+        <img src="{{ collection_image | image_url: width: 1920, height: height }}"
+             alt="{{ collection_image.alt | escape }}"
+             class="collection-header__image {{ image_height_class }}"
+             width="{{ collection_image.width }}"
+             height="{{ collection_image.height }}"
+             loading="eager"
+             sizes="100vw"
+             srcset="{{ collection_image | image_url: width: 375 }} 375w,
+                     {{ collection_image | image_url: width: 750 }} 750w,
+                     {{ collection_image | image_url: width: 1100 }} 1100w,
+                     {{ collection_image | image_url: width: 1500 }} 1500w,
+                     {{ collection_image | image_url: width: 1920 }} 1920w">
+        
+        {%- if overlay_opacity > 0 -%}
+          <div class="collection-header__overlay" 
+               style="--overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};"></div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="collection-header__content">
+    <div class="collection-header__content-wrapper page-width">
+      
+      {%- if enable_breadcrumbs -%}
+        <nav class="collection-header__breadcrumbs breadcrumbs breadcrumbs--{{ breadcrumb_style }}" 
+             role="navigation" 
+             aria-label="{{ 'general.breadcrumbs.aria_label' | t }}">
+          <ol class="breadcrumbs__list">
+            <li class="breadcrumbs__item">
+              <a href="{{ routes.root_url }}" class="breadcrumbs__link">
+                {% render 'icon-home' %}
+                <span>{{ 'general.breadcrumbs.home' | t }}</span>
+              </a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a href="{{ routes.collections_url }}" class="breadcrumbs__link">
+                <span>{{ 'general.breadcrumbs.collections' | t }}</span>
+              </a>
+            </li>
+            <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">
+              <span class="breadcrumbs__text">{{ collection.title }}</span>
+            </li>
+          </ol>
+        </nav>
+      {%- endif -%}
+
+      <div class="collection-header__text collection-header__text--{{ text_alignment }}"
+           {% if text_color != blank %}style="--text-color: {{ text_color }};"{% endif %}>
+        
+        <h1 class="collection-header__title h1">
+          {{ collection.title | escape }}
+          <div class="collection-header__title-decoration">
+            <div class="bubble bubble--small"></div>
+            <div class="bubble bubble--medium"></div>
+            <div class="bubble bubble--large"></div>
+          </div>
+        </h1>
+
+        {%- if collection.description != blank and show_description -%}
+          <div class="collection-header__description rte">
+            {{ collection.description }}
+          </div>
+        {%- endif -%}
+
+        {%- if collection.all_products_count > 0 -%}
+          <div class="collection-header__count">
+            <span class="collection-header__count-text">
+              {%- liquid
+                if collection.all_products_count == 1
+                  echo 'collections.general.product_count.one' | t: count: collection.all_products_count
+                else
+                  echo 'collections.general.product_count.other' | t: count: collection.all_products_count
+                endif
+              -%}
+            </span>
+            <div class="collection-header__count-decoration">
+              <div class="sparkle sparkle--1"></div>
+              <div class="sparkle sparkle--2"></div>
+              <div class="sparkle sparkle--3"></div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Floating decorative elements {%- endcomment -%}
+  <div class="collection-header__decorations" aria-hidden="true">
+    <div class="floating-bubble floating-bubble--1"></div>
+    <div class="floating-bubble floating-bubble--2"></div>
+    <div class="floating-bubble floating-bubble--3"></div>
+    <div class="floating-bubble floating-bubble--4"></div>
+    <div class="floating-bubble floating-bubble--5"></div>
+  </div>
+</div>
+
+<script src="{{ 'section-collection-header.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Header",
+  "tag": "section",
+  "class": "section-collection-header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "default": true,
+      "label": "Show collection image"
+    },
+    {
+      "type": "select",
+      "id": "collection_image_height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium",
+      "label": "Image height"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "default": true,
+      "label": "Enable parallax effect",
+      "info": "Creates a subtle parallax scrolling effect on the background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30,
+      "label": "Image overlay opacity"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "default": true,
+      "label": "Show collection description"
+    },
+    {
+      "type": "select",
+      "id": "header_text_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Text alignment"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "default": "#ffffff",
+      "label": "Text color",
+      "info": "Used when image overlay is present"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_breadcrumbs",
+      "default": true,
+      "label": "Show breadcrumbs"
+    },
+    {
+      "type": "select",
+      "id": "breadcrumb_style",
+      "options": [
+        {
+          "value": "simple",
+          "label": "Simple"
+        },
+        {
+          "value": "modern",
+          "label": "Modern"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        }
+      ],
+      "default": "modern",
+      "label": "Breadcrumb style"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Header"
+    }
+  ]
+}
+{% endschema %} 

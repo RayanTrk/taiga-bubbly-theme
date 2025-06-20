@@ -1,0 +1,591 @@
+{{ 'section-feature-grid.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .feature-grid-{{ section.id }} {
+    {%- if section.settings.background_color != blank -%}
+      background: {{ section.settings.background_color }};
+    {%- endif -%}
+    
+    {%- if section.settings.background_image != blank -%}
+      background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');
+      background-size: cover;
+      background-position: center;
+    {%- endif -%}
+  }
+
+  .feature-grid-{{ section.id }} .feature-grid__title {
+    {%- if section.settings.heading_color != blank -%}
+      color: {{ section.settings.heading_color }};
+    {%- endif -%}
+  }
+
+  .feature-grid-{{ section.id }} .feature-grid__subtitle {
+    {%- if section.settings.text_color != blank -%}
+      color: {{ section.settings.text_color }};
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign columns = section.settings.columns_desktop | default: 3
+  assign columns_mobile = section.settings.columns_mobile | default: 1
+  assign show_icons = section.settings.show_icons | default: true
+  assign icon_style = section.settings.icon_style | default: 'filled'
+  assign show_decorative_elements = section.settings.show_decorative_elements | default: true
+-%}
+
+<div class="feature-grid feature-grid-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+     data-feature-grid-section
+     data-columns="{{ columns }}"
+     data-columns-mobile="{{ columns_mobile }}">
+
+  {%- comment -%} Decorative Background Elements {%- endcomment -%}
+  {%- if show_decorative_elements -%}
+    <div class="decorative-elements" data-decorative-elements>
+      <div class="floating-bubble bubble-1"></div>
+      <div class="floating-bubble bubble-2"></div>
+      <div class="floating-bubble bubble-3"></div>
+      <div class="floating-bubble bubble-4"></div>
+      <div class="geometric-shape shape-1"></div>
+      <div class="geometric-shape shape-2"></div>
+      <div class="geometric-shape shape-3"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="page-width">
+    <div class="feature-grid__container">
+
+      {%- comment -%} Section Header {%- endcomment -%}
+      {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+        <div class="feature-grid__header" data-aos="fade-up">
+          {%- if section.settings.eyebrow != blank -%}
+            <div class="feature-grid__eyebrow">
+              {{ section.settings.eyebrow }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.title != blank -%}
+            <h2 class="feature-grid__title">
+              {{ section.settings.title }}
+            </h2>
+          {%- endif -%}
+
+          {%- if section.settings.subtitle != blank -%}
+            <div class="feature-grid__subtitle">
+              {{ section.settings.subtitle }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Feature Grid {%- endcomment -%}
+      {%- if section.blocks.size > 0 -%}
+        <div class="feature-grid__grid"
+             data-feature-grid
+             style="--columns-desktop: {{ columns }}; --columns-mobile: {{ columns_mobile }};">
+
+          {%- for block in section.blocks -%}
+            <div class="feature-grid__item"
+                 data-aos="fade-up"
+                 data-aos-delay="{{ forloop.index0 | times: 100 }}"
+                 {{ block.shopify_attributes }}>
+
+              <div class="feature-item" data-feature-item>
+                
+                {%- comment -%} Feature Icon {%- endcomment -%}
+                {%- if show_icons and block.settings.icon != blank -%}
+                  <div class="feature-item__icon feature-item__icon--{{ icon_style }}"
+                       data-icon-style="{{ icon_style }}">
+                    <div class="icon-wrapper">
+                      {%- case block.settings.icon -%}
+                        {%- when 'check' -%}
+                          {%- render 'icon-check' -%}
+                        {%- when 'star' -%}
+                          {%- render 'icon-star-filled' -%}
+                        {%- when 'heart' -%}
+                          {%- render 'icon-heart' -%}
+                        {%- when 'shield' -%}
+                          {%- render 'icon-shield' -%}
+                        {%- when 'lightning' -%}
+                          {%- render 'icon-lightning' -%}
+                        {%- when 'gift' -%}
+                          {%- render 'icon-gift' -%}
+                        {%- when 'truck' -%}
+                          {%- render 'icon-truck' -%}
+                        {%- when 'leaf' -%}
+                          {%- render 'icon-leaf' -%}
+                        {%- when 'globe' -%}
+                          {%- render 'icon-globe' -%}
+                        {%- when 'clock' -%}
+                          {%- render 'icon-clock' -%}
+                        {%- when 'crown' -%}
+                          {%- render 'icon-crown' -%}
+                        {%- when 'diamond' -%}
+                          {%- render 'icon-diamond' -%}
+                        {%- else -%}
+                          {%- render 'icon-check' -%}
+                      {%- endcase -%}
+                    </div>
+                    
+                    {%- comment -%} Icon Animation Ring {%- endcomment -%}
+                    <div class="icon-ring"></div>
+                  </div>
+                {%- endif -%}
+
+                {%- comment -%} Feature Image {%- endcomment -%}
+                {%- if block.settings.image != blank -%}
+                  <div class="feature-item__image">
+                    <img src="{{ block.settings.image | image_url: width: 300 }}"
+                         alt="{{ block.settings.image.alt | escape }}"
+                         loading="lazy"
+                         width="300"
+                         height="{{ 300 | divided_by: block.settings.image.aspect_ratio | round }}">
+                  </div>
+                {%- endif -%}
+
+                {%- comment -%} Feature Content {%- endcomment -%}
+                <div class="feature-item__content">
+                  {%- if block.settings.title != blank -%}
+                    <h3 class="feature-item__title">
+                      {{ block.settings.title }}
+                    </h3>
+                  {%- endif -%}
+
+                  {%- if block.settings.description != blank -%}
+                    <div class="feature-item__description">
+                      {{ block.settings.description }}
+                    </div>
+                  {%- endif -%}
+
+                  {%- if block.settings.button_text != blank -%}
+                    <div class="feature-item__button">
+                      <a href="{{ block.settings.button_url | default: '#' }}"
+                         class="button button--tertiary">
+                        {{ block.settings.button_text }}
+                        {%- if block.settings.show_button_icon -%}
+                          <span class="icon-wrap">
+                            {%- render 'icon-arrow-right' -%}
+                          </span>
+                        {%- endif -%}
+                      </a>
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- comment -%} Hover Effects {%- endcomment -%}
+                <div class="feature-item__hover-effects">
+                  <div class="hover-gradient"></div>
+                  <div class="hover-sparkles">
+                    <div class="sparkle sparkle-1"></div>
+                    <div class="sparkle sparkle-2"></div>
+                    <div class="sparkle sparkle-3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Section CTA {%- endcomment -%}
+      {%- if section.settings.cta_text != blank -%}
+        <div class="feature-grid__cta" data-aos="fade-up" data-aos-delay="600">
+          <a href="{{ section.settings.cta_url | default: '#' }}"
+             class="button button--primary button--large">
+            {{ section.settings.cta_text }}
+            {%- if section.settings.show_cta_icon -%}
+              <span class="icon-wrap">
+                {%- render 'icon-arrow-right' -%}
+              </span>
+            {%- endif -%}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.aiNavigation !== 'undefined') {
+      const section = document.querySelector('[data-feature-grid-section]');
+      if (!section) return;
+
+      // Track section view
+      window.aiNavigation.trackEvent('feature_grid_viewed', {
+        section_id: '{{ section.id }}',
+        features_count: {{ section.blocks.size }},
+        columns: {{ columns }},
+        has_icons: {{ show_icons | json }},
+        icon_style: '{{ icon_style }}',
+        timestamp: Date.now()
+      });
+
+      // Track feature interactions
+      const features = section.querySelectorAll('[data-feature-item]');
+      features.forEach((feature, index) => {
+        feature.addEventListener('mouseenter', function() {
+          window.aiNavigation.trackEvent('feature_item_hovered', {
+            section_id: '{{ section.id }}',
+            feature_index: index,
+            feature_title: feature.querySelector('.feature-item__title')?.textContent.trim(),
+            timestamp: Date.now()
+          });
+        });
+
+        // Track button clicks
+        const button = feature.querySelector('.button');
+        if (button) {
+          button.addEventListener('click', function() {
+            window.aiNavigation.trackEvent('feature_button_clicked', {
+              section_id: '{{ section.id }}',
+              feature_index: index,
+              button_text: button.textContent.trim(),
+              timestamp: Date.now()
+            });
+          });
+        }
+      });
+    }
+  });
+</script>
+
+<script src="{{ 'section-feature-grid.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Feature Grid",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Features"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "<p>Discover what makes us different and why thousands of customers trust us</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Number of columns on desktop",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ],
+      "default": "1",
+      "label": "Number of columns on mobile"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show icons",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "filled",
+      "label": "Icon style"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta_icon",
+      "label": "Show CTA button icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "label": "Show decorative elements",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        },
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "options": [
+            {
+              "value": "check",
+              "label": "Check mark"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "lightning",
+              "label": "Lightning"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "globe",
+              "label": "Globe"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "crown",
+              "label": "Crown"
+            },
+            {
+              "value": "diamond",
+              "label": "Diamond"
+            }
+          ],
+          "default": "check",
+          "label": "Icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Alternative to icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Premium Quality"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Crafted with the finest materials and attention to detail for lasting durability and style.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button link"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button_icon",
+          "label": "Show button icon",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Grid",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Free Shipping",
+            "description": "<p>Free shipping on orders over $200 worldwide</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure Payments",
+            "description": "<p>Your payment information is always safe and secure</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "heart",
+            "title": "Made with Love",
+            "description": "<p>Every product is crafted with care and attention to detail</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

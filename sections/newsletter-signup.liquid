@@ -1,0 +1,626 @@
+{% comment %}
+  Newsletter Signup Section - Taiga Theme Bubbly Style
+  Newsletter subscription form with email marketing integration
+  Follows shopirule.mdc specifications
+{% endcomment %}
+
+{{ 'section-newsletter-signup.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  {% if section.settings.background_color != 'rgba(0,0,0,0)' %}
+    .newsletter-section-{{ section.id }} {
+      background-color: {{ section.settings.background_color }};
+    }
+  {% endif %}
+
+  {% if section.settings.text_color != 'rgba(0,0,0,0)' %}
+    .newsletter-section-{{ section.id }} {
+      color: {{ section.settings.text_color }};
+    }
+  {% endif %}
+{%- endstyle -%}
+
+<div class="newsletter-section newsletter-section-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient{% if section.settings.full_width %} newsletter-section--full-width{% endif %}">
+  <div class="page-width">
+    <div class="newsletter-container">
+      {% if section.settings.show_decorative_elements %}
+        <div class="newsletter-decorations">
+          <div class="bubble bubble--large bubble--float-1"></div>
+          <div class="bubble bubble--medium bubble--float-2"></div>
+          <div class="bubble bubble--small bubble--float-3"></div>
+          <div class="sparkle sparkle--1"></div>
+          <div class="sparkle sparkle--2"></div>
+          <div class="sparkle sparkle--3"></div>
+        </div>
+      {% endif %}
+
+      <div class="newsletter-content">
+        {% if section.settings.heading != blank %}
+          <h2 class="newsletter-heading h1">
+            {{ section.settings.heading }}
+            {% if section.settings.show_emoji %}
+              <span class="newsletter-emoji">{{ section.settings.emoji | default: '✨' }}</span>
+            {% endif %}
+          </h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <div class="newsletter-subheading">
+            {{ section.settings.subheading | escape }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_social_proof %}
+          <div class="newsletter-social-proof">
+            <div class="social-proof-stats">
+              {% if section.settings.subscriber_count != blank %}
+                <div class="stat-item">
+                  <span class="stat-number">{{ section.settings.subscriber_count }}</span>
+                  <span class="stat-label">{{ section.settings.subscriber_label | default: 'Happy Subscribers' }}</span>
+                </div>
+              {% endif %}
+              {% if section.settings.rating != blank %}
+                <div class="stat-item">
+                  <div class="rating-stars">
+                    {%- for i in (1..5) -%}
+                      {% if i <= section.settings.rating %}
+                        {% render 'icon-star' %}
+                      {% else %}
+                        {% render 'icon-star-empty' %}
+                      {% endif %}
+                    {%- endfor -%}
+                  </div>
+                  <span class="stat-label">{{ section.settings.rating_label | default: 'Customer Rating' }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <form 
+          action="{{ routes.cart_add_url }}" 
+          method="post" 
+          enctype="multipart/form-data" 
+          id="newsletter-form-{{ section.id }}"
+          class="newsletter-form"
+          data-newsletter-form
+          novalidate
+        >
+          <div class="newsletter-form-fields">
+            {% if section.settings.show_name_field %}
+              <div class="field">
+                <input
+                  id="newsletter-name-{{ section.id }}"
+                  type="text"
+                  name="contact[first_name]"
+                  class="field__input"
+                  autocomplete="given-name"
+                  placeholder="{{ section.settings.name_placeholder | default: 'Your name' }}"
+                  {% if section.settings.name_required %}required{% endif %}
+                  aria-describedby="newsletter-name-error-{{ section.id }}"
+                >
+                <label for="newsletter-name-{{ section.id }}" class="field__label">
+                  {{ section.settings.name_placeholder | default: 'Your name' }}
+                  {% if section.settings.name_required %}<span class="required">*</span>{% endif %}
+                </label>
+                <div id="newsletter-name-error-{{ section.id }}" class="field__error" role="alert"></div>
+              </div>
+            {% endif %}
+
+            <div class="field">
+              <input
+                id="newsletter-email-{{ section.id }}"
+                type="email"
+                name="contact[email]"
+                class="field__input"
+                value="{{ form.email }}"
+                aria-required="true"
+                autocorrect="off"
+                autocapitalize="off"
+                autocomplete="email"
+                placeholder="{{ section.settings.email_placeholder | default: 'Email address' }}"
+                required
+                aria-describedby="newsletter-email-error-{{ section.id }}"
+              >
+              <label for="newsletter-email-{{ section.id }}" class="field__label">
+                {{ section.settings.email_placeholder | default: 'Email address' }}
+                <span class="required">*</span>
+              </label>
+              <div id="newsletter-email-error-{{ section.id }}" class="field__error" role="alert"></div>
+            </div>
+
+            {% if section.settings.show_phone_field %}
+              <div class="field">
+                <input
+                  id="newsletter-phone-{{ section.id }}"
+                  type="tel"
+                  name="contact[phone]"
+                  class="field__input"
+                  autocomplete="tel"
+                  placeholder="{{ section.settings.phone_placeholder | default: 'Phone number (optional)' }}"
+                  {% if section.settings.phone_required %}required{% endif %}
+                  aria-describedby="newsletter-phone-error-{{ section.id }}"
+                >
+                <label for="newsletter-phone-{{ section.id }}" class="field__label">
+                  {{ section.settings.phone_placeholder | default: 'Phone number (optional)' }}
+                  {% if section.settings.phone_required %}<span class="required">*</span>{% endif %}
+                </label>
+                <div id="newsletter-phone-error-{{ section.id }}" class="field__error" role="alert"></div>
+              </div>
+            {% endif %}
+
+            {% if section.settings.show_preferences %}
+              <div class="field field--checkbox-group">
+                <fieldset>
+                  <legend class="field__label">{{ section.settings.preferences_label | default: 'What interests you?' }}</legend>
+                  {% for i in (1..4) %}
+                    {% assign preference_key = 'preference_' | append: i %}
+                    {% assign preference_value = section.settings[preference_key] %}
+                    {% if preference_value != blank %}
+                      <div class="checkbox-item">
+                        <input
+                          type="checkbox"
+                          id="newsletter-pref-{{ i }}-{{ section.id }}"
+                          name="contact[preferences][]"
+                          value="{{ preference_value }}"
+                          class="checkbox__input"
+                        >
+                        <label for="newsletter-pref-{{ i }}-{{ section.id }}" class="checkbox__label">
+                          <span class="checkbox__checkmark"></span>
+                          {{ preference_value }}
+                        </label>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </fieldset>
+              </div>
+            {% endif %}
+
+            {% if section.settings.show_gdpr_consent %}
+              <div class="field field--checkbox">
+                <input
+                  type="checkbox"
+                  id="newsletter-consent-{{ section.id }}"
+                  name="contact[accepts_marketing]"
+                  class="checkbox__input"
+                  required
+                  value="1"
+                >
+                <label for="newsletter-consent-{{ section.id }}" class="checkbox__label">
+                  <span class="checkbox__checkmark"></span>
+                  {{ section.settings.gdpr_text | default: 'I agree to receive marketing communications' }}
+                  <span class="required">*</span>
+                </label>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="newsletter-form-actions">
+            <button
+              type="submit"
+              class="button button--primary newsletter-submit-btn"
+              name="add"
+              id="newsletter-submit-{{ section.id }}"
+              aria-describedby="newsletter-submit-error-{{ section.id }}"
+            >
+              <span class="button-text">{{ section.settings.button_text | default: 'Subscribe' }}</span>
+              <span class="button-spinner loading-overlay__spinner hidden" aria-hidden="true">
+                {% render 'icon-spinner' %}
+              </span>
+            </button>
+          </div>
+
+          <div id="newsletter-submit-error-{{ section.id }}" class="newsletter-form-error" role="alert"></div>
+          <div id="newsletter-success-{{ section.id }}" class="newsletter-form-success hidden" role="status">
+            <div class="success-icon">{% render 'icon-check-circle' %}</div>
+            <div class="success-message">
+              {{ section.settings.success_message | default: 'Thank you for subscribing!' }}
+            </div>
+          </div>
+        </form>
+
+        {% if section.settings.show_benefits %}
+          <div class="newsletter-benefits">
+            <h3 class="benefits-heading">{{ section.settings.benefits_heading | default: 'Why subscribe?' }}</h3>
+            <div class="benefits-list">
+              {% for i in (1..4) %}
+                {% assign benefit_key = 'benefit_' | append: i %}
+                {% assign benefit_value = section.settings[benefit_key] %}
+                {% if benefit_value != blank %}
+                  <div class="benefit-item">
+                    <div class="benefit-icon">{% render 'icon-check-circle' %}</div>
+                    <span class="benefit-text">{{ benefit_value }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_testimonial and section.settings.testimonial_text != blank %}
+          <div class="newsletter-testimonial">
+            <blockquote class="testimonial-quote">
+              "{{ section.settings.testimonial_text }}"
+            </blockquote>
+            {% if section.settings.testimonial_author != blank %}
+              <cite class="testimonial-author">
+                {% if section.settings.testimonial_avatar != blank %}
+                  <img 
+                    src="{{ section.settings.testimonial_avatar | image_url: width: 60 }}" 
+                    alt="{{ section.settings.testimonial_author }}"
+                    class="testimonial-avatar"
+                    width="30"
+                    height="30"
+                    loading="lazy"
+                  >
+                {% endif %}
+                <span class="author-name">{{ section.settings.testimonial_author }}</span>
+                {% if section.settings.testimonial_title != blank %}
+                  <span class="author-title">{{ section.settings.testimonial_title }}</span>
+                {% endif %}
+              </cite>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_privacy_note %}
+          <div class="newsletter-privacy">
+            <small>{{ section.settings.privacy_text | default: 'We respect your privacy. Unsubscribe at any time.' }}</small>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'section-newsletter-signup.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Newsletter Signup",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Stay in the loop",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "Get the latest updates, exclusive offers, and style inspiration delivered to your inbox.",
+      "label": "Subheading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_emoji",
+      "default": true,
+      "label": "Show emoji in heading"
+    },
+    {
+      "type": "text",
+      "id": "emoji",
+      "default": "✨",
+      "label": "Emoji"
+    },
+    {
+      "type": "header",
+      "content": "Form Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "default": "Subscribe",
+      "label": "Button text"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "default": "Enter your email address",
+      "label": "Email placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_name_field",
+      "default": false,
+      "label": "Show name field"
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "default": "Your name",
+      "label": "Name placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "name_required",
+      "default": false,
+      "label": "Name required"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone_field",
+      "default": false,
+      "label": "Show phone field"
+    },
+    {
+      "type": "text",
+      "id": "phone_placeholder",
+      "default": "Phone number (optional)",
+      "label": "Phone placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "phone_required",
+      "default": false,
+      "label": "Phone required"
+    },
+    {
+      "type": "header",
+      "content": "Preferences"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_preferences",
+      "default": false,
+      "label": "Show preference checkboxes"
+    },
+    {
+      "type": "text",
+      "id": "preferences_label",
+      "default": "What interests you?",
+      "label": "Preferences label"
+    },
+    {
+      "type": "text",
+      "id": "preference_1",
+      "default": "New arrivals",
+      "label": "Preference 1"
+    },
+    {
+      "type": "text",
+      "id": "preference_2",
+      "default": "Sales & promotions",
+      "label": "Preference 2"
+    },
+    {
+      "type": "text",
+      "id": "preference_3",
+      "default": "Style tips",
+      "label": "Preference 3"
+    },
+    {
+      "type": "text",
+      "id": "preference_4",
+      "default": "Behind the scenes",
+      "label": "Preference 4"
+    },
+    {
+      "type": "header",
+      "content": "GDPR Compliance"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gdpr_consent",
+      "default": true,
+      "label": "Show GDPR consent checkbox"
+    },
+    {
+      "type": "text",
+      "id": "gdpr_text",
+      "default": "I agree to receive marketing communications",
+      "label": "GDPR consent text"
+    },
+    {
+      "type": "header",
+      "content": "Social Proof"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_proof",
+      "default": true,
+      "label": "Show social proof"
+    },
+    {
+      "type": "text",
+      "id": "subscriber_count",
+      "default": "10,000+",
+      "label": "Subscriber count"
+    },
+    {
+      "type": "text",
+      "id": "subscriber_label",
+      "default": "Happy Subscribers",
+      "label": "Subscriber label"
+    },
+    {
+      "type": "range",
+      "id": "rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5,
+      "label": "Rating stars"
+    },
+    {
+      "type": "text",
+      "id": "rating_label",
+      "default": "Customer Rating",
+      "label": "Rating label"
+    },
+    {
+      "type": "header",
+      "content": "Benefits"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_benefits",
+      "default": true,
+      "label": "Show benefits list"
+    },
+    {
+      "type": "text",
+      "id": "benefits_heading",
+      "default": "Why subscribe?",
+      "label": "Benefits heading"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1",
+      "default": "Exclusive early access to sales",
+      "label": "Benefit 1"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2",
+      "default": "Style tips from our experts",
+      "label": "Benefit 2"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3",
+      "default": "First to know about new arrivals",
+      "label": "Benefit 3"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4",
+      "default": "Subscriber-only discounts",
+      "label": "Benefit 4"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_testimonial",
+      "default": false,
+      "label": "Show testimonial"
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_text",
+      "default": "I love getting their newsletter! Always full of great style inspiration and the exclusive deals are amazing.",
+      "label": "Testimonial text"
+    },
+    {
+      "type": "text",
+      "id": "testimonial_author",
+      "default": "Sarah M.",
+      "label": "Testimonial author"
+    },
+    {
+      "type": "text",
+      "id": "testimonial_title",
+      "default": "Verified Customer",
+      "label": "Author title"
+    },
+    {
+      "type": "image_picker",
+      "id": "testimonial_avatar",
+      "label": "Author avatar"
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "default": "Welcome to our community! Check your inbox for a special welcome offer.",
+      "label": "Success message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_privacy_note",
+      "default": true,
+      "label": "Show privacy note"
+    },
+    {
+      "type": "text",
+      "id": "privacy_text",
+      "default": "We respect your privacy. Unsubscribe at any time.",
+      "label": "Privacy text"
+    },
+    {
+      "type": "header",
+      "content": "Visual Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "default": true,
+      "label": "Show decorative elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "Make section full width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Custom background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom text color"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter signup"
+    }
+  ]
+}
+{% endschema %} 

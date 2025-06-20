@@ -1,0 +1,47 @@
+{{ 'component-quick-buy.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'quick-buy.js' | asset_url }}" defer="defer"></script>
+
+<quick-buy-modal class="quick-buy-modal">
+  <div class="quick-buy-modal__overlay"></div>
+  <div class="quick-buy-modal__content" role="dialog" aria-modal="true" aria-label="Quick Buy">
+    <div class="quick-buy-modal__header">
+      <h2 class="quick-buy-modal__title">Quick Buy</h2>
+      <button class="quick-buy-modal__close" type="button" aria-label="Close quick buy">
+        {% render 'icon-close' %}
+      </button>
+    </div>
+
+    <div class="quick-buy-modal__body">
+      <div class="quick-buy-product" id="QuickBuyProduct">
+        <!-- Product content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</quick-buy-modal>
+
+{% schema %}
+{
+  "name": "Quick Buy Modal",
+  "class": "quick-buy-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_quick_buy",
+      "default": true,
+      "label": "Enable Quick Buy"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity_selector",
+      "default": true,
+      "label": "Show quantity selector"
+    }
+  ]
+}
+{% endschema %} 

@@ -1,0 +1,443 @@
+{{ 'section-customer-account.css' | asset_url | stylesheet_tag }}
+{{ 'section-customer-account.js' | asset_url | script_tag: defer: true }}
+
+<div class="customer-account-wrapper">
+  <!-- Floating Bubbles Background -->
+  <div class="floating-bubbles" aria-hidden="true">
+    {%- for i in (1..12) -%}
+      <div class="bubble bubble-{{ i }}"></div>
+    {%- endfor -%}
+  </div>
+
+  <div class="page-width">
+    <div class="customer-account-container">
+      
+      <!-- Account Header -->
+      <div class="account-header">
+        <div class="account-welcome">
+          <h1 class="account-title">{{ 'customer.account.title' | t }}</h1>
+          <p class="account-greeting">
+            {{ 'customer.account.welcome' | t: first_name: customer.first_name }}
+          </p>
+        </div>
+        <div class="account-actions">
+          <a href="{{ routes.account_logout_url }}" class="btn btn-secondary">
+            <span class="btn-icon">{% render 'icon-logout' %}</span>
+            <span class="btn-text">{{ 'customer.log_out' | t }}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Account Navigation -->
+      <nav class="account-navigation" aria-label="Account navigation">
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="overview" aria-selected="true">
+            <span class="tab-icon">{% render 'icon-dashboard' %}</span>
+            <span class="tab-text">{{ 'customer.account.overview' | t }}</span>
+          </button>
+          <button class="nav-tab" data-tab="orders" aria-selected="false">
+            <span class="tab-icon">{% render 'icon-order' %}</span>
+            <span class="tab-text">{{ 'customer.orders.title' | t }}</span>
+            {%- if customer.orders_count > 0 -%}
+              <span class="tab-badge">{{ customer.orders_count }}</span>
+            {%- endif -%}
+          </button>
+          <button class="nav-tab" data-tab="addresses" aria-selected="false">
+            <span class="tab-icon">{% render 'icon-location' %}</span>
+            <span class="tab-text">{{ 'customer.addresses.title' | t }}</span>
+          </button>
+          <button class="nav-tab" data-tab="profile" aria-selected="false">
+            <span class="tab-icon">{% render 'icon-user' %}</span>
+            <span class="tab-text">{{ 'customer.account.profile' | t }}</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Tab Content -->
+      <div class="account-content">
+        
+        <!-- Overview Tab -->
+        <div class="tab-panel active" id="overview-panel" role="tabpanel" aria-labelledby="overview-tab">
+          <div class="overview-grid">
+            
+            <!-- Account Summary -->
+            <div class="overview-card summary-card">
+              <div class="card-header">
+                <h2 class="card-title">{{ 'customer.account.summary' | t }}</h2>
+              </div>
+              <div class="card-content">
+                <div class="summary-stats">
+                  <div class="stat-item">
+                    <div class="stat-icon">{% render 'icon-order' %}</div>
+                    <div class="stat-info">
+                      <div class="stat-value">{{ customer.orders_count }}</div>
+                      <div class="stat-label">{{ 'customer.orders.total' | t }}</div>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-icon">{% render 'icon-heart' %}</div>
+                    <div class="stat-info">
+                      <div class="stat-value">0</div>
+                      <div class="stat-label">{{ 'customer.account.wishlist' | t }}</div>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-icon">{% render 'icon-location' %}</div>
+                    <div class="stat-info">
+                      <div class="stat-value">{{ customer.addresses_count }}</div>
+                      <div class="stat-label">{{ 'customer.addresses.total' | t }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="overview-card orders-card">
+              <div class="card-header">
+                <h2 class="card-title">{{ 'customer.orders.recent' | t }}</h2>
+                {%- if customer.orders_count > 0 -%}
+                  <button class="card-action" data-tab-switch="orders">
+                    {{ 'customer.orders.view_all' | t }}
+                  </button>
+                {%- endif -%}
+              </div>
+              <div class="card-content">
+                {%- if customer.orders_count > 0 -%}
+                  <div class="recent-orders">
+                    {%- for order in customer.orders limit: 3 -%}
+                      <div class="order-item">
+                        <div class="order-info">
+                          <div class="order-number">#{{ order.name }}</div>
+                          <div class="order-date">{{ order.created_at | date: format: 'abbreviated_date' }}</div>
+                        </div>
+                        <div class="order-status">
+                          <span class="status-badge status-{{ order.fulfillment_status | default: 'pending' }}">
+                            {{ order.fulfillment_status_label | default: 'Pending' }}
+                          </span>
+                        </div>
+                        <div class="order-total">{{ order.total_price | money }}</div>
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <div class="empty-state">
+                    <div class="empty-icon">{% render 'icon-order' %}</div>
+                    <h3 class="empty-title">{{ 'customer.orders.none' | t }}</h3>
+                    <p class="empty-message">{{ 'customer.orders.none_message' | t }}</p>
+                    <a href="{{ routes.collections_url }}" class="btn btn-primary">
+                      {{ 'customer.orders.start_shopping' | t }}
+                    </a>
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="overview-card actions-card">
+              <div class="card-header">
+                <h2 class="card-title">{{ 'customer.account.quick_actions' | t }}</h2>
+              </div>
+              <div class="card-content">
+                <div class="quick-actions">
+                  <a href="{{ routes.collections_url }}" class="action-item">
+                    <div class="action-icon">{% render 'icon-shopping-bag' %}</div>
+                    <div class="action-text">{{ 'customer.account.continue_shopping' | t }}</div>
+                  </a>
+                  <button class="action-item" data-tab-switch="addresses">
+                    <div class="action-icon">{% render 'icon-plus' %}</div>
+                    <div class="action-text">{{ 'customer.addresses.add_new' | t }}</div>
+                  </button>
+                  <button class="action-item" data-tab-switch="profile">
+                    <div class="action-icon">{% render 'icon-edit' %}</div>
+                    <div class="action-text">{{ 'customer.account.edit_profile' | t }}</div>
+                  </button>
+                  <a href="{{ routes.account_logout_url }}" class="action-item">
+                    <div class="action-icon">{% render 'icon-logout' %}</div>
+                    <div class="action-text">{{ 'customer.log_out' | t }}</div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-panel" id="orders-panel" role="tabpanel" aria-labelledby="orders-tab">
+          <div class="orders-content">
+            {%- if customer.orders_count > 0 -%}
+              <div class="orders-header">
+                <h2 class="orders-title">{{ 'customer.orders.title' | t }}</h2>
+                <div class="orders-filters">
+                  <select class="order-filter" id="order-status-filter">
+                    <option value="">{{ 'customer.orders.all_statuses' | t }}</option>
+                    <option value="pending">{{ 'customer.orders.pending' | t }}</option>
+                    <option value="fulfilled">{{ 'customer.orders.fulfilled' | t }}</option>
+                    <option value="cancelled">{{ 'customer.orders.cancelled' | t }}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="orders-list">
+                {%- for order in customer.orders -%}
+                  <div class="order-card" data-status="{{ order.fulfillment_status | default: 'pending' }}">
+                    <div class="order-header">
+                      <div class="order-details">
+                        <h3 class="order-number">{{ 'customer.order.title' | t: name: order.name }}</h3>
+                        <div class="order-meta">
+                          <span class="order-date">{{ order.created_at | date: format: 'abbreviated_date' }}</span>
+                          <span class="order-separator">•</span>
+                          <span class="order-total">{{ order.total_price | money }}</span>
+                        </div>
+                      </div>
+                      <div class="order-status">
+                        <span class="status-badge status-{{ order.fulfillment_status | default: 'pending' }}">
+                          {{ order.fulfillment_status_label | default: 'Pending' }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="order-items">
+                      {%- for line_item in order.line_items limit: 3 -%}
+                        <div class="order-item">
+                          <div class="item-image">
+                            {%- if line_item.image -%}
+                              <img src="{{ line_item.image | image_url: width: 60 }}" 
+                                   alt="{{ line_item.title | escape }}" 
+                                   loading="lazy"
+                                   width="60" 
+                                   height="60">
+                            {%- else -%}
+                              <div class="item-placeholder">{% render 'icon-product' %}</div>
+                            {%- endif -%}
+                          </div>
+                          <div class="item-details">
+                            <div class="item-title">{{ line_item.title }}</div>
+                            <div class="item-variant">
+                              {%- unless line_item.variant.title == 'Default Title' -%}
+                                {{ line_item.variant.title }}
+                              {%- endunless -%}
+                            </div>
+                            <div class="item-quantity">{{ 'customer.order.quantity' | t: quantity: line_item.quantity }}</div>
+                          </div>
+                          <div class="item-price">{{ line_item.final_price | money }}</div>
+                        </div>
+                      {%- endfor -%}
+                      
+                      {%- if order.line_items.size > 3 -%}
+                        <div class="order-item-more">
+                          {{ 'customer.order.more_items' | t: count: order.line_items.size | minus: 3 }}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                    
+                    <div class="order-actions">
+                      <a href="{{ order.customer_url }}" class="btn btn-outline">
+                        {{ 'customer.order.view_details' | t }}
+                      </a>
+                      {%- if order.fulfillment_status == 'fulfilled' -%}
+                        <button class="btn btn-primary" onclick="reorderItems({{ order.id }})">
+                          {{ 'customer.order.reorder' | t }}
+                        </button>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="empty-state">
+                <div class="empty-icon">{% render 'icon-order' %}</div>
+                <h2 class="empty-title">{{ 'customer.orders.none' | t }}</h2>
+                <p class="empty-message">{{ 'customer.orders.none_message' | t }}</p>
+                <a href="{{ routes.collections_url }}" class="btn btn-primary">
+                  {{ 'customer.orders.start_shopping' | t }}
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Addresses Tab -->
+        <div class="tab-panel" id="addresses-panel" role="tabpanel" aria-labelledby="addresses-tab">
+          <div class="addresses-content">
+            <div class="addresses-header">
+              <h2 class="addresses-title">{{ 'customer.addresses.title' | t }}</h2>
+              <button class="btn btn-primary" id="add-address-btn">
+                <span class="btn-icon">{% render 'icon-plus' %}</span>
+                <span class="btn-text">{{ 'customer.addresses.add_new' | t }}</span>
+              </button>
+            </div>
+            
+            {%- if customer.addresses_count > 0 -%}
+              <div class="addresses-grid">
+                {%- for address in customer.addresses -%}
+                  <div class="address-card" data-address-id="{{ address.id }}">
+                    <div class="address-header">
+                      {%- if address == customer.default_address -%}
+                        <span class="address-badge default">{{ 'customer.addresses.default' | t }}</span>
+                      {%- endif -%}
+                      <div class="address-actions">
+                        <button class="address-action edit" data-address-id="{{ address.id }}" aria-label="{{ 'customer.addresses.edit' | t }}">
+                          {% render 'icon-edit' %}
+                        </button>
+                        <button class="address-action delete" data-address-id="{{ address.id }}" aria-label="{{ 'customer.addresses.delete' | t }}">
+                          {% render 'icon-delete' %}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div class="address-content">
+                      <div class="address-name">{{ address.first_name }} {{ address.last_name }}</div>
+                      <div class="address-company">{{ address.company }}</div>
+                      <div class="address-street">{{ address.address1 }}</div>
+                      {%- if address.address2 != blank -%}
+                        <div class="address-street2">{{ address.address2 }}</div>
+                      {%- endif -%}
+                      <div class="address-city">
+                        {{ address.city }}, {{ address.province_code }} {{ address.zip }}
+                      </div>
+                      <div class="address-country">{{ address.country }}</div>
+                      {%- if address.phone != blank -%}
+                        <div class="address-phone">{{ address.phone }}</div>
+                      {%- endif -%}
+                    </div>
+                    
+                    <div class="address-footer">
+                      {%- unless address == customer.default_address -%}
+                        <button class="btn btn-outline btn-small" data-set-default="{{ address.id }}">
+                          {{ 'customer.addresses.set_default' | t }}
+                        </button>
+                      {%- endunless -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="empty-state">
+                <div class="empty-icon">{% render 'icon-location' %}</div>
+                <h3 class="empty-title">{{ 'customer.addresses.none' | t }}</h3>
+                <p class="empty-message">{{ 'customer.addresses.none_message' | t }}</p>
+                <button class="btn btn-primary" id="add-first-address-btn">
+                  {{ 'customer.addresses.add_first' | t }}
+                </button>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div class="tab-panel" id="profile-panel" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="profile-content">
+            <div class="profile-header">
+              <h2 class="profile-title">{{ 'customer.account.profile' | t }}</h2>
+            </div>
+            
+            <form class="profile-form" action="{{ routes.account_url }}" method="post">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="customer_first_name" class="form-label">
+                    {{ 'customer.register.first_name' | t }}
+                  </label>
+                  <input 
+                    type="text" 
+                    id="customer_first_name" 
+                    name="customer[first_name]" 
+                    class="form-input"
+                    value="{{ customer.first_name }}"
+                    required
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="customer_last_name" class="form-label">
+                    {{ 'customer.register.last_name' | t }}
+                  </label>
+                  <input 
+                    type="text" 
+                    id="customer_last_name" 
+                    name="customer[last_name]" 
+                    class="form-input"
+                    value="{{ customer.last_name }}"
+                    required
+                  >
+                </div>
+                
+                <div class="form-group full-width">
+                  <label for="customer_email" class="form-label">
+                    {{ 'customer.register.email' | t }}
+                  </label>
+                  <input 
+                    type="email" 
+                    id="customer_email" 
+                    name="customer[email]" 
+                    class="form-input"
+                    value="{{ customer.email }}"
+                    required
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="customer_phone" class="form-label">
+                    {{ 'customer.register.phone' | t }}
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="customer_phone" 
+                    name="customer[phone]" 
+                    class="form-input"
+                    value="{{ customer.phone }}"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="customer_birthday" class="form-label">
+                    {{ 'customer.register.birthday' | t }}
+                  </label>
+                  <input 
+                    type="date" 
+                    id="customer_birthday" 
+                    name="customer[birthday]" 
+                    class="form-input"
+                    value="{{ customer.birthday }}"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span class="btn-text">{{ 'customer.account.save_changes' | t }}</span>
+                  <span class="btn-loading">
+                    <div class="spinner"></div>
+                  </span>
+                </button>
+                <button type="button" class="btn btn-outline" id="change-password-btn">
+                  {{ 'customer.account.change_password' | t }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Address Form Modal -->
+<div class="modal" id="address-modal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="address-modal-title">{{ 'customer.addresses.add_new' | t }}</h3>
+      <button class="modal-close" aria-label="Close modal">
+        {% render 'icon-close' %}
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="address-form" id="address-form">
+        <!-- Address form fields will be populated by JavaScript -->
+      </form>
+    </div>
+  </div>
+</div> 

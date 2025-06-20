@@ -1,0 +1,207 @@
+{% comment %}
+  Quick View Modal Snippet
+  Displays product details in a modal overlay
+{% endcomment %}
+
+<div class="quick-view-modal quick-view-modal--{{ settings.style | default: 'bubbly' }}" 
+     id="quick-view-modal" 
+     role="dialog" 
+     aria-modal="true" 
+     aria-labelledby="quick-view-title" 
+     aria-describedby="quick-view-description"
+     aria-hidden="true"
+     data-quick-view-modal>
+  
+  <div class="quick-view-modal__overlay" data-quick-view-overlay></div>
+  
+  <div class="quick-view-modal__container">
+    
+    <div class="quick-view-modal__header">
+      <h2 class="quick-view-modal__title" id="quick-view-title">
+        {{ 'products.quick_view.title' | t }}
+      </h2>
+      <button type="button" 
+              class="quick-view-modal__close" 
+              data-quick-view-close
+              aria-label="{{ 'general.accessibility.close' | t }}">
+        {%- render 'icon-close' -%}
+      </button>
+    </div>
+    
+    <div class="quick-view-modal__content" data-quick-view-content>
+      
+      <div class="quick-view-modal__loading" data-quick-view-loading>
+        <div class="quick-view-modal__loading-spinner">
+          {%- render 'icon-spinner' -%}
+        </div>
+        <span class="quick-view-modal__loading-text">
+          {{ 'products.quick_view.loading' | t }}
+        </span>
+      </div>
+      
+      <div class="quick-view-modal__product" data-quick-view-product style="display: none;">
+        
+        <div class="quick-view-modal__media">
+          <div class="quick-view-modal__image-gallery" data-quick-view-gallery>
+            
+            <div class="quick-view-modal__main-image">
+              <div class="quick-view-modal__image-container">
+                <img class="quick-view-modal__image" 
+                     data-quick-view-main-image
+                     alt=""
+                     loading="lazy">
+                
+                <button type="button" 
+                        class="quick-view-modal__zoom-button" 
+                        data-quick-view-zoom
+                        aria-label="{{ 'products.quick_view.zoom_image' | t }}">
+                  {%- render 'icon-zoom-in' -%}
+                </button>
+              </div>
+              
+              <div class="quick-view-modal__gallery-nav">
+                <button type="button" 
+                        class="quick-view-modal__gallery-prev" 
+                        data-quick-view-prev
+                        aria-label="{{ 'products.quick_view.previous_image' | t }}">
+                  {%- render 'icon-arrow-left' -%}
+                </button>
+                <button type="button" 
+                        class="quick-view-modal__gallery-next" 
+                        data-quick-view-next
+                        aria-label="{{ 'products.quick_view.next_image' | t }}">
+                  {%- render 'icon-arrow-right' -%}
+                </button>
+              </div>
+            </div>
+            
+            <div class="quick-view-modal__thumbnails" data-quick-view-thumbnails>
+              <!-- Thumbnails will be populated by JavaScript -->
+            </div>
+            
+          </div>
+        </div>
+        
+        <div class="quick-view-modal__details">
+          
+          <div class="quick-view-modal__product-info">
+            <h3 class="quick-view-modal__product-title" data-quick-view-title-text>
+              <!-- Product title will be populated by JavaScript -->
+            </h3>
+            
+            <div class="quick-view-modal__price" data-quick-view-price>
+              <!-- Price will be populated by JavaScript -->
+            </div>
+            
+            <div class="quick-view-modal__vendor" data-quick-view-vendor>
+              <!-- Vendor will be populated by JavaScript -->
+            </div>
+            
+            <div class="quick-view-modal__rating" data-quick-view-rating>
+              <!-- Rating will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="quick-view-modal__description" data-quick-view-description>
+            <!-- Description will be populated by JavaScript -->
+          </div>
+          
+          <form class="quick-view-modal__form" data-quick-view-form>
+            
+            <div class="quick-view-modal__variants" data-quick-view-variants>
+              <!-- Variants will be populated by JavaScript -->
+            </div>
+            
+            <div class="quick-view-modal__quantity">
+              <label class="quick-view-modal__quantity-label" for="quick-view-quantity">
+                {{ 'products.product.quantity' | t }}
+              </label>
+              <div class="quick-view-modal__quantity-selector">
+                <button type="button" 
+                        class="quick-view-modal__quantity-button quick-view-modal__quantity-button--minus"
+                        data-quantity-minus
+                        aria-label="{{ 'products.product.quantity_decrease' | t }}">
+                  {%- render 'icon-minus' -%}
+                </button>
+                <input type="number" 
+                       id="quick-view-quantity"
+                       class="quick-view-modal__quantity-input"
+                       name="quantity"
+                       value="1"
+                       min="1"
+                       data-quantity-input
+                       aria-label="{{ 'products.product.quantity' | t }}">
+                <button type="button" 
+                        class="quick-view-modal__quantity-button quick-view-modal__quantity-button--plus"
+                        data-quantity-plus
+                        aria-label="{{ 'products.product.quantity_increase' | t }}">
+                  {%- render 'icon-plus' -%}
+                </button>
+              </div>
+            </div>
+            
+            <div class="quick-view-modal__actions">
+              <button type="submit" 
+                      class="quick-view-modal__add-to-cart"
+                      data-quick-view-add-to-cart>
+                <span class="quick-view-modal__add-to-cart-text">
+                  {{ 'products.product.add_to_cart' | t }}
+                </span>
+                <div class="quick-view-modal__add-to-cart-spinner">
+                  {%- render 'icon-spinner' -%}
+                </div>
+              </button>
+              
+              <button type="button" 
+                      class="quick-view-modal__view-full"
+                      data-quick-view-full>
+                {{ 'products.quick_view.view_full_details' | t }}
+              </button>
+            </div>
+            
+            <div class="quick-view-modal__features">
+              <div class="quick-view-modal__feature">
+                {%- render 'icon-truck' -%}
+                <span>{{ 'products.quick_view.free_shipping' | t }}</span>
+              </div>
+              <div class="quick-view-modal__feature">
+                {%- render 'icon-shield' -%}
+                <span>{{ 'products.quick_view.secure_payment' | t }}</span>
+              </div>
+              <div class="quick-view-modal__feature">
+                {%- render 'icon-clock' -%}
+                <span>{{ 'products.quick_view.fast_delivery' | t }}</span>
+              </div>
+            </div>
+            
+          </form>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+    
+    {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+    {%- if settings.style == 'bubbly' -%}
+      <div class="quick-view-modal__decorative-elements" aria-hidden="true">
+        <div class="quick-view-modal__bubble quick-view-modal__bubble--1"></div>
+        <div class="quick-view-modal__bubble quick-view-modal__bubble--2"></div>
+        <div class="quick-view-modal__bubble quick-view-modal__bubble--3"></div>
+        <div class="quick-view-modal__bubble quick-view-modal__bubble--4"></div>
+        <div class="quick-view-modal__bubble quick-view-modal__bubble--5"></div>
+      </div>
+    {%- endif -%}
+    
+  </div>
+  
+</div>
+
+<script>
+  // Initialize quick view modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof QuickViewModal !== 'undefined') {
+      window.quickViewModal = new QuickViewModal();
+    }
+  });
+</script> 

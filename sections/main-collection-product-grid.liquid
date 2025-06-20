@@ -1,0 +1,522 @@
+{{ 'section-collection-product-grid.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign products_per_row_desktop = section.settings.products_per_row_desktop | default: 4
+  assign products_per_row_tablet = section.settings.products_per_row_tablet | default: 2
+  assign products_per_row_mobile = section.settings.products_per_row_mobile | default: 1
+  assign enable_quick_view = section.settings.enable_quick_view
+  assign enable_quick_add = section.settings.enable_quick_add
+  assign show_vendor = section.settings.show_vendor
+  assign show_rating = section.settings.show_rating
+  assign show_compare_price = section.settings.show_compare_price
+  assign image_ratio = section.settings.image_ratio
+  assign image_hover_effect = section.settings.image_hover_effect
+  assign enable_product_badges = section.settings.enable_product_badges
+  assign badge_style = section.settings.badge_style
+  assign grid_spacing = section.settings.grid_spacing
+  assign enable_infinite_scroll = section.settings.enable_infinite_scroll
+  assign pagination_style = section.settings.pagination_style
+  assign products_per_page = section.settings.products_per_page | default: 24
+  assign enable_lazy_loading = section.settings.enable_lazy_loading
+  assign show_product_count = section.settings.show_product_count
+  assign enable_wishlist = section.settings.enable_wishlist
+  assign card_style = section.settings.card_style
+  assign enable_animations = section.settings.enable_animations
+  assign animation_delay = section.settings.animation_delay | default: 100
+
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+  assign filter_param = request.url | split: '?' | last
+-%}
+
+<div class="collection-product-grid" 
+     data-collection-grid
+     data-collection-handle="{{ collection.handle }}"
+     data-products-per-page="{{ products_per_page }}"
+     data-infinite-scroll="{{ enable_infinite_scroll }}"
+     data-animation-delay="{{ animation_delay }}">
+
+  {%- comment -%} Collection Toolbar {%- endcomment -%}
+  <div class="collection-toolbar">
+    <div class="collection-toolbar__wrapper page-width">
+      
+      {%- if show_product_count -%}
+        <div class="collection-toolbar__count">
+          <span class="collection-toolbar__count-text">
+            {%- if collection.products_count == 0 -%}
+              {{ 'collections.general.no_products' | t }}
+            {%- elsif collection.products_count == 1 -%}
+              {{ 'collections.general.product_count.one' | t: count: collection.products_count }}
+            {%- else -%}
+              {{ 'collections.general.product_count.other' | t: count: collection.products_count }}
+            {%- endif -%}
+          </span>
+        </div>
+      {%- endif -%}
+
+      <div class="collection-toolbar__controls">
+        {%- comment -%} Sort Dropdown {%- endcomment -%}
+        <div class="collection-toolbar__sort">
+          <label for="SortBy" class="collection-toolbar__sort-label">
+            {{ 'collections.sorting.title' | t }}
+          </label>
+          <div class="select-wrapper select-wrapper--bubbly">
+            <select name="sort_by" id="SortBy" class="collection-sort-select" data-sort-select>
+              {%- assign sort_options = 'manual,best-selling,title-ascending,title-descending,price-ascending,price-descending,created-ascending,created-descending' | split: ',' -%}
+              {%- for option in sort_options -%}
+                <option value="{{ option }}" 
+                        {% if sort_by == option %}selected="selected"{% endif %}>
+                  {{ 'collections.sorting.' | append: option | t }}
+                </option>
+              {%- endfor -%}
+            </select>
+            {% render 'icon-caret' %}
+          </div>
+        </div>
+
+        {%- comment -%} View Toggle {%- endcomment -%}
+        <div class="collection-toolbar__view">
+          <button type="button" 
+                  class="collection-toolbar__view-button collection-toolbar__view-button--grid active"
+                  data-view="grid"
+                  aria-label="{{ 'collections.general.grid_view' | t }}">
+            {% render 'icon-grid' %}
+          </button>
+          <button type="button" 
+                  class="collection-toolbar__view-button collection-toolbar__view-button--list"
+                  data-view="list"
+                  aria-label="{{ 'collections.general.list_view' | t }}">
+            {% render 'icon-list' %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Active Filters {%- endcomment -%}
+  {%- if collection.current_type != blank or collection.current_vendor != blank -%}
+    <div class="collection-active-filters">
+      <div class="collection-active-filters__wrapper page-width">
+        <div class="collection-active-filters__list">
+          {%- if collection.current_type != blank -%}
+            <div class="collection-active-filters__item">
+              <span class="collection-active-filters__label">{{ 'collections.filters.product_type' | t }}:</span>
+              <span class="collection-active-filters__value">{{ collection.current_type }}</span>
+              <a href="{{ collection.url }}" class="collection-active-filters__remove">
+                {% render 'icon-close' %}
+              </a>
+            </div>
+          {%- endif -%}
+          
+          {%- if collection.current_vendor != blank -%}
+            <div class="collection-active-filters__item">
+              <span class="collection-active-filters__label">{{ 'collections.filters.vendor' | t }}:</span>
+              <span class="collection-active-filters__value">{{ collection.current_vendor }}</span>
+              <a href="{{ collection.url }}" class="collection-active-filters__remove">
+                {% render 'icon-close' %}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+        
+        <a href="{{ collection.url }}" class="collection-active-filters__clear">
+          {{ 'collections.filters.clear_all' | t }}
+        </a>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Product Grid {%- endcomment -%}
+  <div class="collection-product-grid__wrapper page-width">
+    
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid product-grid--collection product-grid--{{ card_style }} product-grid--spacing-{{ grid_spacing }}"
+           data-product-grid
+           style="--products-per-row-desktop: {{ products_per_row_desktop }};
+                  --products-per-row-tablet: {{ products_per_row_tablet }};
+                  --products-per-row-mobile: {{ products_per_row_mobile }};">
+        
+        {%- liquid
+          assign lazy_load_index = 8
+          if enable_lazy_loading == false
+            assign lazy_load_index = 999
+          endif
+        -%}
+        
+        {%- for product in collection.products -%}
+          {%- liquid
+            assign loading = 'lazy'
+            if forloop.index <= lazy_load_index
+              assign loading = 'eager'
+            endif
+            
+            assign animation_delay_value = 0
+            if enable_animations
+              assign animation_delay_value = forloop.index0 | times: animation_delay
+            endif
+          -%}
+          
+          <div class="product-grid__item"
+               {% if enable_animations %}
+                 style="animation-delay: {{ animation_delay_value }}ms;"
+                 data-aos="fade-up"
+               {% endif %}>
+            {% render 'product-card',
+               product: product,
+               show_vendor: show_vendor,
+               show_rating: show_rating,
+               show_compare_price: show_compare_price,
+               image_ratio: image_ratio,
+               image_hover_effect: image_hover_effect,
+               enable_product_badges: enable_product_badges,
+               badge_style: badge_style,
+               enable_quick_view: enable_quick_view,
+               enable_quick_add: enable_quick_add,
+               enable_wishlist: enable_wishlist,
+               card_style: card_style,
+               loading: loading,
+               sizes: '(min-width: 990px) calc((100vw - 130px) / ' | append: products_per_row_desktop | append: '), (min-width: 750px) calc((100vw - 120px) / ' | append: products_per_row_tablet | append: '), calc((100vw - 35px) / ' | append: products_per_row_mobile | append: ')'
+            %}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Load More / Pagination {%- endcomment -%}
+      {%- if enable_infinite_scroll -%}
+        <div class="collection-load-more" data-load-more>
+          {%- if paginate.next -%}
+            <button type="button" 
+                    class="collection-load-more__button btn btn--primary btn--{{ card_style }}"
+                    data-load-more-button
+                    data-next-url="{{ paginate.next.url }}">
+              <span class="collection-load-more__text">{{ 'collections.general.load_more' | t }}</span>
+              <span class="collection-load-more__spinner">
+                {% render 'icon-spinner' %}
+              </span>
+            </button>
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        {%- if paginate.pages > 1 -%}
+          <div class="collection-pagination">
+            {% render 'pagination', paginate: paginate, style: pagination_style %}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+      
+    {%- else -%}
+      {%- comment -%} Empty State {%- endcomment -%}
+      <div class="collection-empty-state">
+        <div class="collection-empty-state__content">
+          <div class="collection-empty-state__icon">
+            {% render 'icon-search' %}
+          </div>
+          <h2 class="collection-empty-state__title">{{ 'collections.general.no_products_title' | t }}</h2>
+          <p class="collection-empty-state__text">{{ 'collections.general.no_products_text' | t }}</p>
+          <a href="{{ routes.collections_url }}" class="collection-empty-state__button btn btn--primary btn--{{ card_style }}">
+            {{ 'collections.general.browse_collections' | t }}
+          </a>
+        </div>
+        
+        {%- comment -%} Decorative elements {%- endcomment -%}
+        <div class="collection-empty-state__decorations" aria-hidden="true">
+          <div class="floating-bubble floating-bubble--1"></div>
+          <div class="floating-bubble floating-bubble--2"></div>
+          <div class="floating-bubble floating-bubble--3"></div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Loading Overlay {%- endcomment -%}
+  <div class="collection-loading-overlay" data-loading-overlay>
+    <div class="collection-loading-overlay__content">
+      <div class="collection-loading-overlay__spinner">
+        {% render 'icon-spinner' %}
+      </div>
+      <p class="collection-loading-overlay__text">{{ 'collections.general.loading' | t }}</p>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Quick View Modal {%- endcomment -%}
+{%- if enable_quick_view -%}
+  <div id="QuickViewModal" class="quick-view-modal" data-quick-view-modal>
+    <div class="quick-view-modal__overlay" data-quick-view-close></div>
+    <div class="quick-view-modal__content">
+      <button type="button" class="quick-view-modal__close" data-quick-view-close>
+        {% render 'icon-close' %}
+        <span class="visually-hidden">{{ 'general.accessibility.close' | t }}</span>
+      </button>
+      <div class="quick-view-modal__body" data-quick-view-content>
+        {%- comment -%} Content loaded dynamically {%- endcomment -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<script src="{{ 'section-collection-product-grid.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Product Grid",
+  "tag": "section",
+  "class": "section-collection-product-grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Grid Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 3,
+      "default": 4,
+      "label": "Products per row (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 3,
+      "default": 2,
+      "label": "Products per row (tablet)"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 1,
+      "label": "Products per row (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "grid_spacing",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium",
+      "label": "Grid spacing"
+    },
+    {
+      "type": "header",
+      "content": "Product Cards"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        }
+      ],
+      "default": "bubbly",
+      "label": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ],
+      "default": "adapt",
+      "label": "Image ratio"
+    },
+    {
+      "type": "select",
+      "id": "image_hover_effect",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        }
+      ],
+      "default": "zoom",
+      "label": "Image hover effect"
+    },
+    {
+      "type": "header",
+      "content": "Product Information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": true,
+      "label": "Show rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_price",
+      "default": true,
+      "label": "Show compare at price"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_product_badges",
+      "default": true,
+      "label": "Enable product badges"
+    },
+    {
+      "type": "select",
+      "id": "badge_style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        }
+      ],
+      "default": "bubbly",
+      "label": "Badge style"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_view",
+      "default": true,
+      "label": "Enable quick view"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "default": true,
+      "label": "Enable quick add to cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wishlist",
+      "default": true,
+      "label": "Enable wishlist"
+    },
+    {
+      "type": "header",
+      "content": "Pagination"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_scroll",
+      "default": false,
+      "label": "Enable infinite scroll",
+      "info": "Products will load automatically as you scroll"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "options": [
+        {
+          "value": "numbered",
+          "label": "Numbered"
+        },
+        {
+          "value": "load_more",
+          "label": "Load more button"
+        }
+      ],
+      "default": "numbered",
+      "label": "Pagination style"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 12,
+      "default": 24,
+      "label": "Products per page"
+    },
+    {
+      "type": "header",
+      "content": "Performance"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lazy_loading",
+      "default": true,
+      "label": "Enable lazy loading",
+      "info": "Images will load as they come into view"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "default": true,
+      "label": "Show product count"
+    },
+    {
+      "type": "header",
+      "content": "Animations"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animations",
+      "default": true,
+      "label": "Enable animations"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 50,
+      "max": 200,
+      "step": 25,
+      "unit": "ms",
+      "default": 100,
+      "label": "Animation delay between items"
+    }
+  ]
+}
+{% endschema %} 

@@ -1,0 +1,474 @@
+{% comment %}
+  Search Filters Section - Bubbly Style
+  Follows shopirule.mdc specifications for advanced filtering
+  
+  Features:
+  - Price range filtering
+  - Product type filters
+  - Brand filters
+  - Availability filters
+  - Color/variant filters
+  - Mobile-responsive design
+  - Accessibility compliance
+  - Bubbly animations
+{% endcomment %}
+
+{%- liquid
+  assign filter_price_min = search.terms | default: 0
+  assign filter_price_max = search.terms | default: 1000
+  assign filter_availability = search.terms
+  assign filter_product_type = search.terms
+  assign filter_vendor = search.terms
+  
+  assign show_price_filter = section.settings.show_price_filter
+  assign show_availability_filter = section.settings.show_availability_filter
+  assign show_product_type_filter = section.settings.show_product_type_filter
+  assign show_vendor_filter = section.settings.show_vendor_filter
+  assign show_color_filter = section.settings.show_color_filter
+  
+  assign mobile_collapse = section.settings.mobile_collapse
+  assign filter_layout = section.settings.filter_layout
+-%}
+
+<div class="search-filters" data-search-filters>
+  <!-- Bubbly Background Elements -->
+  <div class="search-filters__bubbles" aria-hidden="true">
+    {%- for i in (1..12) -%}
+      <div class="search-filters__bubble search-filters__bubble--{{ i }}"></div>
+    {%- endfor -%}
+  </div>
+  
+  <!-- Filters Header -->
+  <div class="search-filters__header">
+    <h2 class="search-filters__title">
+      {% render 'icon-filter' %}
+      {{ 'search.filters.title' | t: default: 'Filtrer les résultats' }}
+    </h2>
+    
+    <div class="search-filters__actions">
+      <button 
+        type="button" 
+        class="search-filters__clear btn btn--secondary btn--small"
+        data-clear-filters
+        aria-label="{{ 'search.filters.clear_all' | t: default: 'Effacer tous les filtres' }}"
+      >
+        {% render 'icon-close' %}
+        {{ 'search.filters.clear_all' | t: default: 'Effacer tout' }}
+      </button>
+      
+      {%- if mobile_collapse -%}
+        <button 
+          type="button" 
+          class="search-filters__toggle btn btn--tertiary btn--small mobile-only"
+          data-filters-toggle
+          aria-expanded="false"
+          aria-controls="search-filters-content"
+        >
+          {{ 'search.filters.show' | t: default: 'Afficher les filtres' }}
+          {% render 'icon-chevron-down' %}
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+  
+  <!-- Active Filters -->
+  <div class="search-filters__active" data-active-filters style="display: none;">
+    <div class="search-filters__active-title">
+      {{ 'search.filters.active' | t: default: 'Filtres actifs:' }}
+    </div>
+    <div class="search-filters__active-list" data-active-filters-list>
+      <!-- Active filters will be populated by JavaScript -->
+    </div>
+  </div>
+  
+  <!-- Filters Content -->
+  <div 
+    class="search-filters__content"
+    id="search-filters-content"
+    data-filters-content
+  >
+    <form class="search-filters__form" data-filters-form>
+      
+      {%- if show_price_filter -%}
+        <!-- Price Range Filter -->
+        <div class="search-filters__group">
+          <h3 class="search-filters__group-title">
+            {% render 'icon-tag' %}
+            {{ 'search.filters.price' | t: default: 'Prix' }}
+          </h3>
+          
+          <div class="search-filters__price-range">
+            <div class="price-range">
+              <div class="price-range__inputs">
+                <div class="price-range__input-group">
+                  <label for="price-min" class="price-range__label sr-only">
+                    {{ 'search.filters.price_min' | t: default: 'Prix minimum' }}
+                  </label>
+                  <input 
+                    type="number" 
+                    id="price-min"
+                    name="price_min"
+                    class="price-range__input"
+                    placeholder="{{ 'search.filters.price_min' | t: default: 'Min' }}"
+                    min="0"
+                    step="0.01"
+                    value="{{ filter_price_min }}"
+                    data-price-min
+                  >
+                  <span class="price-range__currency">{{ cart.currency.symbol }}</span>
+                </div>
+                
+                <span class="price-range__separator">-</span>
+                
+                <div class="price-range__input-group">
+                  <label for="price-max" class="price-range__label sr-only">
+                    {{ 'search.filters.price_max' | t: default: 'Prix maximum' }}
+                  </label>
+                  <input 
+                    type="number" 
+                    id="price-max"
+                    name="price_max"
+                    class="price-range__input"
+                    placeholder="{{ 'search.filters.price_max' | t: default: 'Max' }}"
+                    min="0"
+                    step="0.01"
+                    value="{{ filter_price_max }}"
+                    data-price-max
+                  >
+                  <span class="price-range__currency">{{ cart.currency.symbol }}</span>
+                </div>
+              </div>
+              
+              <div class="price-range__slider">
+                <div class="range-slider" data-price-slider>
+                  <div class="range-slider__track"></div>
+                  <div class="range-slider__range" data-slider-range></div>
+                  <div class="range-slider__thumb range-slider__thumb--min" data-slider-thumb-min></div>
+                  <div class="range-slider__thumb range-slider__thumb--max" data-slider-thumb-max></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- if show_availability_filter -%}
+        <!-- Availability Filter -->
+        <div class="search-filters__group">
+          <h3 class="search-filters__group-title">
+            {% render 'icon-check-circle' %}
+            {{ 'search.filters.availability' | t: default: 'Disponibilité' }}
+          </h3>
+          
+          <div class="search-filters__options">
+            <label class="search-filters__option">
+              <input 
+                type="checkbox" 
+                name="availability[]" 
+                value="in_stock"
+                class="search-filters__checkbox"
+                data-filter-availability
+              >
+              <span class="search-filters__checkmark"></span>
+              <span class="search-filters__option-text">
+                {{ 'search.filters.in_stock' | t: default: 'En stock' }}
+              </span>
+            </label>
+            
+            <label class="search-filters__option">
+              <input 
+                type="checkbox" 
+                name="availability[]" 
+                value="out_of_stock"
+                class="search-filters__checkbox"
+                data-filter-availability
+              >
+              <span class="search-filters__checkmark"></span>
+              <span class="search-filters__option-text">
+                {{ 'search.filters.out_of_stock' | t: default: 'Rupture de stock' }}
+              </span>
+            </label>
+            
+            <label class="search-filters__option">
+              <input 
+                type="checkbox" 
+                name="availability[]" 
+                value="preorder"
+                class="search-filters__checkbox"
+                data-filter-availability
+              >
+              <span class="search-filters__checkmark"></span>
+              <span class="search-filters__option-text">
+                {{ 'search.filters.preorder' | t: default: 'Précommande' }}
+              </span>
+            </label>
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- if show_product_type_filter -%}
+        <!-- Product Type Filter -->
+        <div class="search-filters__group">
+          <h3 class="search-filters__group-title">
+            {% render 'icon-grid' %}
+            {{ 'search.filters.product_type' | t: default: 'Type de produit' }}
+          </h3>
+          
+          <div class="search-filters__options">
+            {%- assign product_types = 'Vêtements,Accessoires,Chaussures,Sacs,Bijoux' | split: ',' -%}
+            {%- for product_type in product_types -%}
+              <label class="search-filters__option">
+                <input 
+                  type="checkbox" 
+                  name="product_type[]" 
+                  value="{{ product_type | handle }}"
+                  class="search-filters__checkbox"
+                  data-filter-product-type
+                >
+                <span class="search-filters__checkmark"></span>
+                <span class="search-filters__option-text">{{ product_type }}</span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- if show_vendor_filter -%}
+        <!-- Brand/Vendor Filter -->
+        <div class="search-filters__group">
+          <h3 class="search-filters__group-title">
+            {% render 'icon-crown' %}
+            {{ 'search.filters.brand' | t: default: 'Marque' }}
+          </h3>
+          
+          <div class="search-filters__search-input">
+            <input 
+              type="text" 
+              class="search-filters__brand-search"
+              placeholder="{{ 'search.filters.search_brands' | t: default: 'Rechercher une marque...' }}"
+              data-brand-search
+            >
+            {% render 'icon-search' %}
+          </div>
+          
+          <div class="search-filters__options" data-brand-options>
+            {%- assign brands = 'Nike,Adidas,Puma,Converse,Vans,New Balance' | split: ',' -%}
+            {%- for brand in brands -%}
+              <label class="search-filters__option">
+                <input 
+                  type="checkbox" 
+                  name="vendor[]" 
+                  value="{{ brand | handle }}"
+                  class="search-filters__checkbox"
+                  data-filter-vendor
+                >
+                <span class="search-filters__checkmark"></span>
+                <span class="search-filters__option-text">{{ brand }}</span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- if show_color_filter -%}
+        <!-- Color Filter -->
+        <div class="search-filters__group">
+          <h3 class="search-filters__group-title">
+            {% render 'icon-heart' %}
+            {{ 'search.filters.color' | t: default: 'Couleur' }}
+          </h3>
+          
+          <div class="search-filters__colors">
+            {%- assign colors = 'Rouge,Bleu,Vert,Jaune,Noir,Blanc,Gris,Rose,Violet,Orange' | split: ',' -%}
+            {%- assign color_values = '#ff4444,#4444ff,#44ff44,#ffff44,#000000,#ffffff,#888888,#ff88cc,#8844ff,#ff8844' | split: ',' -%}
+            
+            {%- for color in colors -%}
+              {%- assign color_value = color_values[forloop.index0] -%}
+              <label class="search-filters__color-option">
+                <input 
+                  type="checkbox" 
+                  name="color[]" 
+                  value="{{ color | handle }}"
+                  class="search-filters__color-checkbox"
+                  data-filter-color
+                >
+                <span 
+                  class="search-filters__color-swatch"
+                  style="background-color: {{ color_value }};"
+                  title="{{ color }}"
+                  aria-label="{{ color }}"
+                ></span>
+                <span class="search-filters__color-name">{{ color }}</span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+      <!-- Apply Filters Button -->
+      <div class="search-filters__footer">
+        <button 
+          type="submit" 
+          class="search-filters__apply btn btn--primary btn--full"
+          data-apply-filters
+        >
+          {% render 'icon-check-circle' %}
+          {{ 'search.filters.apply' | t: default: 'Appliquer les filtres' }}
+          <span class="search-filters__count" data-filter-count></span>
+        </button>
+      </div>
+      
+    </form>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div class="search-filters__loading" data-filters-loading style="display: none;">
+    <div class="search-filters__spinner">
+      {% render 'icon-spinner' %}
+      {{ 'search.filters.loading' | t: default: 'Application des filtres...' }}
+    </div>
+  </div>
+</div>
+
+<!-- Schema and Scripts -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SearchAction",
+  "target": {
+    "@type": "EntryPoint",
+    "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+  },
+  "query-input": "required name=search_term_string"
+}
+</script>
+
+{% schema %}
+{
+  "name": "Filtres de recherche",
+  "tag": "section",
+  "class": "section section--search-filters",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuration des filtres"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_filter",
+      "label": "Afficher le filtre de prix",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_availability_filter",
+      "label": "Afficher le filtre de disponibilité",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_type_filter",
+      "label": "Afficher le filtre de type de produit",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor_filter",
+      "label": "Afficher le filtre de marque",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_filter",
+      "label": "Afficher le filtre de couleur",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Configuration de l'affichage"
+    },
+    {
+      "type": "select",
+      "id": "filter_layout",
+      "label": "Disposition des filtres",
+      "options": [
+        {
+          "value": "sidebar",
+          "label": "Barre latérale"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "dropdown",
+          "label": "Menu déroulant"
+        }
+      ],
+      "default": "sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_collapse",
+      "label": "Réduire les filtres sur mobile",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style Bubbly"
+    },
+    {
+      "type": "range",
+      "id": "bubble_count",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "label": "Nombre de bulles décoratives",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_bubble_animation",
+      "label": "Activer les animations de bulles",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bubble_color_primary",
+      "label": "Couleur primaire des bulles",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "bubble_color_secondary",
+      "label": "Couleur secondaire des bulles",
+      "default": "#764ba2"
+    },
+    {
+      "type": "header",
+      "content": "Performance et accessibilité"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_ajax_filtering",
+      "label": "Activer le filtrage AJAX",
+      "default": true,
+      "info": "Filtre les résultats sans rechargement de page"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filter_analytics",
+      "label": "Activer l'analyse des filtres",
+      "default": true,
+      "info": "Suit l'utilisation des filtres pour l'optimisation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_ai_navigation",
+      "label": "Activer AI Navigation",
+      "default": true,
+      "info": "Apprentissage automatique des préférences de filtrage"
+    }
+  ]
+}
+{% endschema %} 

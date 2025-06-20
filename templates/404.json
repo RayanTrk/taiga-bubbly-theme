@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "error-header": {
+      "type": "page-header",
+      "settings": {
+        "title": "Page Not Found"
+      }
+    }
+  },
+  "order": [
+    "error-header"
+  ]
+} 

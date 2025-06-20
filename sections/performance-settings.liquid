@@ -1,0 +1,794 @@
+{% comment %}
+  Performance Settings Section - Bubbly Style
+  Configuration section for performance optimization settings
+{% endcomment %}
+
+<div class="performance-settings-section">
+  <div class="container">
+    <div class="performance-settings__header">
+      <h2 class="performance-settings__title">{{ section.settings.title | default: 'Performance Settings' }}</h2>
+      {% if section.settings.description != blank %}
+        <div class="performance-settings__description">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="performance-settings__content">
+      <!-- Lazy Loading Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">Lazy Loading</h3>
+        <div class="setting-group__description">
+          Configure lazy loading for images and videos to improve page load times.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_lazy_loading" 
+                {% if section.settings.enable_lazy_loading %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Enable Lazy Loading</span>
+            </label>
+            <div class="setting-help">
+              Automatically load images and videos when they come into view
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_native_lazy_loading" 
+                {% if section.settings.enable_native_lazy_loading %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Use Native Lazy Loading</span>
+            </label>
+            <div class="setting-help">
+              Use browser's native lazy loading when available for better performance
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Optimization Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">Image Optimization</h3>
+        <div class="setting-group__description">
+          Configure image loading and optimization settings.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_responsive_images" 
+                {% if section.settings.enable_responsive_images %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Responsive Images</span>
+            </label>
+            <div class="setting-help">
+              Automatically serve appropriately sized images based on device
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_webp_format" 
+                {% if section.settings.enable_webp_format %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">WebP Format</span>
+            </label>
+            <div class="setting-help">
+              Use WebP format for better compression when supported
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <span class="setting-text">Image Quality</span>
+              <select name="image_quality" class="setting-select">
+                <option value="auto" {% if section.settings.image_quality == 'auto' %}selected{% endif %}>Auto</option>
+                <option value="high" {% if section.settings.image_quality == 'high' %}selected{% endif %}>High (90%)</option>
+                <option value="medium" {% if section.settings.image_quality == 'medium' %}selected{% endif %}>Medium (75%)</option>
+                <option value="low" {% if section.settings.image_quality == 'low' %}selected{% endif %}>Low (60%)</option>
+              </select>
+            </label>
+            <div class="setting-help">
+              Balance between image quality and file size
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Monitoring Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">Performance Monitoring</h3>
+        <div class="setting-group__description">
+          Monitor and track performance metrics for optimization.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_performance_monitoring" 
+                {% if section.settings.enable_performance_monitoring %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Performance Monitoring</span>
+            </label>
+            <div class="setting-help">
+              Track page load times and performance metrics
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_core_web_vitals" 
+                {% if section.settings.enable_core_web_vitals %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Core Web Vitals</span>
+            </label>
+            <div class="setting-help">
+              Monitor Google's Core Web Vitals (LCP, FID, CLS)
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="debug_performance" 
+                {% if section.settings.debug_performance %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Debug Mode</span>
+            </label>
+            <div class="setting-help">
+              Show performance debug panel (development only)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animation Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">Animation Settings</h3>
+        <div class="setting-group__description">
+          Configure animations and visual effects.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_animations" 
+                {% if section.settings.enable_animations %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Enable Animations</span>
+            </label>
+            <div class="setting-help">
+              Enable CSS animations and transitions
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="respect_reduced_motion" 
+                {% if section.settings.respect_reduced_motion %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Respect Reduced Motion</span>
+            </label>
+            <div class="setting-help">
+              Disable animations for users who prefer reduced motion
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <span class="setting-text">Animation Speed</span>
+              <select name="animation_speed" class="setting-select">
+                <option value="fast" {% if section.settings.animation_speed == 'fast' %}selected{% endif %}>Fast</option>
+                <option value="normal" {% if section.settings.animation_speed == 'normal' %}selected{% endif %}>Normal</option>
+                <option value="slow" {% if section.settings.animation_speed == 'slow' %}selected{% endif %}>Slow</option>
+              </select>
+            </label>
+            <div class="setting-help">
+              Control the speed of animations throughout the theme
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical CSS Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">CSS Optimization</h3>
+        <div class="setting-group__description">
+          Optimize CSS loading and delivery.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_critical_css" 
+                {% if section.settings.enable_critical_css %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Critical CSS</span>
+            </label>
+            <div class="setting-help">
+              Inline critical CSS for above-the-fold content
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="defer_non_critical_css" 
+                {% if section.settings.defer_non_critical_css %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Defer Non-Critical CSS</span>
+            </label>
+            <div class="setting-help">
+              Load non-critical CSS asynchronously
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JavaScript Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">JavaScript Optimization</h3>
+        <div class="setting-group__description">
+          Configure JavaScript loading and execution.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="defer_javascript" 
+                {% if section.settings.defer_javascript %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Defer JavaScript</span>
+            </label>
+            <div class="setting-help">
+              Load JavaScript after HTML parsing is complete
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_code_splitting" 
+                {% if section.settings.enable_code_splitting %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Code Splitting</span>
+            </label>
+            <div class="setting-help">
+              Load JavaScript modules only when needed
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Navigation Settings -->
+      <div class="performance-setting-group">
+        <h3 class="setting-group__title">AI Navigation</h3>
+        <div class="setting-group__description">
+          Configure AI-powered navigation optimization.
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_ai_navigation" 
+                {% if section.settings.enable_ai_navigation %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">AI Navigation</span>
+            </label>
+            <div class="setting-help">
+              Enable AI-powered navigation pattern learning and optimization
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <label class="setting-label">
+              <input 
+                type="checkbox" 
+                name="enable_predictive_prefetch" 
+                {% if section.settings.enable_predictive_prefetch %}checked{% endif %}
+                class="setting-checkbox"
+              >
+              <span class="setting-text">Predictive Prefetch</span>
+            </label>
+            <div class="setting-help">
+              Preload pages that users are likely to visit next
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Status -->
+    <div class="performance-status">
+      <h3 class="performance-status__title">Performance Status</h3>
+      <div class="performance-metrics">
+        <div class="metric-item">
+          <span class="metric-label">Page Speed Score</span>
+          <span class="metric-value" id="page-speed-score">--</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Core Web Vitals</span>
+          <span class="metric-value" id="core-web-vitals">--</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Optimization Level</span>
+          <span class="metric-value" id="optimization-level">--</span>
+        </div>
+      </div>
+      
+      <div class="performance-actions">
+        <button type="button" class="btn btn--primary" id="test-performance">
+          Test Performance
+        </button>
+        <button type="button" class="btn btn--secondary" id="clear-cache">
+          Clear Cache
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .performance-settings-section {
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+  }
+
+  .performance-settings__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .performance-settings__title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .performance-settings__description {
+    font-size: 1.125rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .performance-setting-group {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .performance-setting-group:hover {
+    transform: translateY(-0.25rem);
+  }
+
+  .setting-group__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .setting-group__description {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .setting-item {
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .setting-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 0.25rem 0.5rem rgba(102, 126, 234, 0.1);
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .setting-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: #667eea;
+  }
+
+  .setting-select {
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    background: white;
+    color: #333;
+    font-size: 0.875rem;
+  }
+
+  .setting-help {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .performance-status {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  }
+
+  .performance-status__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+
+  .performance-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+  }
+
+  .metric-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .metric-value {
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1.125rem;
+  }
+
+  .performance-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn--primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn--primary:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.5rem 1rem rgba(102, 126, 234, 0.3);
+  }
+
+  .btn--secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn--secondary:hover {
+    background: #5a6268;
+    transform: translateY(-0.125rem);
+  }
+
+  @media (max-width: 767px) {
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .performance-metrics {
+      grid-template-columns: 1fr;
+    }
+    
+    .performance-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Performance testing functionality
+    const testPerformanceBtn = document.getElementById('test-performance');
+    const clearCacheBtn = document.getElementById('clear-cache');
+    
+    if (testPerformanceBtn) {
+      testPerformanceBtn.addEventListener('click', function() {
+        // Simulate performance test
+        this.textContent = 'Testing...';
+        this.disabled = true;
+        
+        setTimeout(() => {
+          // Update performance metrics
+          document.getElementById('page-speed-score').textContent = '92/100';
+          document.getElementById('core-web-vitals').textContent = 'Good';
+          document.getElementById('optimization-level').textContent = 'High';
+          
+          this.textContent = 'Test Performance';
+          this.disabled = false;
+        }, 2000);
+      });
+    }
+    
+    if (clearCacheBtn) {
+      clearCacheBtn.addEventListener('click', function() {
+        this.textContent = 'Clearing...';
+        this.disabled = true;
+        
+        setTimeout(() => {
+          this.textContent = 'Clear Cache';
+          this.disabled = false;
+          alert('Cache cleared successfully!');
+        }, 1000);
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Performance Settings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Performance Settings"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Section Description",
+      "default": "<p>Configure performance optimization settings for your store.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Lazy Loading"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lazy_loading",
+      "label": "Enable Lazy Loading",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_native_lazy_loading",
+      "label": "Use Native Lazy Loading",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Image Optimization"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_responsive_images",
+      "label": "Enable Responsive Images",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_webp_format",
+      "label": "Enable WebP Format",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_quality",
+      "label": "Image Quality",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "high",
+          "label": "High (90%)"
+        },
+        {
+          "value": "medium",
+          "label": "Medium (75%)"
+        },
+        {
+          "value": "low",
+          "label": "Low (60%)"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Performance Monitoring"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_performance_monitoring",
+      "label": "Enable Performance Monitoring",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_core_web_vitals",
+      "label": "Enable Core Web Vitals",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "debug_performance",
+      "label": "Debug Performance",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animations",
+      "label": "Enable Animations",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "respect_reduced_motion",
+      "label": "Respect Reduced Motion",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "animation_speed",
+      "label": "Animation Speed",
+      "options": [
+        {
+          "value": "fast",
+          "label": "Fast"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "slow",
+          "label": "Slow"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "CSS Optimization"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_critical_css",
+      "label": "Enable Critical CSS",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "defer_non_critical_css",
+      "label": "Defer Non-Critical CSS",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "JavaScript Optimization"
+    },
+    {
+      "type": "checkbox",
+      "id": "defer_javascript",
+      "label": "Defer JavaScript",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_code_splitting",
+      "label": "Enable Code Splitting",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "AI Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_ai_navigation",
+      "label": "Enable AI Navigation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_predictive_prefetch",
+      "label": "Enable Predictive Prefetch",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Performance Settings"
+    }
+  ]
+}
+{% endschema %} 

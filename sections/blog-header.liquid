@@ -1,0 +1,280 @@
+{% comment %}
+  Blog Header Section
+  Displays blog title, description, and optional featured image
+{% endcomment %}
+
+{{ 'section-blog-header.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-blog-header.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign blog_image = blog.image | default: section.settings.fallback_image
+  assign show_image = section.settings.show_blog_image and blog_image
+  assign show_description = section.settings.show_blog_description and blog.summary != blank
+  assign text_alignment = section.settings.header_text_alignment
+  assign enable_parallax = section.settings.enable_parallax
+-%}
+
+<div class="blog-header blog-header--{{ section.settings.style | default: 'bubbly' }}"
+     data-blog-header
+     data-parallax="{{ enable_parallax }}">
+  
+  {%- if show_image -%}
+    <div class="blog-header__media"
+         style="--overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};">
+      
+      <div class="blog-header__image-container" data-parallax-container>
+        {%- assign image_height = section.settings.blog_image_height -%}
+        {%- case image_height -%}
+          {%- when 'small' -%}
+            {%- assign height_class = 'blog-header__image--small' -%}
+          {%- when 'medium' -%}
+            {%- assign height_class = 'blog-header__image--medium' -%}
+          {%- when 'large' -%}
+            {%- assign height_class = 'blog-header__image--large' -%}
+          {%- else -%}
+            {%- assign height_class = 'blog-header__image--medium' -%}
+        {%- endcase -%}
+        
+        <img class="blog-header__image {{ height_class }}"
+             src="{{ blog_image | image_url: width: 1920 }}"
+             alt="{{ blog.title | escape }}"
+             width="{{ blog_image.width }}"
+             height="{{ blog_image.height }}"
+             loading="eager"
+             data-parallax-image>
+        
+        <div class="blog-header__overlay"></div>
+      </div>
+      
+    </div>
+  {%- endif -%}
+  
+  <div class="blog-header__content">
+    <div class="blog-header__container page-width">
+      
+      {%- if section.settings.enable_breadcrumbs -%}
+        <nav class="blog-header__breadcrumbs breadcrumbs breadcrumbs--{{ section.settings.breadcrumb_style }}"
+             role="navigation"
+             aria-label="{{ 'general.breadcrumbs.aria_label' | t }}">
+          <ol class="breadcrumbs__list">
+            <li class="breadcrumbs__item">
+              <a href="{{ routes.root_url }}" class="breadcrumbs__link">
+                {%- render 'icon-home' -%}
+                <span class="visually-hidden">{{ 'general.breadcrumbs.home' | t }}</span>
+              </a>
+            </li>
+            <li class="breadcrumbs__item">
+              <span class="breadcrumbs__separator" aria-hidden="true">
+                {%- render 'icon-caret' -%}
+              </span>
+            </li>
+            <li class="breadcrumbs__item breadcrumbs__item--current">
+              <span class="breadcrumbs__current" aria-current="page">
+                {{ blog.title }}
+              </span>
+            </li>
+          </ol>
+        </nav>
+      {%- endif -%}
+      
+      <div class="blog-header__text blog-header__text--{{ text_alignment }}"
+           {% if show_image %}style="color: {{ section.settings.text_color }};"{% endif %}>
+        
+        <h1 class="blog-header__title">
+          {{ blog.title }}
+        </h1>
+        
+        {%- if show_description -%}
+          <div class="blog-header__description">
+            {{ blog.summary }}
+          </div>
+        {%- endif -%}
+        
+        {%- if blog.tags.size > 0 -%}
+          <div class="blog-header__meta">
+            <div class="blog-header__tags">
+              <span class="blog-header__tags-label">
+                {{ 'blog.general.topics' | t }}:
+              </span>
+              {%- for tag in blog.tags limit: 5 -%}
+                <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+                   class="blog-header__tag">
+                  {{ tag }}
+                </a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+        
+      </div>
+      
+    </div>
+  </div>
+  
+  {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+  {%- if section.settings.style == 'bubbly' -%}
+    <div class="blog-header__decorative-elements" aria-hidden="true">
+      <div class="blog-header__bubble blog-header__bubble--1"></div>
+      <div class="blog-header__bubble blog-header__bubble--2"></div>
+      <div class="blog-header__bubble blog-header__bubble--3"></div>
+      <div class="blog-header__bubble blog-header__bubble--4"></div>
+    </div>
+  {%- endif -%}
+  
+</div>
+
+{% schema %}
+{
+  "name": "Blog Header",
+  "class": "blog-header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blog_image",
+      "label": "Show blog image",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Fallback image",
+      "info": "Used when blog doesn't have a featured image"
+    },
+    {
+      "type": "select",
+      "id": "blog_image_height",
+      "label": "Image height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blog_description",
+      "label": "Show blog description",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "header_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "breadcrumb_style",
+      "label": "Breadcrumb style",
+      "options": [
+        {
+          "value": "simple",
+          "label": "Simple"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "modern",
+          "label": "Modern"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Section style",
+      "options": [
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "bubbly"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Header"
+    }
+  ]
+}
+{% endschema %} 

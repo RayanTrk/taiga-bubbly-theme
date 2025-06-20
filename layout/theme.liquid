@@ -1,0 +1,331 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}" dir="{{ settings.text_direction }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.colors_accent_1 }}">
+    
+    {%- comment -%}
+    Taiga Theme - Style Bubbly
+    Optimisé pour la performance avec navigation IA et narration visuelle
+    Respecte les règles shopirule pour un chargement ultra-rapide
+    {%- endcomment -%}
+    
+    <link rel="canonical" href="{{ canonical_url }}">
+    
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    
+    {%- comment -%} Préchargement des polices critiques selon shopirule {%- endcomment -%}
+    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+    
+    {%- comment -%} Preload CSS critique pour performance maximale {%- endcomment -%}
+    <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ 'base.css' | asset_url }}"></noscript>
+    
+    {%- comment -%} Variables CSS critiques inline pour éviter FOUC {%- endcomment -%}
+    {%- render 'css-variables' -%}
+    
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags.join(', ') }}{% endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+    
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+    
+    {%- comment -%} Données structurées pour SEO selon shopirule {%- endcomment -%}
+    {% if settings.enable_structured_data %}
+      <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "WebSite",
+          "name": "{{ shop.name }}",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ routes.search_url }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          },
+          "url": "{{ request.origin }}"
+        }
+      </script>
+      
+      <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "Organization",
+          "name": "{{ shop.name }}",
+          {% if settings.logo %}
+            "logo": "{{ settings.logo | image_url: width: 300 }}",
+          {% endif %}
+          "sameAs": [
+            {% if settings.social_facebook_link != blank %}"{{ settings.social_facebook_link }}"{% unless forloop.last %},{% endunless %}{% endif %}
+            {% if settings.social_instagram_link != blank %}"{{ settings.social_instagram_link }}"{% unless forloop.last %},{% endunless %}{% endif %}
+            {% if settings.social_twitter_link != blank %}"{{ settings.social_twitter_link }}"{% unless forloop.last %},{% endunless %}{% endif %}
+            {% if settings.social_youtube_link != blank %}"{{ settings.social_youtube_link }}"{% unless forloop.last %},{% endunless %}{% endif %}
+          ],
+          "url": "{{ request.origin }}"
+        }
+      </script>
+    {% endif %}
+    
+    {%- comment -%} CSS non-critique différé {%- endcomment -%}
+    <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'performance-monitor.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'ai-navigation.js' | asset_url }}" defer="defer"></script>
+    
+    {{ content_for_header }}
+    
+    {%- comment -%} Meta tags pour optimisation mobile selon shopirule {%- endcomment -%}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    {%- comment -%} Préconnexions pour performance {%- endcomment -%}
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    {%- comment -%} Script d'optimisation critique {%- endcomment -%}
+    <script>
+      // Détection de support WebP selon shopirule
+      {% if settings.enable_webp_images %}
+      function supportsWebP(callback) {
+        var webP = new Image();
+        webP.onload = webP.onerror = function () {
+          callback(webP.height == 2);
+        };
+        webP.src = "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA";
+      }
+      supportsWebP(function(supported) {
+        document.documentElement.classList.add(supported ? 'supports-webp' : 'no-webp');
+      });
+      {% endif %}
+      
+      // Suppression de la classe no-js pour JavaScript activé
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+      
+      // Optimisation du chargement selon shopirule
+      window.addEventListener('load', function() {
+        document.body.classList.add('loaded');
+        
+        // Marquer le contenu comme chargé pour éviter FOUC
+        const pageContent = document.querySelector('.page-content');
+        if (pageContent) {
+          pageContent.classList.add('loaded');
+        }
+      });
+      
+      // Navigation IA - Apprentissage des patterns utilisateur
+      {% if settings.enable_ai_navigation %}
+      window.TaigaAI = {
+        trackNavigation: function(path) {
+          // Enregistrement des patterns de navigation
+          const userPaths = JSON.parse(localStorage.getItem('taiga_nav_patterns') || '[]');
+          userPaths.push({
+            path: path,
+            timestamp: Date.now(),
+            referrer: document.referrer
+          });
+          
+          // Garder seulement les 50 dernières navigations
+          if (userPaths.length > 50) {
+            userPaths.splice(0, userPaths.length - 50);
+          }
+          
+          localStorage.setItem('taiga_nav_patterns', JSON.stringify(userPaths));
+        },
+        
+        getPredictedNext: function() {
+          // Prédiction basique basée sur les patterns
+          const patterns = JSON.parse(localStorage.getItem('taiga_nav_patterns') || '[]');
+          const currentPath = window.location.pathname;
+          
+          // Logique simple de prédiction
+          const nextPaths = patterns
+            .filter(p => p.referrer.includes(currentPath))
+            .map(p => p.path);
+            
+          return [...new Set(nextPaths)]; // Retourner les chemins uniques
+        }
+      };
+      
+      // Initialiser le tracking
+      TaigaAI.trackNavigation(window.location.pathname);
+      {% endif %}
+    </script>
+  </head>
+
+  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+    
+    {%- comment -%} Skip link pour l'accessibilité {%- endcomment -%}
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+    
+    {%- comment -%} Conteneur principal selon shopirule avec largeur fixe optionnelle {%- endcomment -%}
+    {% if settings.enable_fixed_width %}
+    <div class="main-content">
+    {% endif %}
+      
+      {%- comment -%} Contenu de la page avec classe pour éviter FOUC {%- endcomment -%}
+      <div class="page-content">
+        
+        {%- comment -%} Header - toujours visible {%- endcomment -%}
+        {% sections 'header-group' %}
+        
+        {%- comment -%} Contenu principal {%- endcomment -%}
+        <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+          {{ content_for_layout }}
+        </main>
+        
+        {%- comment -%} Footer {%- endcomment -%}
+        {% sections 'footer-group' %}
+        
+      </div>
+      
+    {% if settings.enable_fixed_width %}
+    </div>
+    {% endif %}
+    
+    {%- comment -%} Bouton retour en haut selon shopirule {%- endcomment -%}
+    {% if settings.enable_back_to_top %}
+    <button 
+      type="button" 
+      class="back-to-top"
+      aria-label="{{ 'accessibility.back_to_top' | t }}"
+      style="display: none;"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0L0 8h4v8h8V8h4L8 0z"/>
+      </svg>
+    </button>
+    {% endif %}
+    
+    {%- comment -%} Scripts différés pour performance optimale {%- endcomment -%}
+    {% if settings.enable_back_to_top %}
+    <script>
+      // Bouton retour en haut
+      const backToTopBtn = document.querySelector('.back-to-top');
+      
+      if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+          if (window.pageYOffset > 300) {
+            backToTopBtn.style.display = 'block';
+          } else {
+            backToTopBtn.style.display = 'none';
+          }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+    </script>
+    {% endif %}
+    
+    {%- comment -%} Chargement paresseux des images selon shopirule {%- endcomment -%}
+    {% if settings.enable_lazy_loading %}
+    <script>
+      // Intersection Observer pour lazy loading
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.src = img.dataset.src;
+              img.classList.remove('lazy');
+              img.classList.add('loaded');
+              imageObserver.unobserve(img);
+            }
+          });
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          const lazyImages = document.querySelectorAll('img[data-src]');
+          lazyImages.forEach(img => imageObserver.observe(img));
+        });
+      }
+    </script>
+    {% endif %}
+    
+    {%- comment -%} Analytics et tracking différés {%- endcomment -%}
+    <script>
+      // Déclaration des variables Shopify pour JS
+      window.Shopify = window.Shopify || {};
+      window.Shopify.routes = {
+        root: '{{ routes.root }}',
+        account_login: '{{ routes.account_login }}',
+        account_logout: '{{ routes.account_logout }}',
+        account_recover: '{{ routes.account_recover }}',
+        account_register: '{{ routes.account_register }}',
+        account_addresses: '{{ routes.account_addresses }}',
+        account: '{{ routes.account }}',
+        search: '{{ routes.search }}'
+      };
+      
+      window.Shopify.locale = '{{ request.locale.iso_code }}';
+      window.Shopify.currency = '{{ cart.currency.iso_code }}';
+      window.Shopify.theme = {
+        name: "Taiga",
+        version: "1.0.0",
+        id: {{ theme.id }},
+        role: "{{ theme.role }}"
+      };
+      
+      // Performance monitoring
+      if (window.performance && window.performance.mark) {
+        window.performance.mark('taiga-theme-loaded');
+      }
+    </script>
+    
+    {%- comment -%} Styles CSS du bouton retour en haut {%- endcomment -%}
+    {% if settings.enable_back_to_top %}
+    <style>
+      .back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border: none;
+        border-radius: 50%;
+        background-color: var(--color-primary);
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        z-index: 99;
+        display: none;
+      }
+      
+      .back-to-top:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      }
+      
+      @media (max-width: 750px) {
+        .back-to-top {
+          bottom: 15px;
+          right: 15px;
+          width: 45px;
+          height: 45px;
+        }
+      }
+    </style>
+    {% endif %}
+    
+  </body>
+</html> 

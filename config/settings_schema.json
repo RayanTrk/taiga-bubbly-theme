@@ -1,0 +1,524 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Taiga Bubbly",
+    "theme_version": "4.0.0",
+    "theme_author": "Taiga Themes - Style Bubbly",
+    "theme_documentation_url": "https://docs.taiga-bubbly.com",
+    "theme_support_url": "https://support.taiga-bubbly.com"
+  },
+  {
+    "name": "Couleurs Bubbly",
+    "settings": [
+      {
+        "type": "header",
+        "content": "🎨 Palette de couleurs Taiga Bubbly"
+      },
+      {
+        "type": "paragraph", 
+        "content": "Palette énergique et moderne optimisée pour l'engagement et la conversion. Style signature Bubbly avec gradients dynamiques."
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_1",
+        "label": "Couleur primaire Bubbly",
+        "default": "#667EEA",
+        "info": "Bleu énergique - boutons principaux et éléments d'action"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_2", 
+        "label": "Couleur secondaire Bubbly",
+        "default": "#764BA2",
+        "info": "Violet moderne - accents et éléments secondaires"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_3",
+        "label": "Couleur d'accent énergique",
+        "default": "#F093FB",
+        "info": "Rose vif - promotions et call-to-actions spéciaux"
+      },
+      {
+        "type": "color",
+        "id": "colors_success",
+        "label": "Couleur de succès",
+        "default": "#4ECDC4",
+        "info": "Turquoise - confirmations et messages positifs"
+      },
+      {
+        "type": "color",
+        "id": "colors_warning",
+        "label": "Couleur d'alerte",
+        "default": "#FFE66D",
+        "info": "Jaune doré - avertissements et notifications importantes"
+      },
+      {
+        "type": "color",
+        "id": "colors_error",
+        "label": "Couleur d'erreur",
+        "default": "#FF6B9D",
+        "info": "Rose saumon - erreurs et alertes critiques"
+      },
+      {
+        "type": "header",
+        "content": "🌈 Gradients Signature Bubbly"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_gradients",
+        "label": "Activer les gradients Bubbly",
+        "default": true,
+        "info": "Active les dégradés caractéristiques du style Bubbly"
+      },
+      {
+        "type": "color",
+        "id": "gradient_start",
+        "label": "Début du gradient principal",
+        "default": "#667EEA"
+      },
+      {
+        "type": "color", 
+        "id": "gradient_end",
+        "label": "Fin du gradient principal",
+        "default": "#764BA2"
+      },
+      {
+        "type": "color",
+        "id": "colors_text",
+        "label": "Couleur du texte principal",
+        "default": "#2D3748",
+        "info": "Gris foncé moderne pour une lisibilité optimale"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_1",
+        "label": "Couleur d'arrière-plan principal",
+        "default": "#FFFFFF",
+        "info": "Blanc pur pour un contraste maximal"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_2",
+        "label": "Couleur d'arrière-plan secondaire",
+        "default": "#F7FAFC",
+        "info": "Gris très clair pour les sections alternées"
+      },
+      {
+        "type": "color",
+        "id": "colors_outline_button_labels",
+        "label": "Couleur des bordures",
+        "default": "#E2E8F0",
+        "info": "Gris très clair pour des séparateurs subtils"
+      }
+    ]
+  },
+  {
+    "name": "Typographie Bubbly",
+    "settings": [
+      {
+        "type": "header",
+        "content": "📝 Police et style de texte"
+      },
+      {
+        "type": "paragraph",
+        "content": "Typographie moderne et énergique optimisée pour la lisibilité et l'impact visuel selon le style Bubbly."
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "label": "Police des titres Bubbly",
+        "default": "poppins_n7",
+        "info": "Police moderne et audacieuse pour les titres"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 1.1,
+        "max": 1.5,
+        "step": 0.05,
+        "unit": "x",
+        "label": "Échelle des titres",
+        "default": 1.35,
+        "info": "Contrôle la progression de taille entre les niveaux de titres"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Police du corps de texte",
+        "default": "inter_n4",
+        "info": "Police claire et moderne pour le contenu"
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 0.9,
+        "max": 1.3,
+        "step": 0.05,
+        "unit": "x",
+        "label": "Échelle du texte",
+        "default": 1.0,
+        "info": "Ajuste la taille globale du texte de base"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_text_shadows",
+        "label": "Activer les ombres de texte Bubbly",
+        "default": true,
+        "info": "Ajoute de la profondeur aux titres avec des ombres subtiles"
+      }
+    ]
+  },
+  {
+    "name": "Mise en page Bubbly",
+    "settings": [
+      {
+        "type": "header",
+        "content": "📐 Configuration avancée de la mise en page"
+      },
+      {
+        "type": "paragraph",
+        "content": "Contrôles précis pour créer l'expérience Taiga Bubbly parfaite sur tous les appareils."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_fixed_width",
+        "label": "Activer la largeur maximale fixe",
+        "default": true,
+        "info": "Limite la largeur pour une meilleure lisibilité sur grands écrans"
+      },
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1200,
+        "max": 1920,
+        "step": 40,
+        "unit": "px",
+        "label": "Largeur maximale du contenu",
+        "default": 1440,
+        "info": "Largeur optimale pour le style Bubbly (1200-1920px)"
+      },
+      {
+        "type": "color",
+        "id": "white_space_color",
+        "label": "Couleur de l'espace latéral",
+        "default": "#F7FAFC",
+        "info": "Couleur des espaces quand la largeur fixe est activée"
+      },
+      {
+        "type": "range",
+        "id": "main_content_shadow",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%", 
+        "label": "Intensité de l'ombre du contenu",
+        "default": 20,
+        "info": "Ombre douce autour du contenu principal (0-100%)"
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 40,
+        "max": 160,
+        "step": 8,
+        "unit": "px",
+        "label": "Espacement vertical des sections",
+        "default": 80,
+        "info": "Espace entre les sections principales"
+      },
+      {
+        "type": "range",
+        "id": "spacing_grid_horizontal",
+        "min": 16,
+        "max": 48,
+        "step": 4,
+        "unit": "px",
+        "label": "Espacement de la grille",
+        "default": 24,
+        "info": "Espace entre les éléments de grille (produits, articles)"
+      },
+      {
+        "type": "range",
+        "id": "border_radius",
+        "min": 0,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "label": "Arrondi des éléments",
+        "default": 16,
+        "info": "Rayon de courbure pour cartes et boutons"
+      }
+    ]
+  },
+  {
+    "name": "Animations Bubbly",
+    "settings": [
+      {
+        "type": "header",
+        "content": "✨ Effets et animations signature"
+      },
+      {
+        "type": "paragraph",
+        "content": "Animations fluides et énergiques qui caractérisent l'expérience Taiga Bubbly."
+      },
+      {
+        "type": "checkbox",
+        "id": "animations_reveal_on_scroll",
+        "label": "Activer les animations Bubbly",
+        "default": true,
+        "info": "Active toutes les animations du thème"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_bubble_effects",
+        "label": "Activer les effets de bulles",
+        "default": true,
+        "info": "Bulles flottantes caractéristiques du style Bubbly"
+      },
+      {
+        "type": "checkbox",
+        "id": "animations_hover_elements",
+        "label": "Activer les effets de survol",
+        "default": true,
+        "info": "Transformations et ombres au survol des éléments"
+      },
+      {
+        "type": "select",
+        "id": "animation_speed",
+        "label": "Vitesse des animations",
+        "options": [
+          { "value": "slow", "label": "Lente (0.6s)" },
+          { "value": "normal", "label": "Normale (0.3s)" },
+          { "value": "fast", "label": "Rapide (0.15s)" }
+        ],
+        "default": "normal",
+        "info": "Vitesse globale des transitions et animations"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_parallax",
+        "label": "Activer l'effet parallaxe",
+        "default": true,
+        "info": "Effet de profondeur sur les images de fond"
+      }
+    ]
+  },
+  {
+    "name": "Boutons Bubbly",
+    "settings": [
+      {
+        "type": "header",
+        "content": "🔘 Style des boutons"
+      },
+      {
+        "type": "paragraph",
+        "content": "Boutons modernes avec gradients et effets signature du style Bubbly."
+      },
+      {
+        "type": "select",
+        "id": "buttons_border_thickness",
+        "label": "Style des boutons",
+        "options": [
+          { "value": "0", "label": "Arrondis (Bubbly)" },
+          { "value": "1", "label": "Pilule (Très arrondis)" },
+          { "value": "2", "label": "Carrés (Moderne)" }
+        ],
+        "default": "0",
+        "info": "Forme générale des boutons"
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Opacité des bordures",
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "buttons_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Arrondi des boutons",
+        "default": 16,
+        "info": "Contrôle l'arrondi des coins des boutons"
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Intensité de l'ombre",
+        "default": 20,
+        "info": "Ombre des boutons pour l'effet de profondeur"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_button_gradients",
+        "label": "Activer les gradients sur les boutons",
+        "default": true,
+        "info": "Gradients colorés signature Bubbly"
+      }
+    ]
+  },
+  {
+    "name": "Navigation & En-tête",
+    "settings": [
+      {
+        "type": "header",
+        "content": "🧭 Configuration de l'en-tête"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_sticky_header",
+        "label": "En-tête fixe",
+        "default": true,
+        "info": "L'en-tête reste visible lors du défilement"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_header_shadow",
+        "label": "Ombre de l'en-tête",
+        "default": true,
+        "info": "Ajoute une ombre douce sous l'en-tête"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_mega_menu",
+        "label": "Activer le méga menu",
+        "default": true,
+        "info": "Menu déroulant avancé pour les grandes listes"
+      },
+      {
+        "type": "color",
+        "id": "header_background",
+        "label": "Arrière-plan de l'en-tête",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "header_text_color",
+        "label": "Couleur du texte de l'en-tête",
+        "default": "#2D3748"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 100,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "label": "Largeur du logo",
+        "default": 150,
+        "info": "Largeur maximale du logo en pixels"
+      }
+    ]
+  },
+  {
+    "name": "Performance & SEO",
+    "settings": [
+      {
+        "type": "header",
+        "content": "⚡ Optimisations avancées"
+      },
+      {
+        "type": "paragraph",
+        "content": "Paramètres pour optimiser la vitesse et le référencement selon les standards Taiga."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_lazy_loading",
+        "label": "Chargement paresseux des images",
+        "default": true,
+        "info": "Améliore la vitesse de chargement initial"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_webp_images",
+        "label": "Support des images WebP",
+        "default": true,
+        "info": "Format d'image moderne pour de meilleures performances"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_ai_navigation",
+        "label": "Navigation IA avancée",
+        "default": true,
+        "info": "Optimisation des parcours utilisateur par IA"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_structured_data",
+        "label": "Données structurées",
+        "default": true,
+        "info": "Améliore le référencement et les extraits enrichis"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_quick_buy",
+        "label": "Achat rapide",
+        "default": true,
+        "info": "Boutons d'achat rapide sur les listes de produits"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_infinite_scroll",
+        "label": "Défilement infini",
+        "default": true,
+        "info": "Chargement automatique des produits supplémentaires"
+      }
+    ]
+  },
+  {
+    "name": "Réseaux sociaux",
+    "settings": [
+      {
+        "type": "header",
+        "content": "📱 Comptes de réseaux sociaux"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "Twitter",
+        "info": "https://twitter.com/votrecompte"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "info": "https://facebook.com/votrecompte"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "info": "https://instagram.com/votrecompte"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube_link",
+        "label": "YouTube",
+        "info": "https://youtube.com/votrecompte"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "TikTok",
+        "info": "https://tiktok.com/@votrecompte"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest_link",
+        "label": "Pinterest",
+        "info": "https://pinterest.com/votrecompte"
+      }
+    ]
+  }
+] 

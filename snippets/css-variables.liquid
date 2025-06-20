@@ -1,0 +1,113 @@
+{%- comment -%}
+  Variables CSS critiques pour les performances - Style Taiga Bubbly
+  Intégré inline dans le <head> pour éviter le flash de contenu non stylé (FOUC)
+  Respecte les règles shopirule pour la rapidité de chargement
+{%- endcomment -%}
+
+<style>
+  :root {
+    /* Variables de couleurs critiques */
+    --color-primary: {{ settings.primary_color | default: '#FF6B9D' }};
+    --color-secondary: {{ settings.secondary_color | default: '#4ECDC4' }};
+    --color-accent: {{ settings.accent_color | default: '#FFE66D' }};
+    --color-text: {{ settings.text_color | default: '#2C3E50' }};
+    --color-background: {{ settings.background_color | default: '#FFFFFF' }};
+    --color-border: {{ settings.border_color | default: '#E1E8ED' }};
+    
+    /* Variables d'en-tête critiques */
+    --header-background: {{ settings.header_background | default: '#FFFFFF' }};
+    --header-text-color: {{ settings.header_text_color | default: '#2C3E50' }};
+    
+    /* Variables de layout critiques selon shopirule */
+    {% if settings.enable_fixed_width %}
+    --page-width: {{ settings.page_width | default: 1440 }}px;
+    --white-space-color: {{ settings.white_space_color | default: '#F8F9FA' }};
+    --main-content-shadow: {{ settings.main_content_shadow | default: 15 }};
+    {% endif %}
+    
+    /* Variables de typographie critiques */
+    --font-heading-family: {{ settings.type_header_font.family | default: 'Poppins' }}, 'Helvetica Neue', Arial, sans-serif;
+    --font-body-family: {{ settings.type_body_font.family | default: 'Inter' }}, 'Helvetica Neue', Arial, sans-serif;
+    --heading-scale: {{ settings.heading_scale | default: 1.25 }};
+    --body-scale: {{ settings.body_scale | default: 1.0 }};
+    
+    /* Variables d'espacement critiques */
+    --grid-gap: {{ settings.grid_gap | default: 24 }}px;
+    --border-radius: {{ settings.border_radius | default: 8 }}px;
+    --section-vertical-spacing: {{ settings.section_vertical_spacing | default: 64 }}px;
+  }
+  
+  /* Styles critiques pour éviter le FOUC */
+  {% if settings.enable_fixed_width %}
+  body {
+    background-color: var(--white-space-color);
+  }
+  
+  .main-content {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    background-color: var(--color-background);
+    min-height: 100vh;
+    {% if settings.main_content_shadow > 0 %}
+    box-shadow: 0 0 40px rgba(0, 0, 0, calc(var(--main-content-shadow) / 100));
+    {% endif %}
+  }
+  {% endif %}
+  
+  /* Styles d'en-tête critiques */
+  .site-header {
+    background-color: var(--header-background);
+    color: var(--header-text-color);
+    {% if settings.sticky_header %}
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    {% endif %}
+    {% if settings.show_header_shadow %}
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    {% endif %}
+  }
+  
+  /* Préchargement du contenu critique */
+  .loading-placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Optimisations de performance critiques */
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    margin: 0;
+    font-family: var(--font-body-family);
+    font-size: calc(16px * var(--body-scale));
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Masquer le contenu jusqu'au chargement complet pour éviter le FOUC */
+  .page-content {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .page-content.loaded {
+    opacity: 1;
+  }
+</style> 

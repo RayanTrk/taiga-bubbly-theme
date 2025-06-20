@@ -1,0 +1,245 @@
+{
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "🎉 Livraison GRATUITE dès 75€ d'achat ! Méthodes de paiement sécurisées et fiables",
+        "color_scheme": "accent-1",
+        "show_line_separator": true,
+        "show_social_icons": true,
+        "auto_rotate": true
+      }
+    },
+    "hero_banner": {
+      "type": "hero-banner",
+      "blocks": {
+        "hero_button_1": {
+          "type": "button",
+          "settings": {
+            "button_label": "Découvrir la Collection",
+            "button_link": "/collections/all",
+            "button_style_secondary": false
+          }
+        },
+        "hero_button_2": {
+          "type": "button",
+          "settings": {
+            "button_label": "En Savoir Plus",
+            "button_link": "/pages/about",
+            "button_style_secondary": true
+          }
+        }
+      },
+      "block_order": [
+        "hero_button_1",
+        "hero_button_2"
+      ],
+      "settings": {
+        "eyebrow": "NOUVELLE COLLECTION",
+        "heading": "PRAIRIE FLEURIE",
+        "subheading": "Découvrez notre collection unique alliant design moderne et performance exceptionnelle. Style Bubbly énergique pour une expérience shopping dynamique.",
+        "height_desktop": 700,
+        "height_mobile": 600,
+        "overlay_opacity": 25,
+        "show_scroll_indicator": true,
+        "enable_parallax": true,
+        "image_behavior": "ambient",
+        "padding_top": 0,
+        "padding_bottom": 40
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Collection Vedette",
+        "heading_size": "h1",
+        "description": "Découvrez nos produits phares sélectionnés avec soin pour vous offrir le meilleur de notre gamme.",
+        "collection": "",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": true,
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "enable_quick_add": true,
+        "enable_filtering": true,
+        "filter_type": "horizontal",
+        "enable_sorting": true,
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": true,
+        "show_quick_buy": true,
+        "color_scheme": "background-1",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_image_outline": false,
+        "image_padding": false,
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_with_image": {
+      "type": "rich-text-with-image",
+      "blocks": {
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "icon": "leaf",
+            "title": "Produits Naturels",
+            "description": "Nos produits sont conçus avec des ingrédients naturels de haute qualité, respectueux de l'environnement et de votre bien-être."
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Qualité Garantie",
+            "description": "Chaque produit est testé et certifié selon les plus hauts standards de qualité pour votre satisfaction totale."
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "icon": "heart",
+            "title": "Fait avec Amour",
+            "description": "Nos créateurs mettent tout leur savoir-faire et leur passion dans chaque création pour vous offrir le meilleur."
+          }
+        },
+        "stat_1": {
+          "type": "stat",
+          "settings": {
+            "number": "100%",
+            "label": "Ingrédients Naturels"
+          }
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {
+            "number": "24h",
+            "label": "Livraison Express"
+          }
+        }
+      },
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "stat_1",
+        "stat_2"
+      ],
+      "settings": {
+        "title": "POUR UN MEILLEUR DEMAIN",
+        "heading_size": "h1",
+        "text": "Nous nous engageons à vous offrir des produits d'exception qui allient qualité, durabilité et design innovant. Découvrez l'univers Taiga Bubbly et laissez-vous séduire par notre approche unique.",
+        "button_label": "Découvrir nos valeurs",
+        "button_link": "/pages/about",
+        "button_style_secondary": false,
+        "layout": "text_first",
+        "image_width": "50",
+        "desktop_content_position": "center",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "background-2",
+        "color_scheme": "background-2",
+        "image_behavior": "none",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "image_gallery": {
+      "type": "image-gallery",
+      "settings": {
+        "title": "L'expérience Taiga en images",
+        "heading_size": "h1",
+        "gallery_type": "grid",
+        "columns": 3,
+        "aspect_ratio": "square",
+        "enable_lightbox": true,
+        "show_captions": true,
+        "color_scheme": "background-1",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "video_section": {
+      "type": "video-section",
+      "settings": {
+        "title": "Design Bubbly : Où créativité et performance se rencontrent",
+        "heading_size": "h1",
+        "description": "Découvrez comment notre thème Taiga Bubbly transforme votre boutique en une expérience shopping inoubliable. Plus de 25 sections personnalisables, animations fluides et design optimisé pour la conversion.",
+        "video_url": "",
+        "cover_image": "",
+        "description_style": "body",
+        "full_width": false,
+        "color_scheme": "accent-1",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "collection_showcase": {
+      "type": "collection-showcase",
+      "settings": {
+        "title": "Nos Collections",
+        "heading_size": "h1",
+        "layout": "grid",
+        "collections_to_show": 4,
+        "columns_desktop": 2,
+        "columns_mobile": 1,
+        "show_collection_description": true,
+        "show_collection_image": true,
+        "image_ratio": "square",
+        "color_scheme": "background-1",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "testimonials_showcase": {
+      "type": "testimonials-showcase",
+      "settings": {
+        "title": "Ils nous font confiance",
+        "heading_size": "h1",
+        "subtitle": "Rejoignez les milliers de clients qui ont choisi l'excellence Taiga pour leur boutique en ligne. Un design qui convertit, une performance qui impressionne.",
+        "layout": "carousel",
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "columns_desktop": 3,
+        "columns_mobile": 1,
+        "show_dots": true,
+        "show_arrows": true,
+        "color_scheme": "background-2",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "newsletter_signup": {
+      "type": "newsletter-signup",
+      "settings": {
+        "title": "Restez connecté avec l'univers Taiga",
+        "heading_size": "h1",
+        "subtitle": "Inscrivez-vous à notre newsletter et obtenez 10% de réduction sur votre première commande. Recevez nos dernières nouveautés, offres exclusives et conseils pour optimiser votre boutique.",
+        "show_name": false,
+        "button_label": "S'abonner",
+        "show_privacy_policy": true,
+        "privacy_policy_text": "En vous abonnant, vous acceptez de recevoir nos communications et notre politique de confidentialité",
+        "color_scheme": "accent-1",
+        "full_width": true,
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "hero_banner",
+    "featured_collection",
+    "rich_text_with_image",
+    "image_gallery",
+    "video_section",
+    "collection_showcase",
+    "testimonials_showcase",
+    "newsletter_signup"
+  ]
+} 

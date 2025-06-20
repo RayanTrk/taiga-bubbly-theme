@@ -1,0 +1,157 @@
+{{ 'section-customer-login.css' | asset_url | stylesheet_tag }}
+{{ 'section-customer-login.js' | asset_url | script_tag: defer: true }}
+
+<div class="customer-login-wrapper">
+  <!-- Floating Bubbles Background -->
+  <div class="floating-bubbles" aria-hidden="true">
+    {%- for i in (1..12) -%}
+      <div class="bubble bubble-{{ i }}"></div>
+    {%- endfor -%}
+  </div>
+
+  <div class="page-width">
+    <div class="customer-login-container">
+      <div class="customer-login-header">
+        <h1 class="customer-login-title">{{ 'customer.login_page.title' | t }}</h1>
+        <p class="customer-login-subtitle">{{ 'customer.login_page.subtitle' | t }}</p>
+      </div>
+
+      <div class="customer-login-content">
+        <!-- Login Form -->
+        <div class="customer-login-form-wrapper">
+          <div class="customer-login-form-container">
+            <h2 class="form-title">{{ 'customer.login_page.login_title' | t }}</h2>
+            
+            {%- form 'customer_login', novalidate: 'novalidate', class: 'customer-login-form' -%}
+              {%- if form.errors -%}
+                <div class="form-errors" role="alert" aria-live="polite">
+                  <div class="form-errors-icon">
+                    <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm3.5 11L12 14.5 10 12.5 8 14.5 6.5 13l2-2-2-2L8 7.5l2 2 2-2L13.5 9l-2 2 2 2z"/>
+                    </svg>
+                  </div>
+                  <div class="form-errors-content">
+                    <h3 class="form-errors-title">{{ 'customer.login_page.error_title' | t }}</h3>
+                    <ul class="form-errors-list">
+                      {%- for error in form.errors -%}
+                        <li>{{ error }}</li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              <div class="form-group">
+                <label for="CustomerEmail" class="form-label">
+                  {{ 'customer.login_page.email' | t }}
+                  <span class="form-required" aria-label="{{ 'customer.login_page.required' | t }}">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="customer[email]"
+                  id="CustomerEmail"
+                  class="form-input"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  value="{{ form.email }}"
+                  required
+                  aria-describedby="email-error"
+                >
+                <span id="email-error" class="form-error-message" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="CustomerPassword" class="form-label">
+                  {{ 'customer.login_page.password' | t }}
+                  <span class="form-required" aria-label="{{ 'customer.login_page.required' | t }}">*</span>
+                </label>
+                <div class="password-input-wrapper">
+                  <input
+                    type="password"
+                    name="customer[password]"
+                    id="CustomerPassword"
+                    class="form-input password-input"
+                    autocomplete="current-password"
+                    required
+                    aria-describedby="password-error"
+                  >
+                  <button type="button" class="password-toggle" aria-label="{{ 'customer.login_page.show_password' | t }}">
+                    <svg class="password-toggle-show" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M10 4C5.5 4 1.7 6.9 0 11c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 11.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zm0-7c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z"/>
+                    </svg>
+                    <svg class="password-toggle-hide" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="display: none;">
+                      <path fill="currentColor" d="M10 4C5.5 4 1.7 6.9 0 11c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 11.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zm0-7c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z"/>
+                      <path fill="currentColor" d="M2 2l16 16-1.4 1.4L15 17.8c-1.5.8-3.2 1.2-5 1.2-4.5 0-8.3-2.9-10-7 .8-2 2.2-3.7 4-4.9L2.6 3.4 2 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <span id="password-error" class="form-error-message" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full-width">
+                  <span class="btn-text">{{ 'customer.login_page.sign_in' | t }}</span>
+                  <div class="btn-loading" aria-hidden="true">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="form-links">
+                <a href="{{ routes.account_recover_url }}" class="link-underline">
+                  {{ 'customer.login_page.forgot_password' | t }}
+                </a>
+              </div>
+            {%- endform -%}
+          </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="customer-register-form-wrapper">
+          <div class="customer-register-form-container">
+            <h2 class="form-title">{{ 'customer.login_page.create_account_title' | t }}</h2>
+            <p class="form-subtitle">{{ 'customer.login_page.create_account_subtitle' | t }}</p>
+            
+            <div class="register-benefits">
+              <ul class="benefits-list">
+                <li class="benefit-item">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                  </svg>
+                  {{ 'customer.login_page.benefit_1' | t }}
+                </li>
+                <li class="benefit-item">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                  </svg>
+                  {{ 'customer.login_page.benefit_2' | t }}
+                </li>
+                <li class="benefit-item">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                  </svg>
+                  {{ 'customer.login_page.benefit_3' | t }}
+                </li>
+              </ul>
+            </div>
+
+            <a href="{{ routes.account_register_url }}" class="btn btn-secondary btn-full-width">
+              {{ 'customer.login_page.create_account' | t }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "{{ 'customer.login_page.title' | t }}",
+  "description": "{{ 'customer.login_page.subtitle' | t }}",
+  "url": "{{ shop.url }}{{ routes.account_login_url }}"
+}
+</script> 

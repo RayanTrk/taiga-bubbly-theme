@@ -1,0 +1,699 @@
+{{ 'section-rich-text-with-image.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .rich-text-with-image-{{ section.id }} {
+    {%- if section.settings.background_color != blank -%}
+      background: {{ section.settings.background_color }};
+    {%- endif -%}
+    
+    {%- if section.settings.background_image != blank -%}
+      background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');
+      background-size: cover;
+      background-position: center;
+    {%- endif -%}
+  }
+
+  .rich-text-with-image-{{ section.id }} .rich-text__content {
+    {%- if section.settings.text_color != blank -%}
+      color: {{ section.settings.text_color }};
+    {%- endif -%}
+  }
+
+  .rich-text-with-image-{{ section.id }} .rich-text__heading {
+    {%- if section.settings.heading_color != blank -%}
+      color: {{ section.settings.heading_color }};
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign layout = section.settings.layout | default: 'image_left'
+  assign image_width = section.settings.image_width | default: 50
+  assign content_alignment = section.settings.content_alignment | default: 'left'
+  assign enable_parallax = section.settings.enable_parallax | default: false
+  assign show_decorative_elements = section.settings.show_decorative_elements | default: true
+-%}
+
+<div class="rich-text-with-image rich-text-with-image-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+     data-rich-text-section
+     data-layout="{{ layout }}"
+     data-parallax="{{ enable_parallax }}">
+
+  {%- comment -%} Decorative Background Elements {%- endcomment -%}
+  {%- if show_decorative_elements -%}
+    <div class="decorative-elements" data-decorative-elements>
+      <div class="floating-bubble floating-bubble--1"></div>
+      <div class="floating-bubble floating-bubble--2"></div>
+      <div class="floating-bubble floating-bubble--3"></div>
+      <div class="floating-shape floating-shape--1"></div>
+      <div class="floating-shape floating-shape--2"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="page-width">
+    <div class="rich-text-container" 
+         data-rich-text-container
+         data-content-alignment="{{ content_alignment }}">
+
+      {%- comment -%} Content Layout {%- endcomment -%}
+      <div class="rich-text-layout rich-text-layout--{{ layout }}"
+           style="--image-width: {{ image_width }}%;">
+
+        {%- comment -%} Image Section {%- endcomment -%}
+        {%- if section.settings.image != blank -%}
+          <div class="rich-text__image-wrapper" data-aos="fade-{% if layout == 'image_left' %}right{% else %}left{% endif %}">
+            <div class="rich-text__image-container" 
+                 data-image-container
+                 {% if enable_parallax %}data-parallax-image{% endif %}>
+              
+              {%- comment -%} Main Image {%- endcomment -%}
+              <div class="image-wrapper">
+                <img src="{{ section.settings.image | image_url: width: 800 }}"
+                     alt="{{ section.settings.image.alt | escape }}"
+                     class="rich-text__image"
+                     loading="lazy"
+                     width="800"
+                     height="{{ 800 | divided_by: section.settings.image.aspect_ratio | round }}">
+                
+                {%- comment -%} Image Overlay Effects {%- endcomment -%}
+                <div class="image-overlay">
+                  <div class="overlay-gradient"></div>
+                  <div class="overlay-pattern"></div>
+                </div>
+              </div>
+
+              {%- comment -%} Secondary Image (Optional) {%- endcomment -%}
+              {%- if section.settings.secondary_image != blank -%}
+                <div class="secondary-image-wrapper" data-aos="zoom-in" data-aos-delay="300">
+                  <img src="{{ section.settings.secondary_image | image_url: width: 300 }}"
+                       alt="{{ section.settings.secondary_image.alt | escape }}"
+                       class="rich-text__secondary-image"
+                       loading="lazy"
+                       width="300"
+                       height="{{ 300 | divided_by: section.settings.secondary_image.aspect_ratio | round }}">
+                </div>
+              {%- endif -%}
+
+              {%- comment -%} Image Statistics/Badges {%- endcomment -%}
+              {%- if section.settings.show_image_stats -%}
+                <div class="image-stats" data-aos="fade-up" data-aos-delay="500">
+                  {%- for block in section.blocks -%}
+                    {%- if block.type == 'stat' -%}
+                      <div class="stat-badge" {{ block.shopify_attributes }}>
+                        <div class="stat-badge__number">{{ block.settings.number }}</div>
+                        <div class="stat-badge__label">{{ block.settings.label }}</div>
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Content Section {%- endcomment -%}
+        <div class="rich-text__content-wrapper" data-aos="fade-{{ layout == 'image_left' ? 'left' : 'right' }}">
+          <div class="rich-text__content" data-content-alignment="{{ content_alignment }}">
+
+            {%- comment -%} Eyebrow/Label {%- endcomment -%}
+            {%- if section.settings.eyebrow != blank -%}
+              <div class="rich-text__eyebrow" data-aos="fade-up">
+                {{ section.settings.eyebrow }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Main Heading {%- endcomment -%}
+            {%- if section.settings.heading != blank -%}
+              <h2 class="rich-text__heading" data-aos="fade-up" data-aos-delay="100">
+                {{ section.settings.heading }}
+              </h2>
+            {%- endif -%}
+
+            {%- comment -%} Subheading {%- endcomment -%}
+            {%- if section.settings.subheading != blank -%}
+              <div class="rich-text__subheading" data-aos="fade-up" data-aos-delay="200">
+                {{ section.settings.subheading }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Main Text Content {%- endcomment -%}
+            {%- if section.settings.text != blank -%}
+              <div class="rich-text__text" data-aos="fade-up" data-aos-delay="300">
+                {{ section.settings.text }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Feature List {%- endcomment -%}
+            {%- assign feature_blocks = section.blocks | where: 'type', 'feature' -%}
+            {%- if feature_blocks.size > 0 -%}
+              <div class="rich-text__features" data-aos="fade-up" data-aos-delay="400">
+                <ul class="feature-list">
+                  {%- for block in feature_blocks -%}
+                    <li class="feature-item" {{ block.shopify_attributes }}>
+                      {%- if block.settings.icon != blank -%}
+                        <div class="feature-icon">
+                          {%- case block.settings.icon -%}
+                            {%- when 'check' -%}
+                              {%- render 'icon-check' -%}
+                            {%- when 'star' -%}
+                              {%- render 'icon-star-filled' -%}
+                            {%- when 'heart' -%}
+                              {%- render 'icon-heart' -%}
+                            {%- when 'shield' -%}
+                              {%- render 'icon-shield' -%}
+                            {%- when 'lightning' -%}
+                              {%- render 'icon-lightning' -%}
+                            {%- else -%}
+                              {%- render 'icon-check' -%}
+                          {%- endcase -%}
+                        </div>
+                      {%- endif -%}
+                      <div class="feature-content">
+                        {%- if block.settings.title != blank -%}
+                          <div class="feature-title">{{ block.settings.title }}</div>
+                        {%- endif -%}
+                        {%- if block.settings.description != blank -%}
+                          <div class="feature-description">{{ block.settings.description }}</div>
+                        {%- endif -%}
+                      </div>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Call to Action Buttons {%- endcomment -%}
+            {%- if section.settings.button_text != blank or section.settings.secondary_button_text != blank -%}
+              <div class="rich-text__buttons" data-aos="fade-up" data-aos-delay="500">
+                {%- if section.settings.button_text != blank -%}
+                  <a href="{{ section.settings.button_url | default: '#' }}" 
+                     class="button button--primary button--large">
+                    {{ section.settings.button_text }}
+                    {%- if section.settings.show_button_icon -%}
+                      <span class="icon-wrap">
+                        {%- render 'icon-arrow-right' -%}
+                      </span>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+
+                {%- if section.settings.secondary_button_text != blank -%}
+                  <a href="{{ section.settings.secondary_button_url | default: '#' }}" 
+                     class="button button--secondary button--large">
+                    {{ section.settings.secondary_button_text }}
+                    {%- if section.settings.show_secondary_button_icon -%}
+                      <span class="icon-wrap">
+                        {%- render 'icon-arrow-right' -%}
+                      </span>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Additional Content Blocks {%- endcomment -%}
+            {%- assign content_blocks = section.blocks | where: 'type', 'content' -%}
+            {%- if content_blocks.size > 0 -%}
+              <div class="rich-text__additional-content" data-aos="fade-up" data-aos-delay="600">
+                {%- for block in content_blocks -%}
+                  <div class="content-block" {{ block.shopify_attributes }}>
+                    {%- if block.settings.content_type == 'quote' -%}
+                      <blockquote class="content-quote">
+                        <div class="quote-icon">
+                          {%- render 'icon-quote' -%}
+                        </div>
+                        <div class="quote-text">{{ block.settings.quote_text }}</div>
+                        {%- if block.settings.quote_author != blank -%}
+                          <cite class="quote-author">{{ block.settings.quote_author }}</cite>
+                        {%- endif -%}
+                      </blockquote>
+                    {%- elsif block.settings.content_type == 'highlight' -%}
+                      <div class="content-highlight">
+                        <div class="highlight-content">{{ block.settings.highlight_text }}</div>
+                      </div>
+                    {%- elsif block.settings.content_type == 'note' -%}
+                      <div class="content-note">
+                        <div class="note-icon">
+                          {%- render 'icon-info' -%}
+                        </div>
+                        <div class="note-content">{{ block.settings.note_text }}</div>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.aiNavigation !== 'undefined') {
+      const section = document.querySelector('[data-rich-text-section]');
+      if (!section) return;
+
+      // Track section view
+      window.aiNavigation.trackEvent('rich_text_section_viewed', {
+        section_id: '{{ section.id }}',
+        layout: '{{ layout }}',
+        has_image: {{ section.settings.image != blank | json }},
+        has_secondary_image: {{ section.settings.secondary_image != blank | json }},
+        features_count: {{ feature_blocks.size }},
+        content_blocks_count: {{ content_blocks.size }},
+        timestamp: Date.now()
+      });
+
+      // Track button clicks
+      section.addEventListener('click', function(event) {
+        const button = event.target.closest('.button');
+        if (button) {
+          const isPrimary = button.classList.contains('button--primary');
+          window.aiNavigation.trackEvent('rich_text_button_clicked', {
+            section_id: '{{ section.id }}',
+            button_type: isPrimary ? 'primary' : 'secondary',
+            button_text: button.textContent.trim(),
+            timestamp: Date.now()
+          });
+        }
+      });
+
+      // Track scroll depth for long content
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            window.aiNavigation.trackEvent('rich_text_content_viewed', {
+              section_id: '{{ section.id }}',
+              element_class: entry.target.className,
+              timestamp: Date.now()
+            });
+          }
+        });
+      }, { threshold: 0.5 });
+
+      // Observe key content elements
+      const contentElements = section.querySelectorAll('[data-aos]');
+      contentElements.forEach(element => observer.observe(element));
+    }
+  });
+</script>
+
+<script src="{{ 'section-rich-text-with-image.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Rich Text with Image",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "options": [
+        {
+          "value": "image_left",
+          "label": "Image left, content right"
+        },
+        {
+          "value": "image_right",
+          "label": "Image right, content left"
+        },
+        {
+          "value": "image_top",
+          "label": "Image top, content bottom"
+        },
+        {
+          "value": "image_bottom",
+          "label": "Image bottom, content top"
+        }
+      ],
+      "default": "image_left",
+      "label": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 30,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "label": "Image width",
+      "default": 50,
+      "info": "Only applies to side-by-side layouts"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "label": "Content alignment"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Main image"
+    },
+    {
+      "type": "image_picker",
+      "id": "secondary_image",
+      "label": "Secondary image",
+      "info": "Optional smaller image that overlays the main image"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax effect",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_stats",
+      "label": "Show statistics on image",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "About Us"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Crafted with Care and Attention to Detail"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Experience the perfect blend of style, comfort, and sustainability</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Our commitment to quality and craftsmanship shines through in every product we create. From carefully selected materials to innovative design processes, we ensure that each item meets our high standards and exceeds your expectations.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Primary button text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Primary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_icon",
+      "label": "Show primary button icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary button text"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_url",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_button_icon",
+      "label": "Show secondary button icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "label": "Show decorative elements",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        },
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "options": [
+            {
+              "value": "check",
+              "label": "Check mark"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "lightning",
+              "label": "Lightning"
+            }
+          ],
+          "default": "check",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Feature title",
+          "default": "Premium Quality"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Feature description",
+          "default": "<p>Crafted from the finest materials for lasting durability</p>"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "10K+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Happy Customers"
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "name": "Content Block",
+      "settings": [
+        {
+          "type": "select",
+          "id": "content_type",
+          "options": [
+            {
+              "value": "quote",
+              "label": "Quote"
+            },
+            {
+              "value": "highlight",
+              "label": "Highlight"
+            },
+            {
+              "value": "note",
+              "label": "Note"
+            }
+          ],
+          "default": "quote",
+          "label": "Content type"
+        },
+        {
+          "type": "richtext",
+          "id": "quote_text",
+          "label": "Quote text",
+          "default": "<p>This company has transformed our business with their innovative solutions.</p>",
+          "info": "For quote content type"
+        },
+        {
+          "type": "text",
+          "id": "quote_author",
+          "label": "Quote author",
+          "default": "Jane Smith, CEO",
+          "info": "For quote content type"
+        },
+        {
+          "type": "richtext",
+          "id": "highlight_text",
+          "label": "Highlight text",
+          "default": "<p>Important information that stands out from the rest of the content.</p>",
+          "info": "For highlight content type"
+        },
+        {
+          "type": "richtext",
+          "id": "note_text",
+          "label": "Note text",
+          "default": "<p>Additional information or disclaimer text.</p>",
+          "info": "For note content type"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text with Image",
+      "blocks": [
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "stat"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

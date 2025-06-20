@@ -1,0 +1,547 @@
+{{ 'section-collection-showcase.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .collection-showcase-{{ section.id }} {
+    {%- if section.settings.background_color != blank -%}
+      background: {{ section.settings.background_color }};
+    {%- endif -%}
+    
+    {%- if section.settings.background_image != blank -%}
+      background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');
+      background-size: cover;
+      background-position: center;
+    {%- endif -%}
+  }
+
+  .collection-showcase-{{ section.id }} .section-header {
+    {%- if section.settings.header_text_color != blank -%}
+      color: {{ section.settings.header_text_color }};
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign collection = collections[section.settings.collection] | default: collections.all
+  assign products_limit = section.settings.products_to_show | default: 8
+  assign products_per_row = section.settings.products_per_row | default: 4
+  assign enable_quick_buy = section.settings.enable_quick_buy | default: true
+  assign show_collection_image = section.settings.show_collection_image | default: true
+  assign show_filters = section.settings.show_filters | default: false
+  assign show_sorting = section.settings.show_sorting | default: false
+-%}
+
+<div class="collection-showcase collection-showcase-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+     data-collection-showcase
+     data-collection-handle="{{ collection.handle }}"
+     data-products-per-row="{{ products_per_row }}"
+     data-products-limit="{{ products_limit }}">
+
+  {%- comment -%} Section Header {%- endcomment -%}
+  {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+    <div class="section-header" data-aos="fade-up">
+      <div class="page-width">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="collection-showcase__heading">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+        
+        {%- if section.settings.subheading != blank -%}
+          <div class="collection-showcase__subheading">
+            {{ section.settings.subheading }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_view_all and collection.url != blank -%}
+          <div class="collection-showcase__view-all">
+            <a href="{{ collection.url }}" class="button button--secondary" data-collection-view-all>
+              {{ 'sections.collection_showcase.view_all' | t: collection_title: collection.title }}
+              <span class="icon-wrap">
+                {%- render 'icon-arrow-right' -%}
+              </span>
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Collection Image Banner {%- endcomment -%}
+  {%- if show_collection_image and collection.featured_image -%}
+    <div class="collection-showcase__banner" data-aos="fade-up" data-aos-delay="200">
+      <div class="page-width">
+        <div class="collection-banner">
+          <div class="collection-banner__image-wrapper">
+            <img src="{{ collection.featured_image | image_url: width: 1200 }}"
+                 alt="{{ collection.featured_image.alt | escape }}"
+                 class="collection-banner__image"
+                 loading="lazy"
+                 width="1200"
+                 height="{{ 1200 | divided_by: collection.featured_image.aspect_ratio | round }}">
+          </div>
+          {%- if collection.description != blank -%}
+            <div class="collection-banner__content">
+              <div class="collection-banner__description">
+                {{ collection.description }}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Filters and Sorting {%- endcomment -%}
+  {%- if show_filters or show_sorting -%}
+    <div class="collection-showcase__controls" data-aos="fade-up" data-aos-delay="300">
+      <div class="page-width">
+        <div class="collection-controls">
+          {%- if show_filters -%}
+            <div class="collection-filters">
+              <button type="button" 
+                      class="collection-filters__toggle button button--secondary"
+                      data-filters-toggle
+                      aria-expanded="false">
+                <span class="icon-wrap">
+                  {%- render 'icon-filter' -%}
+                </span>
+                {{ 'sections.collection_showcase.filters' | t }}
+              </button>
+              
+              <div class="collection-filters__panel" data-filters-panel>
+                {%- comment -%} Filters will be populated by JavaScript {%- endcomment -%}
+                <div class="filters-loading">
+                  {%- render 'icon-spinner' -%}
+                  {{ 'sections.collection_showcase.loading_filters' | t }}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- if show_sorting -%}
+            <div class="collection-sorting">
+              <select class="collection-sorting__select" data-sorting-select>
+                <option value="manual">{{ 'sections.collection_showcase.sort_featured' | t }}</option>
+                <option value="best-selling">{{ 'sections.collection_showcase.sort_best_selling' | t }}</option>
+                <option value="title-ascending">{{ 'sections.collection_showcase.sort_name_az' | t }}</option>
+                <option value="title-descending">{{ 'sections.collection_showcase.sort_name_za' | t }}</option>
+                <option value="price-ascending">{{ 'sections.collection_showcase.sort_price_low' | t }}</option>
+                <option value="price-descending">{{ 'sections.collection_showcase.sort_price_high' | t }}</option>
+                <option value="created-descending">{{ 'sections.collection_showcase.sort_date_new' | t }}</option>
+                <option value="created-ascending">{{ 'sections.collection_showcase.sort_date_old' | t }}</option>
+              </select>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Products Grid {%- endcomment -%}
+  <div class="collection-showcase__products" data-aos="fade-up" data-aos-delay="400">
+    <div class="page-width">
+      <div class="collection-products" 
+           data-products-grid
+           data-products-per-row="{{ products_per_row }}">
+        
+        {%- comment -%} Loading State {%- endcomment -%}
+        <div class="products-loading" data-products-loading style="display: none;">
+          <div class="loading-grid">
+            {%- for i in (1..products_limit) -%}
+              <div class="product-card-skeleton">
+                <div class="skeleton__image"></div>
+                <div class="skeleton__content">
+                  <div class="skeleton__title"></div>
+                  <div class="skeleton__price"></div>
+                  <div class="skeleton__button"></div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- comment -%} Products Grid {%- endcomment -%}
+        <div class="products-grid" data-products-container>
+          {%- for product in collection.products limit: products_limit -%}
+            <div class="product-card-wrapper" 
+                 data-product-card
+                 data-product-id="{{ product.id }}"
+                 data-aos="fade-up" 
+                 data-aos-delay="{{ forloop.index | times: 100 }}">
+              
+              {%- render 'product-card', 
+                  product: product, 
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  lazy_load: true,
+                  enable_quick_buy: enable_quick_buy,
+                  section_id: section.id -%}
+            </div>
+          {%- else -%}
+            <div class="collection-showcase__empty" data-aos="fade-up">
+              <div class="empty-state">
+                <div class="empty-state__icon">
+                  {%- render 'icon-collection' -%}
+                </div>
+                <h3 class="empty-state__title">
+                  {{ 'sections.collection_showcase.empty_title' | t }}
+                </h3>
+                <p class="empty-state__description">
+                  {{ 'sections.collection_showcase.empty_description' | t }}
+                </p>
+                <a href="{{ routes.collections_url }}" class="button">
+                  {{ 'sections.collection_showcase.browse_collections' | t }}
+                </a>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- comment -%} Load More Button {%- endcomment -%}
+      {%- if section.settings.enable_load_more and collection.products_count > products_limit -%}
+        <div class="collection-showcase__load-more" data-aos="fade-up" data-aos-delay="600">
+          <button type="button" 
+                  class="button button--secondary button--full-width"
+                  data-load-more-btn
+                  data-collection-handle="{{ collection.handle }}"
+                  data-products-loaded="{{ products_limit }}"
+                  data-products-total="{{ collection.products_count }}">
+            <span class="button__text">
+              {{ 'sections.collection_showcase.load_more' | t }}
+            </span>
+            <span class="button__spinner" style="display: none;">
+              {%- render 'icon-spinner' -%}
+            </span>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Quick Buy Modal Integration {%- endcomment -%}
+  {%- if enable_quick_buy -%}
+    <div id="quick-buy-modal-{{ section.id }}" class="quick-buy-modal" hidden>
+      {%- render 'quick-buy' -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.aiNavigation !== 'undefined') {
+      const showcaseSection = document.querySelector('[data-collection-showcase]');
+      if (!showcaseSection) return;
+
+      // Track section view
+      window.aiNavigation.trackEvent('collection_showcase_viewed', {
+        section_id: '{{ section.id }}',
+        collection_handle: '{{ collection.handle }}',
+        products_count: {{ products_limit }},
+        has_filters: {{ show_filters | json }},
+        has_sorting: {{ show_sorting | json }},
+        products_per_row: {{ products_per_row }},
+        timestamp: Date.now()
+      });
+
+      // Track product card interactions
+      showcaseSection.addEventListener('click', function(event) {
+        const productCard = event.target.closest('[data-product-card]');
+        if (productCard) {
+          const productId = productCard.getAttribute('data-product-id');
+          window.aiNavigation.trackEvent('collection_product_clicked', {
+            section_id: '{{ section.id }}',
+            product_id: productId,
+            collection_handle: '{{ collection.handle }}',
+            click_type: event.target.classList.contains('quick-buy-button') ? 'quick_buy' : 'product_view',
+            timestamp: Date.now()
+          });
+        }
+
+        // Track view all clicks
+        if (event.target.matches('[data-collection-view-all]')) {
+          window.aiNavigation.trackEvent('collection_view_all_clicked', {
+            section_id: '{{ section.id }}',
+            collection_handle: '{{ collection.handle }}',
+            timestamp: Date.now()
+          });
+        }
+      });
+    }
+  });
+</script>
+
+<script src="{{ 'section-collection-showcase.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Collection Showcase",
+  "tag": "section", 
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Select collection to showcase products from"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Products per row",
+      "default": 4,
+      "info": "Number of products per row on desktop"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Discover our curated selection of premium products</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show \"View all\" button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Show collection featured image",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Product cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ],
+      "default": "adapt",
+      "label": "Image ratio"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "arch",
+          "label": "Arch"
+        },
+        {
+          "value": "blob",
+          "label": "Blob"
+        },
+        {
+          "value": "chevronleft",
+          "label": "Chevron left"
+        },
+        {
+          "value": "chevronright",
+          "label": "Chevron right"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        },
+        {
+          "value": "parallelogram",
+          "label": "Parallelogram"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "default",
+      "label": "Image shape"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "Show second product image on hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show product vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "Show product rating",
+      "info": "To display a rating, add a product rating app. [Learn more](https://help.shopify.com/manual/online-store/themes/theme-structure/theme-features#featured-collection-show-product-rating)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_buy",
+      "default": true,
+      "label": "Enable quick buy"
+    },
+    {
+      "type": "header",
+      "content": "Filtering and sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "default": false,
+      "label": "Enable product filtering"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sorting",
+      "default": false,
+      "label": "Enable product sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_load_more",
+      "default": true,
+      "label": "Enable \"Load more\" button"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header text color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        },
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Showcase"
+    }
+  ]
+}
+{% endschema %} 

@@ -1,0 +1,93 @@
+{% comment %}
+  Quick View Modal Section
+  Provides a modal interface for viewing product details without leaving the collection page
+{% endcomment %}
+
+{{ 'component-quick-view-modal.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'quick-view-modal.js' | asset_url }}" defer="defer"></script>
+
+{%- render 'quick-view-modal' -%}
+
+{% schema %}
+{
+  "name": "Quick View Modal",
+  "class": "quick-view-modal-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Modal Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable image zoom",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_social_sharing",
+      "label": "Enable social sharing buttons",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show product SKU",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "modal_style",
+      "label": "Modal style",
+      "options": [
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "text",
+      "id": "feature_1_text",
+      "label": "Feature 1 text",
+      "default": "Free shipping"
+    },
+    {
+      "type": "text",
+      "id": "feature_2_text",
+      "label": "Feature 2 text", 
+      "default": "Secure payment"
+    },
+    {
+      "type": "text",
+      "id": "feature_3_text",
+      "label": "Feature 3 text",
+      "default": "Fast delivery"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quick View Modal"
+    }
+  ]
+}
+{% endschema %} 

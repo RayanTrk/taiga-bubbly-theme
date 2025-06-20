@@ -1,0 +1,411 @@
+{% comment %}
+  Main Blog Section
+  Displays blog articles in a responsive grid layout
+{% endcomment %}
+
+{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-main-blog.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign posts_per_row_desktop = section.settings.posts_per_row_desktop
+  assign posts_per_row_tablet = section.settings.posts_per_row_tablet
+  assign posts_per_row_mobile = section.settings.posts_per_row_mobile
+  assign blog_layout = section.settings.blog_layout
+  assign card_style = section.settings.card_style
+  assign image_ratio = section.settings.image_ratio
+  assign enable_animations = section.settings.enable_animations
+-%}
+
+<div class="main-blog main-blog--{{ blog_layout }} main-blog--{{ card_style }}"
+     data-main-blog
+     data-layout="{{ blog_layout }}"
+     data-animations="{{ enable_animations }}">
+  
+  <div class="main-blog__container page-width">
+    
+    {%- if blog.articles.size > 0 -%}
+      
+      <div class="main-blog__grid"
+           style="--posts-per-row-desktop: {{ posts_per_row_desktop }}; --posts-per-row-tablet: {{ posts_per_row_tablet }}; --posts-per-row-mobile: {{ posts_per_row_mobile }};">
+        
+        {%- for article in blog.articles -%}
+          <article class="main-blog__article article-card article-card--{{ card_style }}"
+                   data-article-card
+                   data-animation-delay="{{ forloop.index | times: section.settings.animation_delay }}">
+            
+            {%- if section.settings.show_featured_image and article.image -%}
+              <div class="article-card__media">
+                <a href="{{ article.url }}" class="article-card__image-link" tabindex="-1" aria-hidden="true">
+                  <div class="article-card__image-container article-card__image-container--{{ image_ratio }}">
+                    <img class="article-card__image"
+                         src="{{ article.image | image_url: width: 600 }}"
+                         alt="{{ article.image.alt | escape | default: article.title | escape }}"
+                         width="{{ article.image.width }}"
+                         height="{{ article.image.height }}"
+                         loading="lazy"
+                         data-hover-effect="{{ section.settings.image_hover_effect }}">
+                    
+                    {%- if section.settings.show_read_time -%}
+                      <div class="article-card__read-time">
+                        {%- assign word_count = article.content | strip_html | split: ' ' | size -%}
+                        {%- assign read_time = word_count | divided_by: 200 | at_least: 1 -%}
+                        <span class="article-card__read-time-text">
+                          {{ read_time }} {{ 'blog.article.min_read' | t }}
+                        </span>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </a>
+              </div>
+            {%- endif -%}
+            
+            <div class="article-card__content">
+              
+              <div class="article-card__meta">
+                {%- if section.settings.show_date -%}
+                  <time class="article-card__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: format: 'abbreviated_date' }}
+                  </time>
+                {%- endif -%}
+                
+                {%- if section.settings.show_author and article.author != blank -%}
+                  <span class="article-card__author">
+                    {{ 'blog.article.by_author' | t: author: article.author }}
+                  </span>
+                {%- endif -%}
+              </div>
+              
+              <h3 class="article-card__title">
+                <a href="{{ article.url }}" class="article-card__title-link">
+                  {{ article.title | escape }}
+                </a>
+              </h3>
+              
+              {%- if section.settings.show_excerpt and article.excerpt != blank -%}
+                <div class="article-card__excerpt">
+                  {%- assign excerpt_length = section.settings.excerpt_length -%}
+                  {%- if article.excerpt.size > excerpt_length -%}
+                    {{ article.excerpt | strip_html | truncate: excerpt_length }}
+                  {%- else -%}
+                    {{ article.excerpt | strip_html }}
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+              
+              {%- if section.settings.show_tags and article.tags.size > 0 -%}
+                <div class="article-card__tags">
+                  {%- for tag in article.tags limit: 3 -%}
+                    <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+                       class="article-card__tag">
+                      {{ tag }}
+                    </a>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+              
+              <div class="article-card__footer">
+                <a href="{{ article.url }}" class="article-card__read-more button button--secondary">
+                  {{ 'blog.article.read_more' | t }}
+                  {%- render 'icon-arrow-right' -%}
+                </a>
+              </div>
+              
+            </div>
+            
+            {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+            {%- if card_style == 'bubbly' -%}
+              <div class="article-card__decorative-elements" aria-hidden="true">
+                <div class="article-card__bubble article-card__bubble--1"></div>
+                <div class="article-card__bubble article-card__bubble--2"></div>
+              </div>
+            {%- endif -%}
+            
+          </article>
+        {%- endfor -%}
+        
+      </div>
+      
+      {%- comment -%} Pagination {%- endcomment -%}
+      {%- if paginate.pages > 1 -%}
+        <div class="main-blog__pagination">
+          {%- render 'pagination', paginate: paginate, anchor: '', class: 'pagination--' | append: section.settings.pagination_style -%}
+        </div>
+      {%- endif -%}
+      
+    {%- else -%}
+      
+      <div class="main-blog__empty">
+        <div class="main-blog__empty-content">
+          <h2 class="main-blog__empty-title">
+            {{ 'blog.general.no_articles' | t }}
+          </h2>
+          <p class="main-blog__empty-text">
+            {{ 'blog.general.no_articles_description' | t }}
+          </p>
+          <a href="{{ routes.root_url }}" class="button button--primary">
+            {{ 'general.continue_shopping' | t }}
+          </a>
+        </div>
+      </div>
+      
+    {%- endif -%}
+    
+  </div>
+  
+  {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+  {%- if card_style == 'bubbly' -%}
+    <div class="main-blog__decorative-elements" aria-hidden="true">
+      <div class="main-blog__bubble main-blog__bubble--1"></div>
+      <div class="main-blog__bubble main-blog__bubble--2"></div>
+      <div class="main-blog__bubble main-blog__bubble--3"></div>
+    </div>
+  {%- endif -%}
+  
+</div>
+
+{% schema %}
+{
+  "name": "Main Blog",
+  "class": "main-blog-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "blog_layout",
+      "label": "Blog layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "list",
+          "label": "List"
+        },
+        {
+          "value": "masonry",
+          "label": "Masonry"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "posts_per_row_desktop",
+      "label": "Posts per row (desktop)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "posts_per_row_tablet",
+      "label": "Posts per row (tablet)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "posts_per_row_mobile",
+      "label": "Posts per row (mobile)",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Article Card Settings"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "Show featured image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "16_9",
+          "label": "16:9"
+        },
+        {
+          "value": "4_3",
+          "label": "4:3"
+        },
+        {
+          "value": "1_1",
+          "label": "1:1"
+        }
+      ],
+      "default": "16_9"
+    },
+    {
+      "type": "select",
+      "id": "image_hover_effect",
+      "label": "Image hover effect",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        }
+      ],
+      "default": "zoom"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "excerpt_length",
+      "label": "Excerpt length",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "unit": "characters",
+      "default": 150
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_time",
+      "label": "Show estimated read time",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Pagination"
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination style",
+      "options": [
+        {
+          "value": "numbered",
+          "label": "Numbered"
+        },
+        {
+          "value": "load_more",
+          "label": "Load more button"
+        },
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        }
+      ],
+      "default": "numbered"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_scroll",
+      "label": "Enable infinite scroll",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Performance"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lazy_loading",
+      "label": "Enable lazy loading",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Animations"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animations",
+      "label": "Enable animations",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "label": "Animation delay between items",
+      "min": 50,
+      "max": 200,
+      "step": 25,
+      "unit": "ms",
+      "default": 100
+    }
+  ]
+}
+{% endschema %} 

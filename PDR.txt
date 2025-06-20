@@ -1,0 +1,252 @@
+Document de Spécifications Produit (PRD) - Thème Shopify
+Statut du Document : Finalisé
+
+ * Introduction et Vue d'ensemble
+   1.1. Nom du Thème
+   Taiga - Style 'Bubbly'
+   1.2. Objectif Principal du Thème
+ * Problème résolu : Temps de chargement lents, manque de capacités de narration visuelle, difficulté de personnalisation pour les boutiques à fort volume. 
+ * Proposition de valeur unique : Un thème ultra-rapide et moderne avec plus de 10 sections vidéo, offrant une liberté visuelle totale et une navigation optimisée par IA pour des performances quasi parfaites sur tous les appareils, idéal pour les boutiques à fort volume et axées sur la narration visuelle. 
+ * Public Cible (Marchands) : Boutiques à fort volume de transactions, marques axées sur la narration visuelle, entreprises recherchant une configuration rapide, marques avec une personnalité vibrante et énergique. 
+ * Objectif Client Final (Acheteurs) : Une expérience d'achat immersive, rapide et engageante, avec une navigation fluide et une présentation visuelle riche des produits et de la marque. 
+   1.3. Objectifs Stratégiques (pour le Marchand)
+ * Augmenter le taux de conversion grâce à des temps de chargement instantanés et une navigation optimisée par IA. 
+ * Améliorer l'engagement utilisateur et la durée des sessions grâce à un contenu visuel riche et des animations dynamiques. 
+ * Faciliter une configuration et un lancement rapides de la boutique en ligne. 
+ * Permettre une gestion de contenu flexible grâce à des sections et blocs modulaires. 
+ * Renforcer la crédibilité et la confiance des clients grâce à des badges de confiance et des informations claires. 
+   1.4. Non-Objectifs (Exclusions Claires)
+ * Le thème n'inclura pas de système de gestion des stocks avancé au-delà des fonctionnalités Shopify natives (nécessitera une application tierce si souhaité).
+ * Le thème ne gérera pas les retours ou les remboursements directement (fonctionnalité de Shopify Admin).
+ * Le thème ne fournira pas de fonctionnalités de CRM intégrées.
+ * Le thème ne prendra pas en charge les intégrations de paiement personnalisées au-delà des options Shopify standard.
+ * Design et Expérience Utilisateur (UX)
+   2.1. Principes de Design Généraux
+ * Style Visuel : Vibrant et énergique avec des couleurs vives et une typographie ludique, intégrant des animations dynamiques et des éléments interactifs. 
+ * Philosophie UX : Créer une expérience d'achat amusante et engageante, ultra-rapide et axée sur la narration visuelle, avec une navigation intuitive et une accessibilité améliorée. 
+ * Cohérence : Le thème doit avoir un aspect et une convivialité cohérents sur tous les modèles (page d'accueil, pages de produits et de collections, blogs, recherche, panier).
+ * Qualité Visuelle : Toutes les images, graphiques et icônes doivent être de haute qualité, clairs, de taille appropriée et cohérents. Pas d'images floues, étirées, pixelisées ou de qualité clipart.
+   2.2. Maquettes et Wireframes
+ * Les maquettes et wireframes devront couvrir les états desktop, tablette et mobile pour toutes les pages clés (accueil, produit, collection, panier, blog, article, page, recherche, 404, client, mot de passe, carte cadeau). Les états de survol, actif, erreur et chargement devront également être spécifiés.
+   2.3. Typographie
+ * Polices de caractères :
+   * Titres (H1-H6) : (À définir, mais les polices obsolètes ont été mises à jour [span_47](start_span)[span_47](end_span)[span_52](start_span)[span_52](end_span)[span_57](start_span)[span_57](end_span))
+   * Corps du texte : (À définir)
+   * Police d'icônes : (À définir)
+ * Hiérarchie et Tailles : Clairement définie pour assurer la lisibilité et l'organisation visuelle du contenu.
+ * Cohérence Typographique : Éviter une abondance de polices. Toutes les polices doivent être cohérentes et faciles à lire.
+   2.4. Palette de Couleurs
+ * Primaire : #XXXXXX (Vif, énergique) 
+ * Secondaire : #XXXXXX (Complémentaire)
+ * Accent : #XXXXXX (Pour les CTA et éléments interactifs)
+ * Texte : #XXXXXX (Contraste élevé pour la lisibilité)
+ * Arrière-plan : #XXXXXX (Clair, minimaliste)
+ * Erreur/Succès : #FF0000 / #00FF00
+ * Cohérence : La palette de couleurs doit être simple, complémentaire et cohérente dans tout le thème.
+   2.5. Performances Web
+ * Objectif Lighthouse Score : Scores quasi parfaits sur les appareils de bureau et mobiles. 
+ * Optimisations Clés :
+   * Chargement paresseux (Lazy loading) des images et vidéos.
+   * Optimisation des images (compression, formats modernes comme WebP).
+   * Minification des fichiers CSS et JavaScript.
+   * Chargement asynchrone des scripts non essentiels.
+   * Minimiser l'utilisation de JavaScript et s'appuyer sur les fonctionnalités natives des navigateurs web.
+   * Navigation AI pour des chargements de page instantanés et l'élimination des décalages de mise en page. 
+     2.6. Accessibilité (A11y)
+ * Conformité : Le thème doit être construit en respectant les meilleures pratiques d'accessibilité, conformément aux directives WCAG 2.1 AA.
+ * Exigences :
+   * Contraste de couleur suffisant pour la lisibilité.
+   * Navigation au clavier complète et intuitive.
+   * Texte alternatif (alt text) pour toutes les images.
+   * Utilisation de HTML sémantique.
+   * Gestion des états de focus clairs.
+   * Assurer qu'aucune action critique n'est obscurcie par des composants flottants (ex: chat, bannières de cookies).
+   * Améliorer l'expérience utilisateur et l'accessibilité au niveau supérieur. 
+ * Pages et Sections du Thème
+   Ce chapitre décrit les différentes pages et sections du thème, leurs fonctionnalités et leurs options de personnalisation. Le thème doit être compatible avec Online Store 2.0 (OS 2.0) et utiliser les "Sections Everywhere".
+   3.1. Page d'Accueil (index.json)
+ * Description : La page d'accueil doit être entièrement personnalisable via les sections dynamiques, permettant aux marchands de glisser-déposer et de configurer le contenu.
+ * Sections Recommandées (avec options de personnalisation pour le marchand) :
+   * Bannière Héro : Image ou vidéo en arrière-plan, titre, sous-titre, bouton(s) CTA.
+     * Options : superposition de texte, alignement (gauche/centre/droite), lien du bouton, couleur du texte, taille du texte. Supporte les options de hauteur à ratio fixe pour les diaporamas. 
+   * Collection en Vedette : Affichage d'une ou plusieurs collections sélectionnées, titre, description.
+     * Options : Nombre de produits par ligne (2, 3, 4), ratio d'image, affichage du bouton "Voir tout", sélection de la collection. Espacement de la grille configurable. 
+   * Produits en Vedette : Sélection manuelle de produits à mettre en avant.
+     * Options : Carrousel ou grille, nombre de produits à afficher, affichage du prix, affichage du bouton "Ajouter au panier".
+   * Texte Riche : Bloc de texte avec éditeur de texte enrichi.
+     * Options : Alignement du texte, taille du texte, couleur du texte.
+   * Témoignages : Carrousel de témoignages clients.
+     * Options : Nombre de témoignages par vue, vitesse du carrousel, couleur de fond. Espacement de la grille configurable. 
+   * Image avec Texte : Combinaison d'une image et d'un bloc de texte.
+     * Options : Position de l'image (gauche/droite), titre, texte, bouton CTA, lien.
+   * Section Blog : Affichage des derniers articles de blog.
+     * Options : Nombre d'articles, affichage de l'image, affichage de l'extrait. Espacement de la grille configurable. 
+   * Newsletter : Formulaire d'inscription à la newsletter.
+     * Options : Titre, texte de description, texte du bouton. Souvent accompagné d'offres attrayantes. 
+   * Carte/Magasin : Carte Google Maps et informations de contact.
+     * Options : Adresse, numéro de téléphone, e-mail, lien Google Maps.
+   * Sections vidéo (plus de 10 sections vidéo disponibles) 
+   * Bannières promotionnelles, pop-ups, tuiles promotionnelles. 
+   * Couverture de presse. 
+   * Section "GET THE LOOK" pour la vente croisée visuelle. 
+   * Section "FOR A BETTER TOMORROW" pour les valeurs de la marque avec accordéons. 
+     3.2. Page Produit (product.json)
+ * Description : La page produit doit mettre en valeur les produits et faciliter le processus d'achat.
+ * Fonctionnalités Clés :
+   * Galerie d'Images Produit : Support des images (formats optimisés comme WebP/JPG), vidéos, modèles 3D. Option de zoom, carrousel ou grille. Support des images haute résolution, vidéos de produits, carrousel ou grille. Options de zoom, effet de survol. 
+   * Variantes : Sélection de variantes (taille, couleur, etc.), gestion des stocks.
+   * Support des échantillons de couleurs (color swatches) avec guide de configuration. 
+   * Bouton Ajouter au Panier : Clair et visible, avec gestion des quantités.
+   * Informations Produit : Affichage du titre, description, prix, prix de comparaison, statut de stock.
+   * Recommandations de Produits : Section "Vous pourriez aussi aimer..." dynamique. Basée sur l'historique de navigation ou les sélections actuelles. 
+   * Informations de Livraison/Retour : Bloc de texte personnalisable.
+   * Avis Clients : Intégration pour des applications d'avis (ex: Judge.me, Yotpo). Affichage des étoiles. 
+   * Paiement Accéléré : Boutons de paiement accéléré (Shop Pay, PayPal, Google Pay) activés par défaut.
+   * Disponibilité en Magasin : Option d'affichage pour le ramassage local.
+   * Versements Shop Pay : Support des versements Shop Pay.
+   * Détails line_item : Affichage des détails de l'objet line_item (titre, prix unitaire, image, prix final, quantité, options avec valeurs).
+   * Sections Dynamiques : Possibilité d'ajouter des sections spécifiques à la page produit via l'éditeur (ex: guide des tailles, vidéo d'utilisation). Informations nutritionnelles, onglets de produits. 
+   * Produits apparentés (Sibling products): Permet de lier plusieurs produits comme options pour l'utilisateur final, sous forme de curseur de vignettes de produits, configuré via des métachamps. 
+   * Élément escamotable (Collapsible item): Affiche des informations supplémentaires sur le produit à l'aide d'onglets extensibles ou de tiroirs. 
+   * Badges de produits. 
+   * Compteur de stock. 
+   * Badges de confiance. 
+     3.3. Page Collection (collection.json)
+ * Description : Affichage des produits d'une collection.
+ * Fonctionnalités Clés :
+   * En-tête de Collection : Affichage du titre, description, image de collection (facultatif).
+   * Grille de Produits : Mise en page flexible (2, 3, 4 colonnes), responsive. Espacement de la grille configurable. 
+   * Options de Tri : Par défaut, prix (croissant/décroissant), alphabétique (A-Z/Z-A), nouveauté.
+   * Filtres : Filtrage par balises, prix, disponibilité, variantes (taille, couleur). Filtres par échantillons de couleur. 
+   * Pagination / Chargement infini. Défilement infini (Infinite scroll) avec corrections récentes. 
+     3.4. Page Panier (cart.json)
+ * Description : Vue récapitulative du panier avant le paiement.
+ * Fonctionnalités Clés :
+   * Liste des articles avec image, nom, quantité, prix unitaire, sous-total.
+   * Possibilité de modifier les quantités ou de supprimer des articles.
+   * Zone pour les notes de commande (Cart notes).
+   * Intégration des réductions automatiques.
+   * Support des plans de vente (Selling plans) si applicable (ex: abonnements).
+   * Bouton(s) de paiement clair(s).
+   * Options de paiement accéléré (Shop Pay, etc.).
+   * Panier coulissant (Slide-out cart). 
+   * Panier fixe (Sticky cart). 
+   * Précommande. 
+   * Achat rapide (Quick buy). 
+     3.5. Autres Templates Essentiels
+ * Blog (blog.json) : Liste des articles de blog. Espacement de la grille configurable. 
+ * Article (article.json) : Affichage d'un article de blog complet avec commentaires et date de publication. Le titre doit être non tronqué et lié à l'URL de l'article. L'image et l'extrait ou le contenu doivent être affichés.
+ * Page (page.json) : Template par défaut pour les pages statiques (À propos, Contact, FAQ). Doit inclure page.title et page.content. Page FAQ dédiée. 
+ * Recherche (search.json) : Affichage des résultats de recherche avec fonctionnalité de recherche prédictive. Recherche améliorée. 
+ * 404 (404.json) : Page d'erreur personnalisée.
+ * Client (customers/*.json) : Pages de compte client (connexion, inscription, adresses, commandes).
+ * Mot de passe (password.json) : Page de protection par mot de passe, affichant le logo ou shop.name et shop.password_message, avec un moyen d'entrer le mot de passe.
+ * Carte cadeau (gift_card.json) : Template pour les cartes cadeaux.
+ * Personnalisation du Thème (Paramètres Shopify Admin)
+   Ce chapitre décrit les options disponibles pour le marchand via l'éditeur de thème de Shopify. Les paramètres doivent être clairement organisés et utiliser un langage simple.
+   4.1. Paramètres de Thème Globaux (config/settings_schema.json)
+ * Couleurs : Options pour toutes les couleurs définies dans la palette (primaire, secondaire, texte, fond, etc.). Arrière-plans, boutons, texte. 
+ * Typographie : Sélecteurs de polices (avec option de polices Google ou Shopify Fonts). Pour les titres et le corps de texte. 
+ * Disposition : Largeur maximale du site, espacement par défaut. Largeur maximale du site (contenu), espacement par défaut (Grid gap), largeur de section (Contained/Full width), couleur de l'espace blanc, ombre de la zone de contenu principale. 
+ * En-tête et Pied de Page : Options pour le logo, le menu (support des menus multi-niveaux ), les icônes de médias sociaux. Options pour le logo (taille, alignement), le menu (support des menus multi-niveaux, méga menu), les icônes de médias sociaux, les icônes de paiement, les couleurs. 
+ * Icônes Favicon : Téléchargement d'image.
+ * Médias Sociaux : Liens vers les plateformes (Facebook, Instagram, Twitter, Pinterest, etc.).
+ * Checkout : Paramètres de style du checkout (logo, couleurs, typographie) si le thème peut les influencer.
+ * Toggle de données structurées de produit. 
+   4.2. Options de Section et de Bloc
+ * Chaque section et bloc doit avoir des paramètres clairs et intuitifs dans l'éditeur de thème.
+ * Types de Paramètres : texte, texte riche, image, vidéo, collections, produits, nombres, sélecteurs, cases à cocher, etc.
+ * Organisation : Utilisation de groupes de paramètres (schemas) logiques pour faciliter la gestion du contenu.
+ * Flexibilité Prévisible : Les actions du marchand doivent mener à des résultats attendus. Éviter les "paramètres magiques" qui enlèvent le contrôle.
+ * Exigences Techniques et Développement
+   5.1. Architecture et Langages
+ * HTML5 : Sémantique et valide.
+ * CSS : Utilisation de SCSS pour la structure et la maintenabilité. Préférer les variables CSS.
+ * JavaScript : Vanilla JS ou framework léger (ex: Alpine.js ou équivalent). Minimiser le JS côté client.
+ * Liquid : Utilisation des dernières fonctionnalités de Liquid, respect des conventions de nommage.
+ * Structure de Thème : Respecter la structure Shopify OS 2.0 (utilisation intensive des sections avec des templates JSON, des blocs, et des snippets bien organisés).
+   5.2. Outils de Développement
+ * Shopify CLI : Obligatoire pour le développement local et le déploiement.
+ * Contrôle de Version : Git avec dépôt GitHub ([Lien vers le dépôt GitHub si connu]).
+   * Branche principale : main ou master.
+   * Workflow : feature branches, pull requests, code reviews.
+ * IDE : Visual Studio Code (avec extensions Liquid, Shopify Theme Check).
+ * Shopify Theme Check : Utilisation de l'outil pour déboguer le thème et assurer la conformité avec les normes de codage.
+   5.3. Performance et Qualité du Code
+ * Linting : Application de linters (ex: ESLint, Prettier) pour CSS, JS, Liquid.
+ * Minification : Automatisation de la minification des fichiers CSS/JS.
+ * Commentaires : Code clair et bien commenté.
+ * Modularité : Réutilisation maximale des snippets et des sections pour la scalabilité et la performance.
+ * Ignorer les fichiers : Exclure config/settings_data.json et les fichiers auto-générés du contrôle de version.
+   5.4. Intégration Shopify
+ * API Storefront : Si des interactions côté client avancées sont nécessaires.
+ * API Admin : Pour la gestion du thème via GitHub.
+ * Gestion des Assets : Utilisation de l'API des assets de Shopify pour les images, CSS, JS.
+ * Objets Globaux : Stocker les valeurs rendues par le backend Shopify dans un objet commun au sein de l'objet global window (ex: window.MY_STORE.allProducts) plutôt que des variables globales.
+ * Workflow de Développement et Déploiement
+   6.1. Développement Local
+ * Commencer avec le thème de référence Shopify Dawn comme base.
+ * Utiliser shopify theme dev pour le développement en temps réel avec hot-reloading.
+ * Accès à une boutique de développement Shopify pour les tests.
+   6.2. Intégration GitHub
+ * Le thème sera connecté à un dépôt GitHub ([Lien vers le futur dépôt du thème]).
+ * Les modifications poussées vers la branche main (ou une branche configurée) du dépôt GitHub déclencheront le déploiement vers le thème Shopify via l'intégration native de Shopify.
+ * Branche de Développement : develop (ou dev) pour les fonctionnalités en cours.
+ * Branche de Production : main pour les versions stables déployées sur la boutique live.
+   6.3. Processus de Tests
+ * Tests Manuels : Test sur différents navigateurs (Chrome, Firefox, Safari, Edge) et appareils (desktop, tablette, mobile).
+ * Tests Automatisés : Si applicable (ex: tests d'intégration légers pour des fonctionnalités JS complexes).
+ * Validation des Paramètres Thème : Vérifier que toutes les options fonctionnent correctement dans l'éditeur.
+ * Vérification des Exigences Shopify Theme Store : Tester rigoureusement le thème pour s'assurer qu'il répond à toutes les exigences de Shopify avant toute soumission.
+ * Critères d'Acceptation et Métriques de Succès
+   7.1. Critères d'Acceptation Généraux
+ * Toutes les fonctionnalités décrites dans la section 3 sont implémentées et fonctionnent comme attendu.
+ * Le thème est entièrement personnalisable via l'éditeur Shopify (section 4).
+ * Respect des objectifs de design et UX (section 2).
+ * Le code est propre, bien structuré et conforme aux standards (section 5).
+ * Le thème est responsive et s'affiche correctement sur tous les appareils.
+ * Le thème est accessible selon les directives WCAG 2.1 AA.
+ * Les performances (scores Lighthouse) sont atteintes.
+ * Le thème est substantiellement différent des thèmes existants et offre des options de personnalisation uniques.
+   7.2. Métriques de Succès (KPIs)
+ * Score Lighthouse de performance supérieur à 90 sur mobile et desktop. 
+ * Taux de rebond réduit de X% par rapport aux thèmes précédents. 
+ * Augmentation du temps moyen passé sur le site de X%. 
+ * Augmentation du taux de conversion de X%. 
+ * Nombre de téléchargements/installations du thème (cible: X par mois/an).
+ * Contraintes et Hypothèses
+   8.1. Contraintes
+ * Budget : (À définir)
+ * Délais : Première version livrable en 6 semaines (MVP). Version complète en 12 semaines.
+ * Dépendances : Dépendance aux API et fonctionnalités de la plateforme Shopify.
+ * Compatibilité : Compatible avec la dernière version de Shopify Online Store 2.0.
+ * Ressources : (À définir)
+   8.2. Hypothèses
+ * Le thème sera acquis via la boutique officielle de thèmes Shopify pour garantir les mises à jour et le support. 
+ * Les images téléchargées par le marchand seront optimisées pour le web (ou un processus d'optimisation sera mis en place).
+ * Les marchands utiliseront les métachamps pour la configuration avancée des produits apparentés et des fils d'Ariane. 
+ * Les traductions pour l'UE (EN, FR, IT, DE, ES) seront maintenues à jour. 
+ * Glossaire / Définitions (AI-Friendly)
+ * PRD : Product Requirements Document - Document de spécifications produit.
+ * UX : User Experience - Expérience utilisateur.
+ * UI : User Interface - Interface utilisateur.
+ * CTA : Call To Action - Appel à l'action.
+ * Liquid : Langage de templating open-source de Shopify.
+ * OS 2.0 : Online Store 2.0 - Architecture moderne des thèmes Shopify, permettant les sections dynamiques sur toutes les pages.
+ * Shopify CLI : Command Line Interface - Outil en ligne de commande de Shopify pour les développeurs.
+ * WCAG : Web Content Accessibility Guidelines - Directives pour l'accessibilité du contenu web.
+ * Lighthouse : Outil d'audit open-source de Google pour évaluer les performances web, l'accessibilité, les meilleures pratiques, le SEO.
+ * Section : Module de contenu réutilisable et personnalisable dans un thème Shopify.
+ * Bloc : Élément de contenu au sein d'une section, personnalisable par le marchand.
+ * Snippet : Petit morceau de code Liquid réutilisable, invisible dans l'éditeur de thème.
+ * Asset : Fichier statique du thème (image, CSS, JavaScript).
+ * Méta-champs : Champs personnalisés pour ajouter des informations supplémentaires aux produits, collections, pages, etc.
+   Guide pour l'utilisation de ce PRD avec Taskmaster / Cursor :
+ * Remplissez les Placeholders : Parcourez le document et remplacez toutes les sections entre crochets [ ] par les détails spécifiques de votre thème. Soyez aussi précis et concis que possible.
+ * Détail et Clarté : Plus vous êtes spécifique et clair dans chaque section, moins l'IA aura à "deviner". Utilisez des listes à puces pour les fonctionnalités et les critères d'acceptation. Chaque point doit être une exigence distincte.
+ * User Stories : Formulez les exigences fonctionnelles sous forme de user stories ("En tant que [rôle], je veux [action] afin de [bénéfice]") pour que l'IA comprenne le contexte utilisateur et la valeur.
+ * Référer aux sections : Si une exigence fait référence à un design ou une fonctionnalité précédemment décrite, mentionnez la section correspondante (ex: "Voir les détails de design dans la section 2.3").
+ * Structure cohérente : Maintenez la hiérarchie des titres (H1, H2, H3, etc.) pour aider l'IA à comprendre l'organisation du document.
+ * Mots-clés Shopify : Utilisez les termes spécifiques à Shopify (Liquid, sections, blocs, OS 2.0, theme.liquid, settings_schema.json, product.json, etc.) pour guider l'IA vers les bonnes pratiques de la plateforme.
+   *.cursorrules (ou équivalent) : En complément de ce PRD, créez un fichier.cursorrules (ou un fichier de règles pour votre éditeur/outil IA) dans votre dépôt. Ce fichier peut être utilisé pour définir des règles de codage spécifiques et persistantes pour l'IA (ex: "toujours utiliser les variables CSS", "limiter le JavaScript à [x] Ko par fichier", "structurer les snippets Liquid de cette façon...", "utiliser Tailwind CSS pour le style"). Cela aide l'IA à générer du code qui respecte vos conventions et votre architecture.
+ * Itération : Ce PRD est un document vivant. Mettez-le à jour régulièrement à mesure que le projet évolue et que de nouvelles informations ou décisions sont prises.

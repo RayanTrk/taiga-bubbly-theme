@@ -1,0 +1,541 @@
+{% comment %}
+  Main Article Section
+  Displays individual blog article content with enhanced typography and social features
+{% endcomment %}
+
+{{ 'section-main-article.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-main-article.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign show_author = section.settings.show_author
+  assign show_date = section.settings.show_date
+  assign show_read_time = section.settings.show_read_time
+  assign show_tags = section.settings.show_tags
+  assign show_share_buttons = section.settings.show_share_buttons
+  assign show_related_articles = section.settings.show_related_articles
+  assign enable_comments = section.settings.enable_comments
+  assign article_style = section.settings.article_style
+-%}
+
+<article class="main-article main-article--{{ article_style }}"
+         data-main-article
+         data-article-id="{{ article.id }}"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+  
+  <div class="main-article__container page-width">
+    
+    {%- comment -%} Article Header {%- endcomment -%}
+    <header class="main-article__header">
+      
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          
+          {%- when 'title' -%}
+            <h1 class="main-article__title {{ block.settings.title_size }}"
+                itemprop="headline">
+              {{ article.title | escape }}
+            </h1>
+          
+          {%- when 'meta' -%}
+            <div class="main-article__meta">
+              
+              {%- if show_author and article.author != blank -%}
+                <div class="main-article__author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                  <span class="main-article__author-label">{{ 'blog.article.by' | t }}</span>
+                  <span class="main-article__author-name" itemprop="name">{{ article.author }}</span>
+                </div>
+              {%- endif -%}
+              
+              {%- if show_date -%}
+                <time class="main-article__date" 
+                      datetime="{{ article.published_at | date: '%Y-%m-%d' }}"
+                      itemprop="datePublished">
+                  {{ article.published_at | date: format: 'month_day_year' }}
+                </time>
+              {%- endif -%}
+              
+              {%- if show_read_time -%}
+                <div class="main-article__read-time">
+                  {%- assign word_count = article.content | strip_html | split: ' ' | size -%}
+                  {%- assign read_time = word_count | divided_by: 200 | at_least: 1 -%}
+                  <span class="main-article__read-time-text">
+                    {{ read_time }} {{ 'blog.article.min_read' | t }}
+                  </span>
+                </div>
+              {%- endif -%}
+              
+            </div>
+          
+          {%- when 'featured_image' -%}
+            {%- if article.image -%}
+              <div class="main-article__featured-image">
+                <div class="main-article__image-container main-article__image-container--{{ block.settings.image_height }}">
+                  <img class="main-article__image"
+                       src="{{ article.image | image_url: width: 1200 }}"
+                       alt="{{ article.image.alt | escape | default: article.title | escape }}"
+                       width="{{ article.image.width }}"
+                       height="{{ article.image.height }}"
+                       loading="eager"
+                       itemprop="image">
+                  
+                  {%- if block.settings.show_image_caption and article.image.alt != blank -%}
+                    <figcaption class="main-article__image-caption">
+                      {{ article.image.alt | escape }}
+                    </figcaption>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          
+          {%- when 'share_buttons' -%}
+            {%- if show_share_buttons -%}
+              <div class="main-article__share-buttons">
+                <span class="main-article__share-label">{{ 'blog.article.share' | t }}</span>
+                <div class="main-article__share-links">
+                  
+                  <a href="https://www.facebook.com/sharer.php?u={{ shop.url }}{{ article.url }}"
+                     class="main-article__share-link main-article__share-link--facebook"
+                     target="_blank"
+                     rel="noopener"
+                     aria-label="{{ 'blog.article.share_on' | t: platform: 'Facebook' }}">
+                    {%- render 'icon-facebook' -%}
+                  </a>
+                  
+                  <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}&text={{ article.title | url_encode }}"
+                     class="main-article__share-link main-article__share-link--twitter"
+                     target="_blank"
+                     rel="noopener"
+                     aria-label="{{ 'blog.article.share_on' | t: platform: 'Twitter' }}">
+                    {%- render 'icon-twitter' -%}
+                  </a>
+                  
+                  <a href="https://www.pinterest.com/pin/create/button/?url={{ shop.url }}{{ article.url }}&media={{ article.image | image_url: width: 1200 }}&description={{ article.title | url_encode }}"
+                     class="main-article__share-link main-article__share-link--pinterest"
+                     target="_blank"
+                     rel="noopener"
+                     aria-label="{{ 'blog.article.share_on' | t: platform: 'Pinterest' }}">
+                    {%- render 'icon-pinterest' -%}
+                  </a>
+                  
+                  <button class="main-article__share-link main-article__share-link--copy"
+                          data-copy-url="{{ shop.url }}{{ article.url }}"
+                          aria-label="{{ 'blog.article.copy_link' | t }}">
+                    {%- render 'icon-link' -%}
+                  </button>
+                  
+                </div>
+              </div>
+            {%- endif -%}
+          
+        {%- endcase -%}
+      {%- endfor -%}
+      
+    </header>
+    
+    {%- comment -%} Article Content {%- endcomment -%}
+    <div class="main-article__content" itemprop="articleBody">
+      {{ article.content }}
+    </div>
+    
+    {%- comment -%} Article Footer {%- endcomment -%}
+    <footer class="main-article__footer">
+      
+      {%- if show_tags and article.tags.size > 0 -%}
+        <div class="main-article__tags">
+          <span class="main-article__tags-label">{{ 'blog.article.tags' | t }}:</span>
+          <div class="main-article__tags-list">
+            {%- for tag in article.tags -%}
+              <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+                 class="main-article__tag">
+                {{ tag }}
+              </a>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+      {%- if show_share_buttons -%}
+        <div class="main-article__share-footer">
+          <span class="main-article__share-label">{{ 'blog.article.share_this_article' | t }}</span>
+          <div class="main-article__share-links">
+            
+            <a href="https://www.facebook.com/sharer.php?u={{ shop.url }}{{ article.url }}"
+               class="main-article__share-link main-article__share-link--facebook"
+               target="_blank"
+               rel="noopener">
+              {%- render 'icon-facebook' -%}
+              <span>Facebook</span>
+            </a>
+            
+            <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}&text={{ article.title | url_encode }}"
+               class="main-article__share-link main-article__share-link--twitter"
+               target="_blank"
+               rel="noopener">
+              {%- render 'icon-twitter' -%}
+              <span>Twitter</span>
+            </a>
+            
+            <a href="https://www.pinterest.com/pin/create/button/?url={{ shop.url }}{{ article.url }}&media={{ article.image | image_url: width: 1200 }}&description={{ article.title | url_encode }}"
+               class="main-article__share-link main-article__share-link--pinterest"
+               target="_blank"
+               rel="noopener">
+              {%- render 'icon-pinterest' -%}
+              <span>Pinterest</span>
+            </a>
+            
+          </div>
+        </div>
+      {%- endif -%}
+      
+    </footer>
+    
+    {%- comment -%} Related Articles {%- endcomment -%}
+    {%- if show_related_articles -%}
+      <div class="main-article__related">
+        <h3 class="main-article__related-title">{{ 'blog.article.related_articles' | t }}</h3>
+        <div class="main-article__related-grid">
+          
+          {%- assign related_articles = blog.articles | where: 'id', '!=', article.id | limit: 3 -%}
+          {%- for related_article in related_articles -%}
+            <article class="main-article__related-item">
+              
+              {%- if related_article.image -%}
+                <div class="main-article__related-image">
+                  <a href="{{ related_article.url }}" tabindex="-1" aria-hidden="true">
+                    <img src="{{ related_article.image | image_url: width: 400 }}"
+                         alt="{{ related_article.image.alt | escape | default: related_article.title | escape }}"
+                         width="{{ related_article.image.width }}"
+                         height="{{ related_article.image.height }}"
+                         loading="lazy">
+                  </a>
+                </div>
+              {%- endif -%}
+              
+              <div class="main-article__related-content">
+                <h4 class="main-article__related-item-title">
+                  <a href="{{ related_article.url }}">{{ related_article.title | escape }}</a>
+                </h4>
+                
+                <div class="main-article__related-meta">
+                  <time datetime="{{ related_article.published_at | date: '%Y-%m-%d' }}">
+                    {{ related_article.published_at | date: format: 'abbreviated_date' }}
+                  </time>
+                </div>
+                
+                {%- if related_article.excerpt != blank -%}
+                  <p class="main-article__related-excerpt">
+                    {{ related_article.excerpt | strip_html | truncate: 100 }}
+                  </p>
+                {%- endif -%}
+              </div>
+              
+            </article>
+          {%- endfor -%}
+          
+        </div>
+      </div>
+    {%- endif -%}
+    
+    {%- comment -%} Comments {%- endcomment -%}
+    {%- if enable_comments and blog.moderated? == false -%}
+      <div class="main-article__comments">
+        {% paginate article.comments by 5 %}
+          
+          <h3 class="main-article__comments-title">
+            {{ 'blog.article.comments' | t: count: article.comments_count }}
+          </h3>
+          
+          {%- if article.comments_count > 0 -%}
+            <div class="main-article__comments-list">
+              {%- for comment in article.comments -%}
+                <div class="main-article__comment" id="comment-{{ comment.id }}">
+                  <div class="main-article__comment-header">
+                    <h4 class="main-article__comment-author">{{ comment.author }}</h4>
+                    <time class="main-article__comment-date" datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                      {{ comment.created_at | date: format: 'month_day_year' }}
+                    </time>
+                  </div>
+                  <div class="main-article__comment-content">
+                    {{ comment.content }}
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+            
+            {%- if paginate.pages > 1 -%}
+              <div class="main-article__comments-pagination">
+                {%- render 'pagination', paginate: paginate, anchor: 'comments' -%}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+          
+          {%- comment -%} Comment Form {%- endcomment -%}
+          <div class="main-article__comment-form">
+            {% form 'new_comment', article %}
+              
+              <h4 class="main-article__comment-form-title">{{ 'blog.article.leave_comment' | t }}</h4>
+              
+              {%- if form.errors -%}
+                <div class="main-article__comment-errors">
+                  {{ form.errors | default_errors }}
+                </div>
+              {%- endif -%}
+              
+              {%- if form.posted_successfully? -%}
+                <div class="main-article__comment-success">
+                  {{ 'blog.article.comment_posted' | t }}
+                </div>
+              {%- endif -%}
+              
+              <div class="main-article__comment-fields">
+                <div class="main-article__comment-field">
+                  <label for="comment-author">{{ 'blog.article.name' | t }} <span class="required">*</span></label>
+                  <input type="text" 
+                         id="comment-author" 
+                         name="comment[author]" 
+                         value="{{ form.author }}"
+                         required>
+                </div>
+                
+                <div class="main-article__comment-field">
+                  <label for="comment-email">{{ 'blog.article.email' | t }} <span class="required">*</span></label>
+                  <input type="email" 
+                         id="comment-email" 
+                         name="comment[email]" 
+                         value="{{ form.email }}"
+                         required>
+                </div>
+                
+                <div class="main-article__comment-field main-article__comment-field--full">
+                  <label for="comment-body">{{ 'blog.article.comment' | t }} <span class="required">*</span></label>
+                  <textarea id="comment-body" 
+                            name="comment[body]" 
+                            rows="5"
+                            required>{{ form.body }}</textarea>
+                </div>
+              </div>
+              
+              <button type="submit" class="button button--primary">
+                {{ 'blog.article.post_comment' | t }}
+              </button>
+              
+            {% endform %}
+          </div>
+          
+        {% endpaginate %}
+      </div>
+    {%- endif -%}
+    
+  </div>
+  
+  {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+  {%- if article_style == 'bubbly' -%}
+    <div class="main-article__decorative-elements" aria-hidden="true">
+      <div class="main-article__bubble main-article__bubble--1"></div>
+      <div class="main-article__bubble main-article__bubble--2"></div>
+      <div class="main-article__bubble main-article__bubble--3"></div>
+      <div class="main-article__bubble main-article__bubble--4"></div>
+    </div>
+  {%- endif -%}
+  
+  {%- comment -%} Schema markup {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ article.title | json }},
+    "author": {
+      "@type": "Person",
+      "name": {{ article.author | json }}
+    },
+    "datePublished": {{ article.published_at | date: '%Y-%m-%d' | json }},
+    "dateModified": {{ article.updated_at | date: '%Y-%m-%d' | json }},
+    "image": {{ article.image | image_url: width: 1200 | json }},
+    "publisher": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "logo": {
+        "@type": "ImageObject",
+        "url": {{ shop.brand.logo | image_url: width: 200 | json }}
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ shop.url | append: article.url | json }}
+    },
+    "description": {{ article.excerpt | strip_html | truncate: 160 | json }}
+  }
+  </script>
+  
+</article>
+
+{% schema %}
+{
+  "name": "Main Article",
+  "class": "main-article-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Article Display"
+    },
+    {
+      "type": "select",
+      "id": "article_style",
+      "label": "Article style",
+      "options": [
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_time",
+      "label": "Show estimated read time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Social Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_buttons",
+      "label": "Show share buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related_articles",
+      "label": "Show related articles",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_comments",
+      "label": "Enable comments",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "title_size",
+          "label": "Title size",
+          "options": [
+            {
+              "value": "h1",
+              "label": "Large"
+            },
+            {
+              "value": "h2",
+              "label": "Medium"
+            },
+            {
+              "value": "h3",
+              "label": "Small"
+            }
+          ],
+          "default": "h1"
+        }
+      ]
+    },
+    {
+      "type": "meta",
+      "name": "Article Meta",
+      "limit": 1
+    },
+    {
+      "type": "featured_image",
+      "name": "Featured Image",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "image_height",
+          "label": "Image height",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_image_caption",
+          "label": "Show image caption",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "share_buttons",
+      "name": "Share Buttons",
+      "limit": 1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Main Article",
+      "blocks": [
+        {
+          "type": "title"
+        },
+        {
+          "type": "meta"
+        },
+        {
+          "type": "featured_image"
+        },
+        {
+          "type": "share_buttons"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

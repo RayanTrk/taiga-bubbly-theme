@@ -1,0 +1,22 @@
+<div class="faq-section-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading | default: "faq-section.liquid" }}</h2>
+    <div class="section-content">
+      <!-- Contenu de la section -->
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "faq section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titre",
+      "default": "Titre de section"
+    }
+  ]
+}
+{% endschema %}

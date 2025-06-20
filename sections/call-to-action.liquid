@@ -1,0 +1,22 @@
+<div class="call-to-action-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading | default: "call-to-action.liquid" }}</h2>
+    <div class="section-content">
+      <!-- Contenu de la section -->
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "call to-action",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titre",
+      "default": "Titre de section"
+    }
+  ]
+}
+{% endschema %}

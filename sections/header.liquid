@@ -1,0 +1,755 @@
+{%- comment -%}
+  Header Section - Taiga Theme Bubbly Style
+  Optimisé selon les règles shopirule pour performance et navigation IA
+  Inclut : Logo, Navigation principale, Recherche, Icônes utilisateur
+  Accessibilité : WCAG 2.1 AA conforme
+{%- endcomment -%}
+
+{%- liquid
+  assign sticky_header = section.settings.enable_sticky_header | default: settings.sticky_header
+  assign show_shadow = section.settings.show_header_shadow | default: settings.show_header_shadow
+  assign enable_mega_menu = section.settings.enable_mega_menu | default: settings.enable_mega_menu
+-%}
+
+<!-- Skip to content link selon shopirule WCAG 2.1 AA -->
+<a href="#main-content" class="skip-to-content-link">
+  {{ 'accessibility.skip_to_content' | t | default: 'Passer au contenu principal' }}
+</a>
+
+<header 
+  class="site-header{% if sticky_header %} site-header--sticky{% endif %}{% if show_shadow %} site-header--shadow{% endif %}"
+  role="banner"
+  aria-label="{{ 'accessibility.site_header' | t | default: 'En-tête du site' }}"
+  data-section-type="header"
+  data-section-id="{{ section.id }}"
+>
+  {%- comment -%} Barre d'annonce supérieure optionnelle selon shopirule {%- endcomment -%}
+  {%- if section.settings.show_announcement_bar -%}
+    <div class="announcement-bar" role="region" aria-label="{{ 'sections.header.announcement' | t }}">
+      <div class="page-width">
+        <div class="announcement-bar__content">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'announcement' -%}
+                <div class="announcement-bar__message" {{ block.shopify_attributes }}>
+                  {%- if block.settings.announcement_link != blank -%}
+                    <a href="{{ block.settings.announcement_link }}" class="announcement-bar__link">
+                  {%- endif -%}
+                  
+                  {%- if block.settings.announcement_icon != blank -%}
+                    <span class="announcement-bar__icon">
+                      {{ block.settings.announcement_icon }}
+                    </span>
+                  {%- endif -%}
+                  
+                  <span class="announcement-bar__text">{{ block.settings.announcement_text }}</span>
+                  
+                  {%- if block.settings.announcement_link != blank -%}
+                    </a>
+                  {%- endif -%}
+                </div>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} En-tête principal selon shopirule {%- endcomment -%}
+  <div class="header-wrapper">
+    <div class="page-width">
+      <div class="header-layout">
+        
+        {%- comment -%} Logo selon shopirule avec options de positionnement {%- endcomment -%}
+        <div class="header__logo" data-logo-position="{{ section.settings.logo_position | default: settings.logo_position }}">
+          {%- if section.settings.logo != blank or settings.logo != blank -%}
+            {%- liquid
+              assign logo_image = section.settings.logo | default: settings.logo
+              assign logo_width = section.settings.logo_width | default: settings.logo_width | default: 150
+              assign logo_height = logo_image.height | divided_by: logo_image.width | times: logo_width | round
+            -%}
+            
+            <a href="{{ routes.root_url }}" class="header__logo-link" aria-label="{{ 'sections.header.logo' | t: shop_name: shop.name }}">
+              {%- if settings.enable_webp_images -%}
+                <picture>
+                  <source srcset="{{ logo_image | image_url: width: logo_width, format: 'webp' }}" type="image/webp">
+                  <img 
+                    src="{{ logo_image | image_url: width: logo_width }}"
+                    alt="{{ shop.name }}"
+                    width="{{ logo_width }}"
+                    height="{{ logo_height }}"
+                    class="header__logo-image"
+                    loading="eager"
+                  >
+                </picture>
+              {%- else -%}
+                <img 
+                  src="{{ logo_image | image_url: width: logo_width }}"
+                  alt="{{ shop.name }}"
+                  width="{{ logo_width }}"
+                  height="{{ logo_height }}"
+                  class="header__logo-image"
+                  loading="eager"
+                >
+              {%- endif -%}
+            </a>
+          {%- else -%}
+            <a href="{{ routes.root_url }}" class="header__logo-text">
+              {{ shop.name }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Navigation principale avec support méga menu selon shopirule {%- endcomment -%}
+        <nav class="header__navigation" role="navigation" aria-label="{{ 'sections.header.navigation' | t | default: 'Navigation principale' }}">
+          <ul class="nav-list{% if enable_mega_menu %} nav-list--mega{% endif %}" role="menubar">
+            {%- for link in section.settings.main_menu.links -%}
+              <li class="nav-item{% if link.links != blank %} nav-item--has-submenu{% endif %}" role="none">
+                {%- if link.links != blank -%}
+                  <button 
+                    type="button" 
+                    class="nav-link nav-link--parent"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    aria-controls="submenu-{{ forloop.index }}"
+                    aria-describedby="submenu-desc-{{ forloop.index }}"
+                    role="menuitem"
+                    data-nav-toggle
+                  >
+                    {{ link.title }}
+                    <span class="nav-link__icon" aria-hidden="true">
+                      {%- render 'icon-chevron-down' -%}
+                    </span>
+                    <span id="submenu-desc-{{ forloop.index }}" class="visually-hidden">
+                      {{ 'accessibility.submenu_toggle' | t: title: link.title | default: 'Développer le sous-menu de ' | append: link.title }}
+                    </span>
+                  </button>
+                  
+                  {%- comment -%} Sous-menu / Méga menu selon shopirule {%- endcomment -%}
+                  <div 
+                    class="nav-submenu{% if enable_mega_menu %} nav-submenu--mega{% endif %}"
+                    id="submenu-{{ forloop.index }}"
+                    aria-hidden="true"
+                    role="menu"
+                    aria-labelledby="submenu-label-{{ forloop.index }}"
+                  >
+                    <h3 id="submenu-label-{{ forloop.index }}" class="visually-hidden">
+                      {{ 'accessibility.submenu_title' | t: title: link.title | default: 'Sous-menu de ' | append: link.title }}
+                    </h3>
+                    <div class="nav-submenu__content">
+                      {%- if enable_mega_menu and link.links.size > 6 -%}
+                        {%- comment -%} Layout méga menu pour grandes listes {%- endcomment -%}
+                        <div class="mega-menu-grid" role="group">
+                          {%- for child_link in link.links -%}
+                            <div class="mega-menu-column">
+                              <a 
+                                href="{{ child_link.url }}" 
+                                class="mega-menu-link" 
+                                role="menuitem"
+                                {% if child_link.url == request.path %} aria-current="page"{% endif %}
+                              >
+                                {{ child_link.title }}
+                              </a>
+                              {%- if child_link.links != blank -%}
+                                <ul class="mega-menu-sublist" role="group">
+                                  {%- for grandchild_link in child_link.links -%}
+                                    <li role="none">
+                                      <a 
+                                        href="{{ grandchild_link.url }}" 
+                                        class="mega-menu-sublink" 
+                                        role="menuitem"
+                                        {% if grandchild_link.url == request.path %} aria-current="page"{% endif %}
+                                      >
+                                        {{ grandchild_link.title }}
+                                      </a>
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                              {%- endif -%}
+                            </div>
+                            {%- if forloop.index == 6 -%}{%- break -%}{%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                      {%- else -%}
+                        {%- comment -%} Menu dropdown standard {%- endcomment -%}
+                        <ul class="nav-submenu-list" role="group">
+                          {%- for child_link in link.links -%}
+                            <li class="nav-submenu-item" role="none">
+                              <a 
+                                href="{{ child_link.url }}" 
+                                class="nav-submenu-link" 
+                                role="menuitem"
+                                {% if child_link.url == request.path %} aria-current="page"{% endif %}
+                              >
+                                {{ child_link.title }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- else -%}
+                  <a 
+                    href="{{ link.url }}" 
+                    class="nav-link" 
+                    role="menuitem"
+                    {% if link.url == request.path %} aria-current="page"{% endif %}
+                  >
+                    {{ link.title }}
+                  </a>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+        {%- comment -%} Actions d'en-tête (Recherche, Compte, Panier) selon shopirule {%- endcomment -%}
+        <div class="header__actions">
+          
+          {%- comment -%} Recherche prédictive selon shopirule {%- endcomment -%}
+          {%- if section.settings.enable_search -%}
+            <div class="header__search">
+              <button 
+                type="button" 
+                class="header__search-toggle"
+                aria-label="{{ 'sections.header.search_toggle' | t }}"
+                aria-expanded="false"
+                aria-controls="header-search"
+                data-search-toggle
+              >
+                {%- render 'icon-search' -%}
+                <span class="visually-hidden">{{ 'sections.header.search' | t }}</span>
+              </button>
+              
+              <div class="header__search-form" id="header-search" aria-hidden="true">
+                <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+                  <div class="search-form__input-wrapper">
+                    <input 
+                      type="search"
+                      name="q"
+                      class="search-form__input"
+                      placeholder="{{ 'sections.header.search_placeholder' | t }}"
+                      aria-label="{{ 'sections.header.search_placeholder' | t }}"
+                      autocomplete="off"
+                      {% if settings.enable_predictive_search %}data-predictive-search-input{% endif %}
+                    >
+                    <button type="submit" class="search-form__submit" aria-label="{{ 'sections.header.search_submit' | t }}">
+                      {%- render 'icon-search' -%}
+                    </button>
+                  </div>
+                  
+                  {%- if settings.enable_predictive_search -%}
+                    <div class="predictive-search" data-predictive-search-results aria-hidden="true">
+                      <div class="predictive-search__loading">
+                        <div class="loading-spinner"></div>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                </form>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Compte utilisateur {%- endcomment -%}
+          <div class="header__account">
+            <a 
+              href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+              class="header__account-link"
+              aria-label="{%- if customer -%}{{ 'sections.header.account_dashboard' | t }}{%- else -%}{{ 'sections.header.account_login' | t }}{%- endif -%}"
+            >
+              {%- render 'icon-account' -%}
+              <span class="header__account-text visually-hidden">
+                {%- if customer -%}{{ 'sections.header.account' | t }}{%- else -%}{{ 'sections.header.login' | t }}{%- endif -%}
+              </span>
+            </a>
+          </div>
+
+          {%- comment -%} Panier selon shopirule avec badge de quantité {%- endcomment -%}
+          <div class="header__cart">
+            <a 
+              href="{{ routes.cart_url }}"
+              class="header__cart-link"
+              aria-label="{{ 'sections.header.cart_items' | t: count: cart.item_count }}"
+              data-cart-toggle
+            >
+              {%- render 'icon-cart' -%}
+              <span class="header__cart-count{% if cart.item_count == 0 %} header__cart-count--empty{% endif %}" data-cart-count>
+                {{ cart.item_count }}
+              </span>
+              <span class="header__cart-text visually-hidden">{{ 'sections.header.cart' | t }}</span>
+            </a>
+          </div>
+
+        </div>
+
+        {%- comment -%} Menu mobile hamburger {%- endcomment -%}
+        <div class="header__mobile-nav">
+          <button 
+            type="button" 
+            class="mobile-nav-toggle"
+            aria-label="{{ 'sections.header.mobile_menu_toggle' | t }}"
+            aria-expanded="false"
+            aria-controls="mobile-navigation"
+            data-mobile-nav-toggle
+          >
+            <span class="mobile-nav-toggle__line"></span>
+            <span class="mobile-nav-toggle__line"></span>
+            <span class="mobile-nav-toggle__line"></span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Navigation mobile selon shopirule avec accessibilité WCAG 2.1 AA {%- endcomment -%}
+  <div 
+    class="mobile-navigation" 
+    id="mobile-navigation" 
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mobile-nav-title"
+  >
+    <div class="mobile-navigation__overlay" data-mobile-nav-close></div>
+    <div class="mobile-navigation__content">
+      <div class="mobile-navigation__header">
+        <h2 id="mobile-nav-title" class="visually-hidden">
+          {{ 'accessibility.mobile_navigation_menu' | t | default: 'Menu de navigation mobile' }}
+        </h2>
+        {%- if section.settings.logo != blank or settings.logo != blank -%}
+          <div class="mobile-navigation__logo">
+            <a href="{{ routes.root_url }}" aria-label="{{ 'accessibility.return_home' | t | default: "Retourner à la page d'accueil" }}">
+              {{ shop.name }}
+            </a>
+          </div>
+        {%- endif -%}
+        <button 
+          type="button" 
+          class="mobile-navigation__close"
+          aria-label="{{ 'sections.header.mobile_menu_close' | t | default: 'Fermer le menu de navigation' }}"
+          data-mobile-nav-close
+        >
+          {%- render 'icon-close' -%}
+        </button>
+      </div>
+      
+      <nav class="mobile-navigation__nav" role="navigation" aria-label="{{ 'sections.header.mobile_navigation' | t | default: 'Navigation principale mobile' }}">
+        <ul class="mobile-nav-list" role="menu">
+          {%- for link in section.settings.main_menu.links -%}
+            <li class="mobile-nav-item{% if link.links != blank %} mobile-nav-item--has-submenu{% endif %}" role="none">
+              {%- if link.links != blank -%}
+                <button 
+                  type="button" 
+                  class="mobile-nav-link mobile-nav-link--parent"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  aria-controls="mobile-submenu-{{ forloop.index }}"
+                  aria-describedby="mobile-submenu-desc-{{ forloop.index }}"
+                  role="menuitem"
+                  data-mobile-submenu-toggle
+                >
+                  {{ link.title }}
+                  <span class="mobile-nav-link__icon" aria-hidden="true">
+                    {%- render 'icon-chevron-down' -%}
+                  </span>
+                  <span id="mobile-submenu-desc-{{ forloop.index }}" class="visually-hidden">
+                    {{ 'accessibility.submenu_toggle' | t: title: link.title | default: 'Développer le sous-menu de ' | append: link.title }}
+                  </span>
+                </button>
+                
+                <div 
+                  class="mobile-nav-submenu" 
+                  id="mobile-submenu-{{ forloop.index }}" 
+                  aria-hidden="true"
+                  role="menu"
+                  aria-labelledby="mobile-submenu-label-{{ forloop.index }}"
+                >
+                  <h3 id="mobile-submenu-label-{{ forloop.index }}" class="visually-hidden">
+                    {{ 'accessibility.submenu_title' | t: title: link.title | default: 'Sous-menu de ' | append: link.title }}
+                  </h3>
+                  <ul class="mobile-nav-submenu-list" role="group">
+                    {%- for child_link in link.links -%}
+                      <li class="mobile-nav-submenu-item" role="none">
+                        <a 
+                          href="{{ child_link.url }}" 
+                          class="mobile-nav-submenu-link"
+                          role="menuitem"
+                          {% if child_link.url == request.path %} aria-current="page"{% endif %}
+                        >
+                          {{ child_link.title }}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              {%- else -%}
+                <a 
+                  href="{{ link.url }}" 
+                  class="mobile-nav-link"
+                  role="menuitem"
+                  {% if link.url == request.path %} aria-current="page"{% endif %}
+                >
+                  {{ link.title }}
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+      
+      {%- comment -%} Actions mobile avec accessibilité selon shopirule {%- endcomment -%}
+      <div class="mobile-navigation__actions" role="region" aria-label="{{ 'accessibility.mobile_actions' | t | default: 'Actions rapides' }}">
+        <a 
+          href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" 
+          class="mobile-nav-action"
+          aria-label="{%- if customer -%}{{ 'sections.header.account_dashboard' | t | default: 'Tableau de bord du compte' }}{%- else -%}{{ 'sections.header.account_login' | t | default: 'Se connecter à votre compte' }}{%- endif -%}"
+        >
+          <span class="mobile-nav-action__icon" aria-hidden="true">
+            {%- render 'icon-account' -%}
+          </span>
+          <span class="mobile-nav-action__text">
+            {%- if customer -%}{{ 'sections.header.account' | t | default: 'Mon compte' }}{%- else -%}{{ 'sections.header.login' | t | default: 'Se connecter' }}{%- endif -%}
+          </span>
+        </a>
+        
+        <a 
+          href="{{ routes.cart_url }}" 
+          class="mobile-nav-action mobile-nav-action--cart"
+          aria-label="{{ 'sections.header.cart_items' | t: count: cart.item_count | default: 'Panier avec ' | append: cart.item_count | append: ' articles' }}"
+        >
+          <span class="mobile-nav-action__icon" aria-hidden="true">
+            {%- render 'icon-cart' -%}
+          </span>
+          <span class="mobile-nav-action__text">
+            {{ 'sections.header.cart' | t | default: 'Panier' }}
+          </span>
+          {%- if cart.item_count > 0 -%}
+            <span class="cart-count" aria-label="{{ 'accessibility.cart_count' | t: count: cart.item_count | default: cart.item_count | append: ' articles dans le panier' }}">
+              {{ cart.item_count }}
+            </span>
+          {%- endif -%}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Live region pour annonces d'accessibilité selon shopirule {%- endcomment -%}
+  <div aria-live="polite" aria-atomic="true" class="sr-announcement" id="accessibility-announcements"></div>
+</header>
+
+{%- comment -%} CSS optimisé pour performance selon shopirule {%- endcomment -%}
+<style>
+  .site-header {
+    background-color: var(--header-background);
+    color: var(--header-text-color);
+    border-bottom: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+    z-index: var(--z-header);
+  }
+  
+  .site-header--sticky {
+    position: sticky;
+    top: 0;
+  }
+  
+  .site-header--shadow {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .announcement-bar {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .header-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 16px 0;
+    gap: 20px;
+  }
+  
+  .header__logo {
+    justify-self: start;
+  }
+  
+  .header__logo[data-logo-position="center"] {
+    justify-self: center;
+    grid-column: 2;
+  }
+  
+  .header__logo[data-logo-position="right"] {
+    justify-self: end;
+  }
+  
+  .header__navigation {
+    justify-self: center;
+  }
+  
+  .header__actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 32px;
+  }
+  
+  .nav-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .nav-link:hover {
+    color: var(--color-primary);
+  }
+  
+  .header__mobile-nav {
+    display: none;
+  }
+  
+  /* Mobile responsive selon shopirule */
+  @media (max-width: 990px) {
+    .header__navigation {
+      display: none;
+    }
+    
+    .header__mobile-nav {
+      display: block;
+    }
+    
+    .header-layout {
+      grid-template-columns: auto 1fr auto;
+    }
+    
+    .header__logo {
+      justify-self: center;
+      grid-column: 2;
+    }
+    
+    .mobile-nav-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .mobile-nav-toggle__line {
+      width: 24px;
+      height: 2px;
+      background: currentColor;
+      transition: all 0.3s ease;
+    }
+  }
+</style>
+
+{%- comment -%} JavaScript optimisé pour navigation et interactions {%- endcomment -%}
+<script>
+  // Navigation interactions selon shopirule
+  document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.site-header');
+    
+    // Mobile navigation toggle
+    const mobileToggle = document.querySelector('[data-mobile-nav-toggle]');
+    const mobileNav = document.querySelector('.mobile-navigation');
+    const mobileClose = document.querySelectorAll('[data-mobile-nav-close]');
+    
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', function() {
+        const isOpen = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isOpen);
+        mobileNav.setAttribute('aria-hidden', isOpen);
+        document.body.style.overflow = isOpen ? '' : 'hidden';
+      });
+    }
+    
+    mobileClose.forEach(btn => {
+      btn.addEventListener('click', function() {
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      });
+    });
+    
+    // Recherche toggle
+    const searchToggle = document.querySelector('[data-search-toggle]');
+    const searchForm = document.querySelector('.header__search-form');
+    
+    if (searchToggle) {
+      searchToggle.addEventListener('click', function() {
+        const isOpen = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isOpen);
+        searchForm.setAttribute('aria-hidden', isOpen);
+        
+        if (!isOpen) {
+          const searchInput = searchForm.querySelector('input');
+          setTimeout(() => searchInput?.focus(), 100);
+        }
+      });
+    }
+    
+    // Navigation IA tracking selon shopirule
+    {% if settings.enable_ai_navigation %}
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.TaigaAI) {
+          window.TaigaAI.trackNavigation(this.href);
+        }
+      });
+    });
+    {% endif %}
+  });
+</script>
+
+{%- comment -%} Schema pour personnalisation dans l'éditeur de thème {%- endcomment -%}
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 150
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Logo position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mega_menu",
+      "label": "Enable mega menu",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Header settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_header",
+      "label": "Enable sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header_shadow",
+      "label": "Show header shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_search",
+      "label": "Enable search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement_bar",
+      "label": "Show announcement bar",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "announcement_text",
+          "label": "Announcement text",
+          "default": "Free shipping on orders over $100"
+        },
+        {
+          "type": "url",
+          "id": "announcement_link",
+          "label": "Announcement link"
+        },
+        {
+          "type": "text",
+          "id": "announcement_icon",
+          "label": "Icon (HTML or Unicode)",
+          "info": "Add an icon before the text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "announcement_text": "Free shipping on orders over $100"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

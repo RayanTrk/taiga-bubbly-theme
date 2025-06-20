@@ -1,0 +1,330 @@
+{{ 'section-hero-banner.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .hero-banner-{{ section.id }} {
+    {%- if section.settings.image != blank -%}
+      background-image: url('{{ section.settings.image | image_url: width: 1920 }}');
+    {%- elsif section.settings.video != blank -%}
+      background-image: url('{{ section.settings.video.preview_image | image_url: width: 1920 }}');
+    {%- endif -%}
+    min-height: {{ section.settings.height_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hero-banner-{{ section.id }} {
+      min-height: {{ section.settings.height_desktop }}px;
+    }
+  }
+
+  {%- if section.settings.overlay_opacity > 0 -%}
+    .hero-banner-{{ section.id }}::before {
+      opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    }
+  {%- endif -%}
+{%- endstyle -%}
+
+<div class="hero-banner hero-banner-{{ section.id }} section-{{ section.id }}-padding" 
+     data-hero-banner
+     role="img"
+     aria-label="{{ section.settings.heading | escape }}">
+  
+  {%- comment -%} Background Video {%- endcomment -%}
+  {%- if section.settings.video != blank -%}
+    <div class="hero-banner__media">
+      <video
+        class="hero-banner__video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="{{ section.settings.video.preview_image | image_url: width: 1920 }}"
+        data-hero-video>
+        <source src="{{ section.settings.video | video_url }}" type="video/mp4">
+        <img src="{{ section.settings.video.preview_image | image_url: width: 1920 }}" 
+             alt="{{ section.settings.heading | escape }}"
+             loading="eager">
+      </video>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Content Overlay {%- endcomment -%}
+  <div class="hero-banner__content">
+    <div class="hero-banner__inner">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero-banner__eyebrow" data-aos="fade-up" data-aos-delay="200">
+          {{ section.settings.eyebrow }}
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h1 class="hero-banner__heading" data-aos="fade-up" data-aos-delay="400">
+          {{ section.settings.heading }}
+        </h1>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <div class="hero-banner__subheading" data-aos="fade-up" data-aos-delay="600">
+          {{ section.settings.subheading }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="hero-banner__buttons" data-aos="fade-up" data-aos-delay="800">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'button' -%}
+                {%- if block.settings.button_label != blank -%}
+                  <a href="{{ block.settings.button_link }}"
+                     class="hero-banner__button button{% if block.settings.button_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
+                     {{ block.shopify_attributes }}
+                     {%- if block.settings.button_link == blank %} role="button"{% endif -%}
+                     data-hero-cta>
+                    {{ block.settings.button_label | escape }}
+                    <div class="button__bubble-effect"></div>
+                  </a>
+                {%- endif -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Scroll Down Indicator {%- endcomment -%}
+      {%- if section.settings.show_scroll_indicator -%}
+        <div class="hero-banner__scroll" data-aos="fade-up" data-aos-delay="1000">
+          <button type="button" class="hero-banner__scroll-button" aria-label="{{ 'sections.hero.scroll_down' | t }}" data-scroll-down>
+            <span class="hero-banner__scroll-text">{{ 'sections.hero.scroll_down' | t }}</span>
+            <div class="hero-banner__scroll-icon">
+              {%- render 'icon-arrow-down' -%}
+            </div>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Animated Background Elements {%- endcomment -%}
+  {%- if section.settings.show_bubbles -%}
+    <div class="hero-banner__bubbles" aria-hidden="true">
+      {%- for i in (1..6) -%}
+        <div class="bubble bubble--{{ i }}"></div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.aiNavigation !== 'undefined') {
+      const heroSection = document.querySelector('[data-hero-banner]');
+      const ctaButtons = heroSection.querySelectorAll('[data-hero-cta]');
+      
+      // Track hero section view
+      window.aiNavigation.trackEvent('hero_section_viewed', {
+        section_id: '{{ section.id }}',
+        heading: {{ section.settings.heading | json }},
+        has_video: {% if section.settings.video != blank %}true{% else %}false{% endif %},
+        cta_count: {{ section.blocks.size }},
+        timestamp: Date.now()
+      });
+
+      // Track CTA clicks
+      ctaButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+          window.aiNavigation.trackEvent('hero_cta_clicked', {
+            section_id: '{{ section.id }}',
+            button_index: index,
+            button_text: this.textContent.trim(),
+            button_url: this.getAttribute('href'),
+            timestamp: Date.now()
+          });
+        });
+      });
+
+      // Track scroll down interaction
+      const scrollButton = heroSection.querySelector('[data-scroll-down]');
+      if (scrollButton) {
+        scrollButton.addEventListener('click', function() {
+          window.aiNavigation.trackEvent('hero_scroll_clicked', {
+            section_id: '{{ section.id }}',
+            timestamp: Date.now()
+          });
+          
+          // Smooth scroll to next section
+          const nextSection = heroSection.nextElementSibling;
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    }
+  });
+</script>
+
+<script src="{{ 'section-hero-banner.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Background Video",
+      "info": "Video will take priority over image if both are selected"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "placeholder": "SPRING COLLECTION"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "BLOOMING MEADOW",
+      "placeholder": "Hero heading"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Discover our latest collection inspired by nature's beauty</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Design"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "min": 400,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop Height",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "min": 300,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Mobile Height",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bubbles",
+      "label": "Show Animated Bubbles",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show Scroll Down Indicator",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "BROWSE COLLECTION"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary",
+          "label": "Use Secondary Button Style",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner",
+      "blocks": [
+        {
+          "type": "button",
+          "settings": {
+            "button_label": "BROWSE COLLECTION",
+            "button_link": "/collections/all"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

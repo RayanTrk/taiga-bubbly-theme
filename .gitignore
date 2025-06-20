@@ -1,0 +1,131 @@
+# Shopify Theme Files
+config/settings_data.json
+config/settings.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+*.map
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Shopify CLI
+.shopify/
+
+# Performance monitoring
+lighthouse-results/
+performance-reports/
+
+# Temporary files
+tmp/
+temp/
+.temp/
+
+# Logs
+logs/
+*.log
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Coverage
+coverage/
+
+# SCSS source maps
+*.css.map
+
+# Editor directories and files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Fichiers temporaires
+*.zip
+temp-*/
+temp-theme-*/
+temp-shopify-*/
+temp-extract/
+
+# Fichiers de développement Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de cache
+.cache/
+.tmp/
+.temp/
+
+# Fichiers de test et rapports
+reports/
+coverage/
+.nyc_output/
+
+# Fichiers de configuration locaux
+.env
+.env.local
+.env.*.local
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.log
+
+# Scripts PowerShell temporaires
+create-shopify-*.ps1
+verif-*.ps1
+
+# Fichiers de backup
+*.bak
+*.backup
+*.old
+
+# Fichiers de build
+dist/
+build/
+out/
+
+# Configuration avec secrets/API keys
+.cursor/
+.taskmaster/
+
+# Fichiers spécifiques volumineux
+taiga-bubbly-theme.zip 

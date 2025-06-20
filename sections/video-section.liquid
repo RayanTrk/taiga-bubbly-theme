@@ -1,0 +1,345 @@
+{% comment %}
+  Video Section - Taiga Theme Bubbly Style
+  Supports YouTube, Vimeo, and self-hosted videos
+  Follows shopirule.mdc specifications
+{% endcomment %}
+
+{{ 'section-video.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign video_id = section.settings.video_url | split: '/' | last
+  assign video_type = 'self-hosted'
+  
+  if section.settings.video_url contains 'youtube.com' or section.settings.video_url contains 'youtu.be'
+    assign video_type = 'youtube'
+    if section.settings.video_url contains 'youtu.be'
+      assign video_id = section.settings.video_url | split: '/' | last
+    else
+      assign video_id = section.settings.video_url | split: 'v=' | last | split: '&' | first
+    endif
+  elsif section.settings.video_url contains 'vimeo.com'
+    assign video_type = 'vimeo'
+    assign video_id = section.settings.video_url | split: '/' | last
+  endif
+  
+  assign section_width = section.settings.section_width
+  assign video_aspect_ratio = section.settings.video_aspect_ratio
+-%}
+
+<div class="video-section video-section--{{ section_width }}{% if section.settings.enable_overlay %} video-section--overlay{% endif %}" 
+     data-section-id="{{ section.id }}"
+     data-video-type="{{ video_type }}"
+     data-video-id="{{ video_id }}"
+     data-autoplay="{{ section.settings.autoplay }}"
+     data-muted="{{ section.settings.muted }}"
+     data-loop="{{ section.settings.loop }}">
+  
+  {%- if section.settings.show_decorative_elements -%}
+    <div class="video-section__bubbles" aria-hidden="true">
+      <div class="video-section__bubble video-section__bubble--1"></div>
+      <div class="video-section__bubble video-section__bubble--2"></div>
+      <div class="video-section__bubble video-section__bubble--3"></div>
+      <div class="video-section__bubble video-section__bubble--4"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="video-section__container">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="video-section__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="video-section__heading">
+            {{ section.settings.heading | escape }}
+          </h2>
+        {%- endif -%}
+        
+        {%- if section.settings.subheading != blank -%}
+          <p class="video-section__subheading">
+            {{ section.settings.subheading | escape }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="video-section__content">
+      <div class="video-section__video-wrapper video-section__video-wrapper--{{ video_aspect_ratio }}">
+        
+        {%- if section.settings.video_url != blank -%}
+          {%- case video_type -%}
+            {%- when 'youtube' -%}
+              <div class="video-section__video video-section__video--youtube" 
+                   data-video-id="{{ video_id }}"
+                   role="img"
+                   aria-label="{{ section.settings.video_alt_text | default: 'Video' | escape }}">
+                
+                {%- if section.settings.poster_image != blank -%}
+                  <img class="video-section__poster"
+                       src="{{ section.settings.poster_image | image_url: width: 1920 }}"
+                       alt="{{ section.settings.video_alt_text | default: 'Video thumbnail' | escape }}"
+                       width="{{ section.settings.poster_image.width }}"
+                       height="{{ section.settings.poster_image.height }}"
+                       loading="lazy">
+                {%- else -%}
+                  <img class="video-section__poster"
+                       src="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg"
+                       alt="{{ section.settings.video_alt_text | default: 'Video thumbnail' | escape }}"
+                       loading="lazy">
+                {%- endif -%}
+                
+                <button class="video-section__play-button" 
+                        type="button"
+                        aria-label="Play video">
+                  <span class="video-section__play-icon">
+                    {%- render 'icon-play' -%}
+                  </span>
+                  <span class="video-section__play-text">
+                    Play Video
+                  </span>
+                </button>
+              </div>
+
+            {%- when 'vimeo' -%}
+              <div class="video-section__video video-section__video--vimeo" 
+                   data-video-id="{{ video_id }}"
+                   role="img"
+                   aria-label="{{ section.settings.video_alt_text | default: 'Video' | escape }}">
+                
+                {%- if section.settings.poster_image != blank -%}
+                  <img class="video-section__poster"
+                       src="{{ section.settings.poster_image | image_url: width: 1920 }}"
+                       alt="{{ section.settings.video_alt_text | default: 'Video thumbnail' | escape }}"
+                       width="{{ section.settings.poster_image.width }}"
+                       height="{{ section.settings.poster_image.height }}"
+                       loading="lazy">
+                {%- endif -%}
+                
+                <button class="video-section__play-button" 
+                        type="button"
+                        aria-label="Play video">
+                  <span class="video-section__play-icon">
+                    {%- render 'icon-play' -%}
+                  </span>
+                  <span class="video-section__play-text">
+                    Play Video
+                  </span>
+                </button>
+              </div>
+
+            {%- when 'self-hosted' -%}
+              {%- if section.settings.video_file != blank -%}
+                <video class="video-section__video video-section__video--self-hosted"
+                       {% if section.settings.poster_image != blank %}poster="{{ section.settings.poster_image | image_url: width: 1920 }}"{% endif %}
+                       {% if section.settings.autoplay %}autoplay{% endif %}
+                       {% if section.settings.muted %}muted{% endif %}
+                       {% if section.settings.loop %}loop{% endif %}
+                       {% if section.settings.show_controls %}controls{% endif %}
+                       preload="metadata"
+                       playsinline
+                       aria-label="{{ section.settings.video_alt_text | default: 'Video' | escape }}">
+                  <source src="{{ section.settings.video_file.url }}" type="{{ section.settings.video_file.content_type }}">
+                  <p>Your browser does not support the video tag.</p>
+                </video>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endif -%}
+
+        {%- if section.settings.enable_overlay and section.settings.overlay_text != blank -%}
+          <div class="video-section__overlay">
+            <div class="video-section__overlay-content">
+              <h3 class="video-section__overlay-title">
+                {{ section.settings.overlay_text | escape }}
+              </h3>
+              
+              {%- if section.settings.overlay_button_text != blank and section.settings.overlay_button_url != blank -%}
+                <a href="{{ section.settings.overlay_button_url }}" 
+                   class="video-section__overlay-button btn btn--primary">
+                  {{ section.settings.overlay_button_text | escape }}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.description != blank -%}
+        <div class="video-section__description">
+          {{ section.settings.description }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'section-video.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Video",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video Content"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Video URL",
+      "info": "Supports YouTube, Vimeo, or direct video file URLs"
+    },
+    {
+      "type": "file",
+      "id": "video_file",
+      "label": "Video File",
+      "accept": "video/*",
+      "info": "Upload a video file directly (MP4 recommended)"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Poster Image",
+      "info": "Custom thumbnail image for the video"
+    },
+    {
+      "type": "text",
+      "id": "video_alt_text",
+      "label": "Video Alt Text",
+      "default": "Video content"
+    },
+    {
+      "type": "header",
+      "content": "Video Settings"
+    },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        {
+          "value": "16-9",
+          "label": "16:9"
+        },
+        {
+          "value": "4-3",
+          "label": "4:3"
+        },
+        {
+          "value": "1-1",
+          "label": "1:1"
+        }
+      ],
+      "default": "16-9"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false,
+      "info": "Video will autoplay when in view"
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Muted",
+      "default": true,
+      "info": "Start video muted (required for autoplay)"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show Controls",
+      "default": true,
+      "info": "Show video controls (for self-hosted videos)"
+    },
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Video Section"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Overlay Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Enable Overlay",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "overlay_text",
+      "label": "Overlay Text"
+    },
+    {
+      "type": "text",
+      "id": "overlay_button_text",
+      "label": "Overlay Button Text"
+    },
+    {
+      "type": "url",
+      "id": "overlay_button_url",
+      "label": "Overlay Button URL"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section Width",
+      "options": [
+        {
+          "value": "contained",
+          "label": "Contained"
+        },
+        {
+          "value": "full-width",
+          "label": "Full Width"
+        }
+      ],
+      "default": "contained"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "label": "Show Decorative Bubbles",
+      "default": true,
+      "info": "Show Bubbly design elements"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video",
+      "settings": {
+        "heading": "Video Section",
+        "video_aspect_ratio": "16-9",
+        "section_width": "contained",
+        "show_decorative_elements": true
+      }
+    }
+  ]
+}
+{% endschema %} 

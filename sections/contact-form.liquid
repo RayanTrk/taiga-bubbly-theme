@@ -1,0 +1,755 @@
+{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  {% if section.settings.background_color != 'rgba(0,0,0,0)' %}
+    .contact-section-{{ section.id }} {
+      background-color: {{ section.settings.background_color }};
+    }
+  {% endif %}
+
+  {% if section.settings.text_color != 'rgba(0,0,0,0)' %}
+    .contact-section-{{ section.id }} {
+      color: {{ section.settings.text_color }};
+    }
+  {% endif %}
+{%- endstyle -%}
+
+<div class="contact-section contact-section-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient{% if section.settings.full_width %} contact-section--full-width{% endif %}">
+  <div class="page-width">
+    <div class="contact-container">
+      {% if section.settings.show_decorative_elements %}
+        <div class="contact-decorations">
+          <div class="bubble bubble--large bubble--float-1"></div>
+          <div class="bubble bubble--medium bubble--float-2"></div>
+          <div class="bubble bubble--small bubble--float-3"></div>
+          <div class="sparkle sparkle--1"></div>
+          <div class="sparkle sparkle--2"></div>
+          <div class="sparkle sparkle--3"></div>
+        </div>
+      {% endif %}
+
+      {% if section.settings.heading != blank or section.settings.subheading != blank %}
+        <div class="contact-header">
+          {% if section.settings.heading != blank %}
+            <h2 class="contact-heading h1">
+              {{ section.settings.heading }}
+              {% if section.settings.show_emoji %}
+                <span class="contact-emoji">{{ section.settings.emoji | default: '💬' }}</span>
+              {% endif %}
+            </h2>
+          {% endif %}
+
+          {% if section.settings.subheading != blank %}
+            <div class="contact-subheading">
+              {{ section.settings.subheading | escape }}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="contact-content">
+        <div class="contact-form-wrapper">
+          {% form 'contact', id: 'contact-form', class: 'contact-form', data-contact-form: '' %}
+            {% if form.posted_successfully? %}
+              <div class="contact-form-success" role="status">
+                <div class="success-icon">{% render 'icon-check-circle' %}</div>
+                <div class="success-message">
+                  {{ section.settings.success_message | default: "Thank you for your message! We'll get back to you soon." }}
+                </div>
+              </div>
+            {% endif %}
+
+            {% if form.errors %}
+              <div class="contact-form-errors" role="alert">
+                <div class="error-icon">{% render 'icon-alert-circle' %}</div>
+                <div class="error-message">
+                  <h3>{{ 'templates.contact.form.error_heading' | t }}</h3>
+                  <ul>
+                    {% for field in form.errors %}
+                      <li>
+                        {% if field == 'form' %}
+                          {{ form.errors.messages[field] }}
+                        {% else %}
+                          {{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="contact-form-fields">
+              <div class="field-row">
+                <div class="field">
+                  <input
+                    id="contact-name-{{ section.id }}"
+                    type="text"
+                    name="contact[name]"
+                    class="field__input"
+                    autocomplete="name"
+                    placeholder="{{ section.settings.name_placeholder | default: 'Your name' }}"
+                    value="{% if form.name %}{{ form.name }}{% endif %}"
+                    required
+                    aria-describedby="contact-name-error-{{ section.id }}"
+                  >
+                  <label for="contact-name-{{ section.id }}" class="field__label">
+                    {{ section.settings.name_placeholder | default: 'Your name' }}
+                    <span class="required">*</span>
+                  </label>
+                  <div id="contact-name-error-{{ section.id }}" class="field__error" role="alert"></div>
+                </div>
+
+                <div class="field">
+                  <input
+                    id="contact-email-{{ section.id }}"
+                    type="email"
+                    name="contact[email]"
+                    class="field__input"
+                    autocomplete="email"
+                    placeholder="{{ section.settings.email_placeholder | default: 'Your email' }}"
+                    value="{% if form.email %}{{ form.email }}{% endif %}"
+                    required
+                    aria-describedby="contact-email-error-{{ section.id }}"
+                  >
+                  <label for="contact-email-{{ section.id }}" class="field__label">
+                    {{ section.settings.email_placeholder | default: 'Your email' }}
+                    <span class="required">*</span>
+                  </label>
+                  <div id="contact-email-error-{{ section.id }}" class="field__error" role="alert"></div>
+                </div>
+              </div>
+
+              {% if section.settings.show_phone_field %}
+                <div class="field">
+                  <input
+                    id="contact-phone-{{ section.id }}"
+                    type="tel"
+                    name="contact[phone]"
+                    class="field__input"
+                    autocomplete="tel"
+                    placeholder="{{ section.settings.phone_placeholder | default: 'Phone number (optional)' }}"
+                    value="{% if form.phone %}{{ form.phone }}{% endif %}"
+                    {% if section.settings.phone_required %}required{% endif %}
+                    aria-describedby="contact-phone-error-{{ section.id }}"
+                  >
+                  <label for="contact-phone-{{ section.id }}" class="field__label">
+                    {{ section.settings.phone_placeholder | default: 'Phone number (optional)' }}
+                    {% if section.settings.phone_required %}<span class="required">*</span>{% endif %}
+                  </label>
+                  <div id="contact-phone-error-{{ section.id }}" class="field__error" role="alert"></div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_subject_field %}
+                <div class="field">
+                  <input
+                    id="contact-subject-{{ section.id }}"
+                    type="text"
+                    name="contact[subject]"
+                    class="field__input"
+                    placeholder="{{ section.settings.subject_placeholder | default: 'Subject' }}"
+                    value="{% if form.subject %}{{ form.subject }}{% endif %}"
+                    {% if section.settings.subject_required %}required{% endif %}
+                    aria-describedby="contact-subject-error-{{ section.id }}"
+                  >
+                  <label for="contact-subject-{{ section.id }}" class="field__label">
+                    {{ section.settings.subject_placeholder | default: 'Subject' }}
+                    {% if section.settings.subject_required %}<span class="required">*</span>{% endif %}
+                  </label>
+                  <div id="contact-subject-error-{{ section.id }}" class="field__error" role="alert"></div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_inquiry_type %}
+                <div class="field field--select">
+                  <select
+                    id="contact-inquiry-{{ section.id }}"
+                    name="contact[inquiry_type]"
+                    class="field__input field__select"
+                    {% if section.settings.inquiry_required %}required{% endif %}
+                    aria-describedby="contact-inquiry-error-{{ section.id }}"
+                  >
+                    <option value="">{{ section.settings.inquiry_placeholder | default: 'Select inquiry type' }}</option>
+                    {% for i in (1..6) %}
+                      {% assign inquiry_key = 'inquiry_option_' | append: i %}
+                      {% assign inquiry_value = section.settings[inquiry_key] %}
+                      {% if inquiry_value != blank %}
+                        <option value="{{ inquiry_value }}" {% if form.inquiry_type == inquiry_value %}selected{% endif %}>
+                          {{ inquiry_value }}
+                        </option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  <label for="contact-inquiry-{{ section.id }}" class="field__label field__label--select">
+                    {{ section.settings.inquiry_placeholder | default: 'Select inquiry type' }}
+                    {% if section.settings.inquiry_required %}<span class="required">*</span>{% endif %}
+                  </label>
+                  <div class="field__select-icon">{% render 'icon-caret-down' %}</div>
+                  <div id="contact-inquiry-error-{{ section.id }}" class="field__error" role="alert"></div>
+                </div>
+              {% endif %}
+
+              <div class="field field--textarea">
+                <textarea
+                  id="contact-message-{{ section.id }}"
+                  name="contact[body]"
+                  class="field__input field__textarea"
+                  placeholder="{{ section.settings.message_placeholder | default: 'Your message' }}"
+                  rows="6"
+                  required
+                  aria-describedby="contact-message-error-{{ section.id }}"
+                >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+                <label for="contact-message-{{ section.id }}" class="field__label">
+                  {{ section.settings.message_placeholder | default: 'Your message' }}
+                  <span class="required">*</span>
+                </label>
+                <div id="contact-message-error-{{ section.id }}" class="field__error" role="alert"></div>
+              </div>
+
+              {% if section.settings.show_gdpr_consent %}
+                <div class="field field--checkbox">
+                  <input
+                    type="checkbox"
+                    id="contact-consent-{{ section.id }}"
+                    name="contact[consent]"
+                    class="checkbox__input"
+                    required
+                    value="1"
+                  >
+                  <label for="contact-consent-{{ section.id }}" class="checkbox__label">
+                    <span class="checkbox__checkmark"></span>
+                    {{ section.settings.gdpr_text | default: 'I agree to the processing of my personal data' }}
+                    <span class="required">*</span>
+                  </label>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="contact-form-actions">
+              <button
+                type="submit"
+                class="button button--primary contact-submit-btn"
+                id="contact-submit-{{ section.id }}"
+              >
+                <span class="button-text">{{ section.settings.button_text | default: 'Send Message' }}</span>
+                <span class="button-spinner loading-overlay__spinner hidden" aria-hidden="true">
+                  {% render 'icon-spinner' %}
+                </span>
+              </button>
+            </div>
+          {% endform %}
+        </div>
+
+        {% if section.settings.show_contact_info %}
+          <div class="contact-info-wrapper">
+            <div class="contact-info">
+              {% if section.settings.contact_info_heading != blank %}
+                <h3 class="contact-info-heading">{{ section.settings.contact_info_heading }}</h3>
+              {% endif %}
+
+              {% if section.settings.show_address and section.settings.address != blank %}
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">{% render 'icon-map-pin' %}</div>
+                  <div class="contact-info-content">
+                    <div class="contact-info-label">{{ section.settings.address_label | default: 'Address' }}</div>
+                    <div class="contact-info-value">{{ section.settings.address | newline_to_br }}</div>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_phone and section.settings.phone != blank %}
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">{% render 'icon-phone' %}</div>
+                  <div class="contact-info-content">
+                    <div class="contact-info-label">{{ section.settings.phone_label | default: 'Phone' }}</div>
+                    <div class="contact-info-value">
+                      <a href="tel:{{ section.settings.phone | replace: ' ', '' | replace: '(', '' | replace: ')', '' | replace: '-', '' }}">
+                        {{ section.settings.phone }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_email and section.settings.contact_email != blank %}
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">{% render 'icon-mail' %}</div>
+                  <div class="contact-info-content">
+                    <div class="contact-info-label">{{ section.settings.email_label | default: 'Email' }}</div>
+                    <div class="contact-info-value">
+                      <a href="mailto:{{ section.settings.contact_email }}">
+                        {{ section.settings.contact_email }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_hours and section.settings.hours != blank %}
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">{% render 'icon-clock' %}</div>
+                  <div class="contact-info-content">
+                    <div class="contact-info-label">{{ section.settings.hours_label | default: 'Hours' }}</div>
+                    <div class="contact-info-value">{{ section.settings.hours | newline_to_br }}</div>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_social_links %}
+                <div class="contact-social-links">
+                  <div class="contact-info-label">{{ section.settings.social_label | default: 'Follow us' }}</div>
+                  <div class="social-links-list">
+                    {% if section.settings.facebook_url != blank %}
+                      <a href="{{ section.settings.facebook_url }}" class="social-link" target="_blank" rel="noopener" aria-label="Facebook">
+                        {% render 'icon-facebook' %}
+                      </a>
+                    {% endif %}
+                    {% if section.settings.twitter_url != blank %}
+                      <a href="{{ section.settings.twitter_url }}" class="social-link" target="_blank" rel="noopener" aria-label="Twitter">
+                        {% render 'icon-twitter' %}
+                      </a>
+                    {% endif %}
+                    {% if section.settings.instagram_url != blank %}
+                      <a href="{{ section.settings.instagram_url }}" class="social-link" target="_blank" rel="noopener" aria-label="Instagram">
+                        {% render 'icon-instagram' %}
+                      </a>
+                    {% endif %}
+                    {% if section.settings.linkedin_url != blank %}
+                      <a href="{{ section.settings.linkedin_url }}" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        {% render 'icon-linkedin' %}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+
+            {% if section.settings.show_map and section.settings.map_address != blank %}
+              <div class="contact-map">
+                <div class="map-container">
+                  <iframe
+                    src="https://www.google.com/maps/embed/v1/place?key={{ section.settings.google_maps_api_key }}&q={{ section.settings.map_address | url_encode }}"
+                    width="100%"
+                    height="300"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Store location map"
+                  ></iframe>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'section-contact-form.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Get in Touch",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+      "label": "Subheading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_emoji",
+      "default": true,
+      "label": "Show emoji in heading"
+    },
+    {
+      "type": "text",
+      "id": "emoji",
+      "default": "💬",
+      "label": "Emoji"
+    },
+    {
+      "type": "header",
+      "content": "Form Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "default": "Send Message",
+      "label": "Button text"
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "default": "Your name",
+      "label": "Name placeholder"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "default": "Your email",
+      "label": "Email placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone_field",
+      "default": true,
+      "label": "Show phone field"
+    },
+    {
+      "type": "text",
+      "id": "phone_placeholder",
+      "default": "Phone number (optional)",
+      "label": "Phone placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "phone_required",
+      "default": false,
+      "label": "Phone required"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subject_field",
+      "default": true,
+      "label": "Show subject field"
+    },
+    {
+      "type": "text",
+      "id": "subject_placeholder",
+      "default": "Subject",
+      "label": "Subject placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "subject_required",
+      "default": false,
+      "label": "Subject required"
+    },
+    {
+      "type": "text",
+      "id": "message_placeholder",
+      "default": "Your message",
+      "label": "Message placeholder"
+    },
+    {
+      "type": "header",
+      "content": "Inquiry Type"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_inquiry_type",
+      "default": true,
+      "label": "Show inquiry type dropdown"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_placeholder",
+      "default": "Select inquiry type",
+      "label": "Inquiry placeholder"
+    },
+    {
+      "type": "checkbox",
+      "id": "inquiry_required",
+      "default": false,
+      "label": "Inquiry type required"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_1",
+      "default": "General inquiry",
+      "label": "Inquiry option 1"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_2",
+      "default": "Product support",
+      "label": "Inquiry option 2"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_3",
+      "default": "Order status",
+      "label": "Inquiry option 3"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_4",
+      "default": "Returns & exchanges",
+      "label": "Inquiry option 4"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_5",
+      "default": "Partnership",
+      "label": "Inquiry option 5"
+    },
+    {
+      "type": "text",
+      "id": "inquiry_option_6",
+      "default": "Press & media",
+      "label": "Inquiry option 6"
+    },
+    {
+      "type": "header",
+      "content": "GDPR Compliance"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gdpr_consent",
+      "default": true,
+      "label": "Show GDPR consent checkbox"
+    },
+    {
+      "type": "text",
+      "id": "gdpr_text",
+      "default": "I agree to the processing of my personal data",
+      "label": "GDPR consent text"
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "default": "Thank you for your message! We'll get back to you soon.",
+      "label": "Success message"
+    },
+    {
+      "type": "header",
+      "content": "Contact Information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_info",
+      "default": true,
+      "label": "Show contact information"
+    },
+    {
+      "type": "text",
+      "id": "contact_info_heading",
+      "default": "Contact Information",
+      "label": "Contact info heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_address",
+      "default": true,
+      "label": "Show address"
+    },
+    {
+      "type": "text",
+      "id": "address_label",
+      "default": "Address",
+      "label": "Address label"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "default": "123 Main Street\nCity, State 12345\nCountry",
+      "label": "Address"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "default": true,
+      "label": "Show phone"
+    },
+    {
+      "type": "text",
+      "id": "phone_label",
+      "default": "Phone",
+      "label": "Phone label"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "default": "+1 (555) 123-4567",
+      "label": "Phone number"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email",
+      "default": true,
+      "label": "Show email"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "default": "Email",
+      "label": "Email label"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "default": "hello@example.com",
+      "label": "Contact email"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hours",
+      "default": true,
+      "label": "Show hours"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "default": "Hours",
+      "label": "Hours label"
+    },
+    {
+      "type": "textarea",
+      "id": "hours",
+      "default": "Monday - Friday: 9:00 AM - 6:00 PM\nSaturday: 10:00 AM - 4:00 PM\nSunday: Closed",
+      "label": "Business hours"
+    },
+    {
+      "type": "header",
+      "content": "Social Links"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_links",
+      "default": true,
+      "label": "Show social links"
+    },
+    {
+      "type": "text",
+      "id": "social_label",
+      "default": "Follow us",
+      "label": "Social links label"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "linkedin_url",
+      "label": "LinkedIn URL"
+    },
+    {
+      "type": "header",
+      "content": "Map"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "default": false,
+      "label": "Show map"
+    },
+    {
+      "type": "text",
+      "id": "map_address",
+      "default": "123 Main Street, City, State 12345",
+      "label": "Map address"
+    },
+    {
+      "type": "text",
+      "id": "google_maps_api_key",
+      "label": "Google Maps API key",
+      "info": "Required for map display"
+    },
+    {
+      "type": "header",
+      "content": "Visual Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "default": true,
+      "label": "Show decorative elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "Make section full width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Custom background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom text color"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact form"
+    }
+  ]
+}
+{% endschema %} 

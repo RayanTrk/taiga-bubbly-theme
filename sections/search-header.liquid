@@ -1,0 +1,277 @@
+{{ 'section-search-header.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign show_breadcrumbs = section.settings.show_breadcrumbs
+  assign show_search_stats = section.settings.show_search_stats
+  assign enable_live_search = section.settings.enable_live_search
+  assign search_placeholder = section.settings.search_placeholder | default: 'What are you looking for?'
+  assign background_gradient = section.settings.background_gradient
+  assign text_color = section.settings.text_color
+  assign overlay_opacity = section.settings.overlay_opacity | default: 60
+  assign enable_parallax = section.settings.enable_parallax
+  assign bubble_animation = section.settings.bubble_animation
+  assign bubble_count = section.settings.bubble_count | default: 15
+  assign bubble_colors = section.settings.bubble_colors
+  
+  assign search_terms = search.terms | escape
+  assign results_count = search.results_count
+  assign search_performed = search.performed
+-%}
+
+<div class="search-header{% if enable_parallax %} search-header--parallax{% endif %}{% if bubble_animation %} search-header--bubbles{% endif %}"
+     data-section-id="{{ section.id }}"
+     data-section-type="search-header"
+     {% if background_gradient %}style="background: {{ background_gradient }};"{% endif %}>
+  
+  {%- if bubble_animation and bubble_colors.size > 0 -%}
+    <div class="search-header__bubbles" aria-hidden="true">
+      {%- for i in (1..bubble_count) -%}
+        {%- assign color_index = forloop.index0 | modulo: bubble_colors.size -%}
+        <div class="search-header__bubble"
+             style="--bubble-color: {{ bubble_colors[color_index] }}; --bubble-delay: {{ forloop.index0 | times: 0.2 }}s; --bubble-size: {{ 20 | plus: forloop.index0 | modulo: 40 }}px;">
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+  
+  <div class="search-header__overlay" 
+       style="opacity: {{ overlay_opacity | divided_by: 100.0 }};" 
+       aria-hidden="true">
+  </div>
+  
+  <div class="search-header__container page-width">
+    {%- if show_breadcrumbs -%}
+      <nav class="search-header__breadcrumbs" role="navigation" aria-label="Breadcrumb">
+        <ol class="breadcrumbs list-unstyled" itemscope itemtype="https://schema.org/BreadcrumbList">
+          <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ routes.root_url }}" class="breadcrumbs__link" itemprop="item">
+              <span itemprop="name">{{ 'general.breadcrumbs.home' | t }}</span>
+            </a>
+            <meta itemprop="position" content="1">
+          </li>
+          <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span class="breadcrumbs__text" itemprop="name">
+              {%- if search_performed -%}
+                {{ 'general.search.results_for' | t: terms: search_terms }}
+              {%- else -%}
+                {{ 'general.search.title' | t }}
+              {%- endif -%}
+            </span>
+            <meta itemprop="position" content="2">
+          </li>
+        </ol>
+      </nav>
+    {%- endif -%}
+    
+    <div class="search-header__content"{% if text_color %} style="color: {{ text_color }};"{% endif %}>
+      <h1 class="search-header__title">
+        {%- if search_performed -%}
+          {%- if results_count == 0 -%}
+            {{ 'general.search.no_results_title' | t: terms: search_terms }}
+          {%- else -%}
+            {{ 'general.search.results_title' | t: terms: search_terms }}
+          {%- endif -%}
+        {%- else -%}
+          {{ 'general.search.title' | t }}
+        {%- endif -%}
+      </h1>
+      
+      {%- if show_search_stats and search_performed -%}
+        <div class="search-header__stats">
+          {%- if results_count == 0 -%}
+            <p class="search-header__stat">{{ 'general.search.no_results_description' | t: terms: search_terms }}</p>
+          {%- elsif results_count == 1 -%}
+            <p class="search-header__stat">{{ 'general.search.one_result' | t: terms: search_terms }}</p>
+          {%- else -%}
+            <p class="search-header__stat">{{ 'general.search.results_count' | t: count: results_count, terms: search_terms }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      
+      <div class="search-header__form">
+        <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+          <div class="search-form__wrapper">
+            <label for="search-header-input" class="search-form__label visually-hidden">
+              {{ 'general.search.placeholder' | t }}
+            </label>
+            <input type="search"
+                   id="search-header-input"
+                   class="search-form__input"
+                   name="q"
+                   value="{{ search_terms }}"
+                   placeholder="{{ search_placeholder }}"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   {% if enable_live_search %}data-live-search{% endif %}
+                   aria-describedby="search-header-description">
+            
+            <button type="submit" class="search-form__submit" aria-label="{{ 'general.search.submit' | t }}">
+              {% render 'icon-search' %}
+              <span class="search-form__submit-text">{{ 'general.search.submit' | t }}</span>
+            </button>
+            
+            {%- if search_terms != blank -%}
+              <button type="button" class="search-form__clear" aria-label="{{ 'general.search.clear' | t }}" data-search-clear>
+                {% render 'icon-close' %}
+              </button>
+            {%- endif -%}
+          </div>
+          
+          {%- if enable_live_search -%}
+            <div class="search-form__suggestions" id="search-suggestions" aria-live="polite" aria-label="{{ 'general.search.suggestions' | t }}">
+              <!-- Live search suggestions will be populated here -->
+            </div>
+          {%- endif -%}
+        </form>
+        
+        <div id="search-header-description" class="search-form__description visually-hidden">
+          {{ 'general.search.description' | t }}
+        </div>
+      </div>
+      
+      {%- if search_performed and results_count > 0 -%}
+        <div class="search-header__actions">
+          <button type="button" class="search-header__filter-toggle btn btn--secondary" data-filter-toggle aria-expanded="false">
+            {% render 'icon-filter' %}
+            <span>{{ 'general.search.filters' | t }}</span>
+            <span class="search-header__filter-count" data-filter-count></span>
+          </button>
+          
+          <div class="search-header__view-toggle">
+            <button type="button" class="search-header__view-btn" data-view="grid" aria-label="{{ 'general.search.grid_view' | t }}">
+              {% render 'icon-grid' %}
+            </button>
+            <button type="button" class="search-header__view-btn" data-view="list" aria-label="{{ 'general.search.list_view' | t }}">
+              {% render 'icon-list' %}
+            </button>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- if enable_live_search -%}
+  <script src="{{ 'section-search-header.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": "{{ shop.url }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+{% schema %}
+{
+  "name": "Search Header",
+  "class": "section-search-header",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_stats",
+      "label": "Show search statistics",
+      "default": true,
+      "info": "Display the number of search results found"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_live_search",
+      "label": "Enable live search",
+      "default": true,
+      "info": "Show search suggestions as users type"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder text",
+      "default": "What are you looking for?",
+      "info": "Placeholder text shown in the search input"
+    },
+    {
+      "type": "header",
+      "content": "Visual Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "info": "CSS gradient for the header background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax effect",
+      "default": true,
+      "info": "Add subtle parallax scrolling effect"
+    },
+    {
+      "type": "header",
+      "content": "Bubble Animation Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "bubble_animation",
+      "label": "Enable bubble animations",
+      "default": true,
+      "info": "Show floating bubble effects in the background"
+    },
+    {
+      "type": "range",
+      "id": "bubble_count",
+      "label": "Number of bubbles",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "default": 15,
+      "info": "Number of floating bubbles to display"
+    },
+    {
+      "type": "textarea",
+      "id": "bubble_colors",
+      "label": "Bubble colors (JSON array)",
+      "default": "[\"#ff6b6b\", \"#4ecdc4\", \"#45b7d1\", \"#96ceb4\", \"#feca57\", \"#ff9ff3\", \"#54a0ff\"]",
+      "info": "Array of hex colors for bubble animations"
+    }
+  ]
+}
+{% endschema %} 

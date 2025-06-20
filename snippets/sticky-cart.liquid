@@ -1,0 +1,327 @@
+{% comment %}
+  Sticky Cart snippet - Appears after scrolling with cart summary
+  Follows Taiga theme Bubbly style with smooth animations
+{% endcomment %}
+
+{%- assign cart_count = cart.item_count -%}
+{%- assign cart_total = cart.total_price -%}
+
+<div class="sticky-cart" id="sticky-cart" {% if cart_count == 0 %}style="display: none;"{% endif %}>
+  <div class="sticky-cart__content">
+    <div class="sticky-cart__info">
+      <div class="sticky-cart__count" aria-label="{{ 'sections.cart.headings.cart_count' | t: count: cart_count }}">
+        {{ cart_count }}
+      </div>
+      
+      <div class="sticky-cart__summary">
+        <span class="sticky-cart__label">{{ 'sections.cart.headings.cart_total' | t }}</span>
+        <span class="sticky-cart__total">{{ cart_total | money }}</span>
+      </div>
+    </div>
+    
+    <div class="sticky-cart__actions">
+      <button 
+        type="button" 
+        class="sticky-cart__cart button button--secondary"
+        onclick="{% if settings.cart_type == 'drawer' %}window.cartDrawer?.open(){% else %}window.location.href='{{ routes.cart_url }}'{% endif %}"
+        aria-label="{{ 'sections.cart.headings.view_cart' | t }}"
+      >
+        {% render 'icon-cart' %}
+        <span class="sticky-cart__cart-text">{{ 'sections.cart.headings.cart' | t }}</span>
+      </button>
+      
+      <button 
+        type="button" 
+        class="sticky-cart__checkout button button--primary"
+        onclick="window.location.href='{{ routes.cart_url }}'"
+        aria-label="{{ 'sections.cart.headings.checkout' | t }}"
+      >
+        <span class="sticky-cart__checkout-text">{{ 'sections.cart.headings.checkout' | t }}</span>
+        {% render 'icon-arrow-right' %}
+      </button>
+    </div>
+  </div>
+  
+  <!-- Quick preview on hover -->
+  <div class="sticky-cart__preview" id="sticky-cart-preview">
+    <div class="sticky-cart__preview-content">
+      <div class="sticky-cart__preview-header">
+        <h3 class="sticky-cart__preview-title">{{ 'sections.cart.headings.your_cart' | t }}</h3>
+        <span class="sticky-cart__preview-count">{{ cart_count }} {{ 'sections.cart.headings.items' | t }}</span>
+      </div>
+      
+      <div class="sticky-cart__preview-items">
+        {%- for item in cart.items limit: 3 -%}
+          <div class="sticky-cart__preview-item">
+            <div class="sticky-cart__preview-image">
+              <img 
+                src="{{ item.image | image_url: width: 60 }}"
+                alt="{{ item.image.alt | escape }}"
+                width="60"
+                height="60"
+                loading="lazy"
+              >
+            </div>
+            <div class="sticky-cart__preview-details">
+              <div class="sticky-cart__preview-name">{{ item.product.title | truncate: 25 }}</div>
+              <div class="sticky-cart__preview-variant">
+                {%- unless item.product.has_only_default_variant -%}
+                  {{ item.variant.title }}
+                {%- endunless -%}
+              </div>
+              <div class="sticky-cart__preview-price">
+                {{ item.quantity }} × {{ item.price | money }}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+        
+        {%- if cart.item_count > 3 -%}
+          <div class="sticky-cart__preview-more">
+            {{ 'sections.cart.headings.and_more' | t: count: cart.item_count | minus: 3 }}
+          </div>
+        {%- endif -%}
+      </div>
+      
+      <div class="sticky-cart__preview-footer">
+        <div class="sticky-cart__preview-total">
+          <span class="sticky-cart__preview-total-label">{{ 'sections.cart.headings.subtotal' | t }}</span>
+          <span class="sticky-cart__preview-total-amount">{{ cart_total | money }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Sticky Cart Preview Styles */
+.sticky-cart__preview {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-1rem);
+  width: 32rem;
+  max-width: 90vw;
+  background: rgba(var(--color-background), 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--color-base-accent-1), 0.15);
+  border-radius: 1.5rem;
+  box-shadow: 0 2rem 4rem rgba(var(--color-base-accent-1), 0.2);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+}
+
+.sticky-cart:hover .sticky-cart__preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.sticky-cart__preview-content {
+  padding: 2rem;
+}
+
+.sticky-cart__preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(var(--color-base-accent-1), 0.1);
+}
+
+.sticky-cart__preview-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: rgb(var(--color-foreground));
+  margin: 0;
+}
+
+.sticky-cart__preview-count {
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+.sticky-cart__preview-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sticky-cart__preview-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sticky-cart__preview-image {
+  flex-shrink: 0;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  background: rgba(var(--color-base-accent-1), 0.05);
+}
+
+.sticky-cart__preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sticky-cart__preview-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.sticky-cart__preview-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgb(var(--color-foreground));
+  margin-bottom: 0.3rem;
+}
+
+.sticky-cart__preview-variant {
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+  margin-bottom: 0.3rem;
+}
+
+.sticky-cart__preview-price {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--gradient-base-accent-1);
+}
+
+.sticky-cart__preview-more {
+  text-align: center;
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+  font-style: italic;
+  padding: 0.5rem;
+}
+
+.sticky-cart__preview-footer {
+  border-top: 1px solid rgba(var(--color-base-accent-1), 0.1);
+  padding-top: 1rem;
+}
+
+.sticky-cart__preview-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sticky-cart__preview-total-label {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgb(var(--color-foreground));
+}
+
+.sticky-cart__preview-total-amount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gradient-base-accent-1);
+}
+
+/* Mobile adjustments for preview */
+@media screen and (max-width: 750px) {
+  .sticky-cart__preview {
+    width: 28rem;
+    transform: translateX(-50%) translateY(-1rem);
+  }
+  
+  .sticky-cart__preview-content {
+    padding: 1.5rem;
+  }
+  
+  .sticky-cart__preview-item {
+    gap: 0.8rem;
+  }
+  
+  .sticky-cart__preview-image {
+    width: 5rem;
+    height: 5rem;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .sticky-cart__preview {
+    transition: none;
+  }
+  
+  .sticky-cart:hover .sticky-cart__preview {
+    transform: translateX(-50%) translateY(-0.5rem);
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const stickyCart = document.getElementById('sticky-cart');
+  if (stickyCart) {
+    // Add hover interactions for better UX
+    let hoverTimeout;
+    
+    stickyCart.addEventListener('mouseenter', function() {
+      clearTimeout(hoverTimeout);
+      // Track AI navigation
+      if (window.aiNavigation) {
+        window.aiNavigation.trackEvent('sticky_cart_hover', {
+          cart_count: {{ cart_count }},
+          cart_total: {{ cart_total }},
+          timestamp: Date.now()
+        });
+      }
+    });
+    
+    stickyCart.addEventListener('mouseleave', function() {
+      hoverTimeout = setTimeout(() => {
+        // Hide preview after delay
+      }, 300);
+    });
+    
+    // Add touch support for mobile
+    stickyCart.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      stickyCart.classList.toggle('preview-visible');
+    });
+    
+    // Update cart data when cart changes
+    document.addEventListener('cart:updated', function(event) {
+      if (event.detail && event.detail.cart) {
+        updateStickyCartData(event.detail.cart);
+      }
+    });
+    
+    function updateStickyCartData(cart) {
+      const countElement = stickyCart.querySelector('.sticky-cart__count');
+      const totalElement = stickyCart.querySelector('.sticky-cart__total');
+      
+      if (countElement) {
+        countElement.textContent = cart.item_count;
+        countElement.setAttribute('aria-label', `{{ 'sections.cart.headings.cart_count' | t }}`.replace('[count]', cart.item_count));
+      }
+      
+      if (totalElement) {
+        totalElement.textContent = new Intl.NumberFormat('{{ localization.language.locale }}', {
+          style: 'currency',
+          currency: '{{ cart.currency.iso_code }}'
+        }).format(cart.total_price / 100);
+      }
+      
+      // Show/hide sticky cart based on item count
+      stickyCart.style.display = cart.item_count > 0 ? 'block' : 'none';
+      
+      // Add updated animation
+      stickyCart.classList.add('updated');
+      setTimeout(() => stickyCart.classList.remove('updated'), 300);
+    }
+  }
+});
+</script> 

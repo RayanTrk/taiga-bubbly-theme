@@ -1,0 +1,487 @@
+{{ 'section-collection-filters.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign enable_filtering = section.settings.enable_filtering
+  assign enable_sorting = section.settings.enable_sorting
+  assign filter_layout = section.settings.filter_layout
+  assign show_results_count = section.settings.show_results_count
+  assign enable_clear_filters = section.settings.enable_clear_filters
+  assign filter_style = section.settings.filter_style
+  assign mobile_filter_style = section.settings.mobile_filter_style
+  assign show_active_filters = section.settings.show_active_filters
+  assign enable_price_filter = section.settings.enable_price_filter
+  assign enable_availability_filter = section.settings.enable_availability_filter
+  assign enable_vendor_filter = section.settings.enable_vendor_filter
+  assign enable_color_swatches = section.settings.enable_color_swatches
+  assign swatch_style = section.settings.swatch_style
+
+  comment
+    Get filter data from collection
+  endcomment
+  assign filter_price_min = 0
+  assign filter_price_max = 0
+  assign filter_vendors = collection.all_vendors
+  assign filter_types = collection.all_types
+  assign filter_tags = collection.all_tags
+  
+  comment
+    Calculate price range
+  endcomment
+  for product in collection.products
+    if product.price_min < filter_price_min or filter_price_min == 0
+      assign filter_price_min = product.price_min
+    endif
+    if product.price_max > filter_price_max
+      assign filter_price_max = product.price_max
+    endif
+  endfor
+-%}
+
+{%- if enable_filtering -%}
+  <div class="collection-filters collection-filters--{{ filter_layout }} collection-filters--{{ filter_style }}"
+       data-collection-filters
+       data-mobile-style="{{ mobile_filter_style }}">
+    
+    {%- comment -%} Mobile Filter Toggle {%- endcomment -%}
+    <div class="collection-filters__mobile-toggle">
+      <button type="button" 
+              class="collection-filters__toggle-button btn btn--secondary btn--{{ filter_style }}"
+              data-filters-toggle
+              aria-expanded="false"
+              aria-controls="CollectionFilters">
+        {% render 'icon-filter' %}
+        <span class="collection-filters__toggle-text">{{ 'collections.filters.title' | t }}</span>
+        <span class="collection-filters__toggle-count" data-active-filters-count></span>
+      </button>
+    </div>
+
+    {%- comment -%} Filter Panel {%- endcomment -%}
+    <div class="collection-filters__panel" 
+         id="CollectionFilters"
+         data-filters-panel>
+      
+      <div class="collection-filters__panel-header">
+        <h3 class="collection-filters__panel-title">{{ 'collections.filters.title' | t }}</h3>
+        <button type="button" 
+                class="collection-filters__panel-close"
+                data-filters-close>
+          {% render 'icon-close' %}
+          <span class="visually-hidden">{{ 'general.accessibility.close' | t }}</span>
+        </button>
+      </div>
+
+      <div class="collection-filters__panel-content">
+        <form class="collection-filters__form" data-filters-form>
+          
+          {%- comment -%} Price Filter {%- endcomment -%}
+          {%- if enable_price_filter and filter_price_max > 0 -%}
+            <div class="collection-filters__group">
+              <h4 class="collection-filters__group-title">
+                <button type="button" 
+                        class="collection-filters__group-button"
+                        data-filter-toggle="price"
+                        aria-expanded="true">
+                  {{ 'collections.filters.price' | t }}
+                  {% render 'icon-caret' %}
+                </button>
+              </h4>
+              
+              <div class="collection-filters__group-content" data-filter-content="price">
+                <div class="collection-filters__price-range">
+                  <div class="collection-filters__price-inputs">
+                    <div class="collection-filters__price-input-wrapper">
+                      <label for="PriceMin" class="collection-filters__price-label">
+                        {{ 'collections.filters.price_min' | t }}
+                      </label>
+                      <div class="collection-filters__price-input">
+                        <span class="collection-filters__price-currency">{{ cart.currency.symbol }}</span>
+                        <input type="number" 
+                               id="PriceMin"
+                               name="filter.v.price.gte"
+                               class="collection-filters__price-field"
+                               min="{{ filter_price_min | money_without_currency | remove: ',' }}"
+                               max="{{ filter_price_max | money_without_currency | remove: ',' }}"
+                               step="1"
+                               placeholder="{{ filter_price_min | money_without_currency | remove: ',' }}"
+                               data-price-min>
+                      </div>
+                    </div>
+                    
+                    <div class="collection-filters__price-separator">{{ 'collections.filters.price_to' | t }}</div>
+                    
+                    <div class="collection-filters__price-input-wrapper">
+                      <label for="PriceMax" class="collection-filters__price-label">
+                        {{ 'collections.filters.price_max' | t }}
+                      </label>
+                      <div class="collection-filters__price-input">
+                        <span class="collection-filters__price-currency">{{ cart.currency.symbol }}</span>
+                        <input type="number" 
+                               id="PriceMax"
+                               name="filter.v.price.lte"
+                               class="collection-filters__price-field"
+                               min="{{ filter_price_min | money_without_currency | remove: ',' }}"
+                               max="{{ filter_price_max | money_without_currency | remove: ',' }}"
+                               step="1"
+                               placeholder="{{ filter_price_max | money_without_currency | remove: ',' }}"
+                               data-price-max>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="collection-filters__price-slider">
+                    <div class="collection-filters__price-track">
+                      <div class="collection-filters__price-range-fill" data-price-range-fill></div>
+                      <input type="range" 
+                             class="collection-filters__price-slider-min"
+                             min="{{ filter_price_min | money_without_currency | remove: ',' }}"
+                             max="{{ filter_price_max | money_without_currency | remove: ',' }}"
+                             step="1"
+                             data-price-slider-min>
+                      <input type="range" 
+                             class="collection-filters__price-slider-max"
+                             min="{{ filter_price_min | money_without_currency | remove: ',' }}"
+                             max="{{ filter_price_max | money_without_currency | remove: ',' }}"
+                             step="1"
+                             data-price-slider-max>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Availability Filter {%- endcomment -%}
+          {%- if enable_availability_filter -%}
+            <div class="collection-filters__group">
+              <h4 class="collection-filters__group-title">
+                <button type="button" 
+                        class="collection-filters__group-button"
+                        data-filter-toggle="availability"
+                        aria-expanded="true">
+                  {{ 'collections.filters.availability' | t }}
+                  {% render 'icon-caret' %}
+                </button>
+              </h4>
+              
+              <div class="collection-filters__group-content" data-filter-content="availability">
+                <div class="collection-filters__checkbox-list">
+                  <label class="collection-filters__checkbox-item">
+                    <input type="checkbox" 
+                           name="filter.v.availability"
+                           value="1"
+                           class="collection-filters__checkbox"
+                           data-filter-checkbox>
+                    <span class="collection-filters__checkbox-mark"></span>
+                    <span class="collection-filters__checkbox-text">{{ 'collections.filters.in_stock' | t }}</span>
+                  </label>
+                  
+                  <label class="collection-filters__checkbox-item">
+                    <input type="checkbox" 
+                           name="filter.v.availability"
+                           value="0"
+                           class="collection-filters__checkbox"
+                           data-filter-checkbox>
+                    <span class="collection-filters__checkbox-mark"></span>
+                    <span class="collection-filters__checkbox-text">{{ 'collections.filters.out_of_stock' | t }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Vendor Filter {%- endcomment -%}
+          {%- if enable_vendor_filter and filter_vendors.size > 1 -%}
+            <div class="collection-filters__group">
+              <h4 class="collection-filters__group-title">
+                <button type="button" 
+                        class="collection-filters__group-button"
+                        data-filter-toggle="vendor"
+                        aria-expanded="false">
+                  {{ 'collections.filters.vendor' | t }}
+                  {% render 'icon-caret' %}
+                </button>
+              </h4>
+              
+              <div class="collection-filters__group-content" data-filter-content="vendor">
+                <div class="collection-filters__checkbox-list">
+                  {%- for vendor in filter_vendors -%}
+                    <label class="collection-filters__checkbox-item">
+                      <input type="checkbox" 
+                             name="filter.v.vendor"
+                             value="{{ vendor | escape }}"
+                             class="collection-filters__checkbox"
+                             data-filter-checkbox>
+                      <span class="collection-filters__checkbox-mark"></span>
+                      <span class="collection-filters__checkbox-text">{{ vendor }}</span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Product Type Filter {%- endcomment -%}
+          {%- if filter_types.size > 1 -%}
+            <div class="collection-filters__group">
+              <h4 class="collection-filters__group-title">
+                <button type="button" 
+                        class="collection-filters__group-button"
+                        data-filter-toggle="type"
+                        aria-expanded="false">
+                  {{ 'collections.filters.product_type' | t }}
+                  {% render 'icon-caret' %}
+                </button>
+              </h4>
+              
+              <div class="collection-filters__group-content" data-filter-content="type">
+                <div class="collection-filters__checkbox-list">
+                  {%- for type in filter_types -%}
+                    <label class="collection-filters__checkbox-item">
+                      <input type="checkbox" 
+                             name="filter.v.product_type"
+                             value="{{ type | escape }}"
+                             class="collection-filters__checkbox"
+                             data-filter-checkbox>
+                      <span class="collection-filters__checkbox-mark"></span>
+                      <span class="collection-filters__checkbox-text">{{ type }}</span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Color Filter {%- endcomment -%}
+          {%- if enable_color_swatches -%}
+            {%- liquid
+              assign color_tags = filter_tags | where: 'color-'
+              assign color_values = ''
+              for tag in color_tags
+                assign color_name = tag | remove: 'color-'
+                assign color_values = color_values | append: color_name | append: ','
+              endfor
+              assign color_array = color_values | split: ',' | uniq
+            -%}
+            
+            {%- if color_array.size > 1 -%}
+              <div class="collection-filters__group">
+                <h4 class="collection-filters__group-title">
+                  <button type="button" 
+                          class="collection-filters__group-button"
+                          data-filter-toggle="color"
+                          aria-expanded="false">
+                    {{ 'collections.filters.color' | t }}
+                    {% render 'icon-caret' %}
+                  </button>
+                </h4>
+                
+                <div class="collection-filters__group-content" data-filter-content="color">
+                  <div class="collection-filters__color-list collection-filters__color-list--{{ swatch_style }}">
+                    {%- for color in color_array -%}
+                      {%- unless color == blank -%}
+                        <label class="collection-filters__color-item">
+                          <input type="checkbox" 
+                                 name="filter.v.tag"
+                                 value="color-{{ color | escape }}"
+                                 class="collection-filters__color-input"
+                                 data-filter-checkbox>
+                          <span class="collection-filters__color-swatch" 
+                                style="background-color: {{ color | downcase }};"
+                                title="{{ color | capitalize }}">
+                            <span class="collection-filters__color-checkmark">
+                              {% render 'icon-check' %}
+                            </span>
+                          </span>
+                          <span class="collection-filters__color-text">{{ color | capitalize }}</span>
+                        </label>
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- comment -%} Filter Actions {%- endcomment -%}
+          <div class="collection-filters__actions">
+            {%- if enable_clear_filters -%}
+              <button type="button" 
+                      class="collection-filters__clear-button btn btn--secondary btn--{{ filter_style }}"
+                      data-filters-clear>
+                {{ 'collections.filters.clear_all' | t }}
+              </button>
+            {%- endif -%}
+            
+            <button type="submit" 
+                    class="collection-filters__apply-button btn btn--primary btn--{{ filter_style }}"
+                    data-filters-apply>
+              {{ 'collections.filters.apply' | t }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {%- comment -%} Filter Overlay {%- endcomment -%}
+    <div class="collection-filters__overlay" data-filters-overlay></div>
+  </div>
+{%- endif -%}
+
+<script src="{{ 'section-collection-filters.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Filters",
+  "tag": "section",
+  "class": "section-collection-filters",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Filter Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "default": true,
+      "label": "Enable filtering"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "Enable sorting"
+    },
+    {
+      "type": "select",
+      "id": "filter_layout",
+      "options": [
+        {
+          "value": "sidebar",
+          "label": "Sidebar"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "dropdown",
+          "label": "Dropdown"
+        }
+      ],
+      "default": "sidebar",
+      "label": "Filter layout"
+    },
+    {
+      "type": "select",
+      "id": "filter_style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        }
+      ],
+      "default": "bubbly",
+      "label": "Filter style"
+    },
+    {
+      "type": "select",
+      "id": "mobile_filter_style",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "Drawer"
+        },
+        {
+          "value": "modal",
+          "label": "Modal"
+        },
+        {
+          "value": "accordion",
+          "label": "Accordion"
+        }
+      ],
+      "default": "drawer",
+      "label": "Mobile filter style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_results_count",
+      "default": true,
+      "label": "Show results count"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_clear_filters",
+      "default": true,
+      "label": "Enable clear filters button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_active_filters",
+      "default": true,
+      "label": "Show active filters"
+    },
+    {
+      "type": "header",
+      "content": "Filter Types"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_price_filter",
+      "default": true,
+      "label": "Enable price filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_availability_filter",
+      "default": true,
+      "label": "Enable availability filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_vendor_filter",
+      "default": true,
+      "label": "Enable vendor filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_color_swatches",
+      "default": true,
+      "label": "Enable color swatches"
+    },
+    {
+      "type": "select",
+      "id": "swatch_style",
+      "options": [
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        }
+      ],
+      "default": "circle",
+      "label": "Swatch style"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Filters"
+    }
+  ]
+}
+{% endschema %} 

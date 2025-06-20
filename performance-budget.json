@@ -1,0 +1,192 @@
+{
+  "budgets": [
+    {
+      "path": "/*",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1800,
+          "tolerance": 200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2500,
+          "tolerance": 300
+        },
+        {
+          "metric": "cumulative-layout-shift",
+          "budget": 0.1,
+          "tolerance": 0.05
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 300,
+          "tolerance": 100
+        },
+        {
+          "metric": "speed-index",
+          "budget": 3400,
+          "tolerance": 400
+        },
+        {
+          "metric": "interactive",
+          "budget": 3800,
+          "tolerance": 500
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 350000,
+          "tolerance": 50000
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 150000,
+          "tolerance": 25000
+        },
+        {
+          "resourceType": "image",
+          "budget": 800000,
+          "tolerance": 100000
+        },
+        {
+          "resourceType": "font",
+          "budget": 100000,
+          "tolerance": 20000
+        },
+        {
+          "resourceType": "total",
+          "budget": 1500000,
+          "tolerance": 200000
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "script",
+          "budget": 15,
+          "tolerance": 3
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 8,
+          "tolerance": 2
+        },
+        {
+          "resourceType": "image",
+          "budget": 25,
+          "tolerance": 5
+        },
+        {
+          "resourceType": "font",
+          "budget": 4,
+          "tolerance": 1
+        },
+        {
+          "resourceType": "third-party",
+          "budget": 10,
+          "tolerance": 3
+        }
+      ]
+    },
+    {
+      "path": "/products/*",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1600,
+          "tolerance": 200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2200,
+          "tolerance": 300
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "image",
+          "budget": 1200000,
+          "tolerance": 150000
+        }
+      ]
+    },
+    {
+      "path": "/collections/*",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1700,
+          "tolerance": 200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2300,
+          "tolerance": 300
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1500,
+          "tolerance": 200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2000,
+          "tolerance": 300
+        }
+      ]
+    }
+  ],
+  "alerts": {
+    "enabled": true,
+    "channels": [
+      {
+        "type": "console",
+        "enabled": true,
+        "level": "warn"
+      },
+      {
+        "type": "webhook",
+        "enabled": false,
+        "url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+        "threshold": "budget-exceeded"
+      },
+      {
+        "type": "email",
+        "enabled": false,
+        "endpoint": "/api/performance-alerts",
+        "threshold": "tolerance-exceeded"
+      }
+    ],
+    "thresholds": {
+      "budget-exceeded": "Budget exceeded by any amount",
+      "tolerance-exceeded": "Budget exceeded by more than tolerance",
+      "critical": "Budget exceeded by more than 50% of tolerance"
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "interval": 300000,
+    "sampleRate": 0.1,
+    "reportingEndpoint": "/api/performance-metrics",
+    "retentionDays": 30
+  },
+  "bubblyTheme": {
+    "allowances": {
+      "animationOverhead": 50,
+      "gradientOverhead": 30,
+      "bubbleEffectsOverhead": 25
+    },
+    "optimizations": {
+      "enableAnimationOptimization": true,
+      "enableGradientOptimization": true,
+      "enableBubbleOptimization": true,
+      "respectReducedMotion": true
+    }
+  }
+} 

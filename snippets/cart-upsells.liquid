@@ -1,0 +1,289 @@
+{% comment %} Cart Upsells and Recommendations for Taiga Theme - Bubbly Style {% endcomment %}
+
+{%- liquid
+  assign cart_total = cart.total_price
+  assign free_shipping_threshold = 20000
+  assign remaining_for_free_shipping = free_shipping_threshold | minus: cart_total
+  assign has_free_shipping = remaining_for_free_shipping <= 0
+-%}
+
+<div class="cart-upsells" data-cart-upsells>
+  {%- comment -%} Free Shipping Progress Bar {%- endcomment -%}
+  {%- unless has_free_shipping -%}
+    <div class="cart-upsells__free-shipping">
+      <div class="free-shipping-indicator">
+        <div class="free-shipping-indicator__icon">
+          {%- render 'icon-truck' -%}
+        </div>
+        <div class="free-shipping-indicator__content">
+          <p class="free-shipping-indicator__text">
+            {% assign remaining_formatted = remaining_for_free_shipping | money %}
+            {{ 'cart.free_shipping.add_more' | t: amount: remaining_formatted }}
+          </p>
+          <div class="free-shipping-indicator__progress">
+            <div class="progress-bar">
+              {%- assign progress_percentage = cart_total | times: 100 | divided_by: free_shipping_threshold -%}
+              <div class="progress-bar__fill" style="width: {{ progress_percentage }}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="cart-upsells__free-shipping cart-upsells__free-shipping--achieved">
+      <div class="free-shipping-achieved">
+        <div class="free-shipping-achieved__icon">
+          {%- render 'icon-check-circle' -%}
+        </div>
+        <p class="free-shipping-achieved__text">
+          {{ 'cart.free_shipping.achieved' | t }}
+        </p>
+      </div>
+    </div>
+  {%- endunless -%}
+
+  {%- comment -%} Product Recommendations {%- endcomment -%}
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="cart-upsells__recommendations">
+      <div class="cart-recommendations">
+        <h3 class="cart-recommendations__title">
+          {{ 'cart.recommendations.title' | t }}
+        </h3>
+        
+        <div class="cart-recommendations__grid" data-recommendations-grid>
+          {%- for product in recommendations.products limit: 4 -%}
+            <div class="cart-recommendation-card" data-product-id="{{ product.id }}">
+              <div class="cart-recommendation-card__image">
+                <a href="{{ product.url }}" class="cart-recommendation-card__image-link">
+                  {%- if product.featured_media -%}
+                    <img 
+                      src="{{ product.featured_media | image_url: width: 300 }}"
+                      alt="{{ product.featured_media.alt | escape }}"
+                      loading="lazy"
+                      width="150"
+                      height="150"
+                      class="cart-recommendation-card__img"
+                    >
+                  {%- else -%}
+                    <div class="cart-recommendation-card__placeholder">
+                      {%- render 'icon-product' -%}
+                    </div>
+                  {%- endif -%}
+                </a>
+                
+                {%- if product.compare_at_price > product.price -%}
+                  <div class="cart-recommendation-card__badge">
+                    <span class="badge badge--sale">
+                      {{ 'product.badge.sale' | t }}
+                    </span>
+                  </div>
+                {%- endif -%}
+              </div>
+              
+              <div class="cart-recommendation-card__content">
+                <h4 class="cart-recommendation-card__title">
+                  <a href="{{ product.url }}" class="cart-recommendation-card__title-link">
+                    {{ product.title | escape }}
+                  </a>
+                </h4>
+                
+                <div class="cart-recommendation-card__price">
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="price price--on-sale">
+                      <span class="price__sale">{{ product.price | money }}</span>
+                      <span class="price__compare">{{ product.compare_at_price | money }}</span>
+                    </span>
+                  {%- else -%}
+                    <span class="price">{{ product.price | money }}</span>
+                  {%- endif -%}
+                </div>
+                
+                {%- if product.available -%}
+                  <div class="cart-recommendation-card__actions">
+                    {%- if product.has_only_default_variant -%}
+                      <button 
+                        type="button" 
+                        class="btn btn--secondary btn--small cart-recommendation__add-btn"
+                        data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                        data-product-title="{{ product.title | escape }}"
+                      >
+                        <span class="btn__text">{{ 'cart.recommendations.add_to_cart' | t }}</span>
+                        <span class="btn__loading-icon">
+                          {%- render 'icon-spinner' -%}
+                        </span>
+                      </button>
+                    {%- else -%}
+                      <a href="{{ product.url }}" class="btn btn--secondary btn--small">
+                        {{ 'cart.recommendations.view_options' | t }}
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- else -%}
+                  <div class="cart-recommendation-card__unavailable">
+                    <span class="text--muted">{{ 'product.status.sold_out' | t }}</span>
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Frequently Bought Together {%- endcomment -%}
+  {%- assign bundle_products = collections['bundle-deals'].products -%}
+  {%- if bundle_products.size > 0 -%}
+    <div class="cart-upsells__bundle">
+      <div class="cart-bundle-offer">
+        <div class="cart-bundle-offer__header">
+          <h3 class="cart-bundle-offer__title">
+            {{ 'cart.bundle.title' | t }}
+          </h3>
+          <div class="cart-bundle-offer__discount">
+            <span class="bundle-discount">
+              {{ 'cart.bundle.save_percentage' | t: percentage: '15' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="cart-bundle-offer__products">
+          {%- for product in bundle_products limit: 3 -%}
+            <div class="bundle-product">
+              <div class="bundle-product__image">
+                {%- if product.featured_media -%}
+                  <img 
+                    src="{{ product.featured_media | image_url: width: 100 }}"
+                    alt="{{ product.featured_media.alt | escape }}"
+                    loading="lazy"
+                    width="50"
+                    height="50"
+                    class="bundle-product__img"
+                  >
+                {%- endif -%}
+              </div>
+              <div class="bundle-product__details">
+                <span class="bundle-product__title">{{ product.title | truncate: 30 }}</span>
+                <span class="bundle-product__price">{{ product.price | money }}</span>
+              </div>
+              {%- unless forloop.last -%}
+                <div class="bundle-product__plus">+</div>
+              {%- endunless -%}
+            </div>
+          {%- endfor -%}
+        </div>
+        
+        <div class="cart-bundle-offer__action">
+          <button type="button" class="btn btn--primary cart-bundle__add-btn" data-bundle-collection="bundle-deals">
+            {{ 'cart.bundle.add_bundle' | t }}
+          </button>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Gift Options {%- endcomment -%}
+  <div class="cart-upsells__gift-options">
+    <div class="cart-gift-options">
+      <h3 class="cart-gift-options__title">
+        {{ 'cart.gift_options.title' | t }}
+      </h3>
+      
+      <div class="gift-option">
+        <input 
+          type="checkbox" 
+          id="gift-wrapping" 
+          name="attributes[Gift Wrapping]" 
+          value="Yes"
+          class="gift-option__checkbox"
+          {% if cart.attributes['Gift Wrapping'] == 'Yes' %}checked{% endif %}
+        >
+        <label for="gift-wrapping" class="gift-option__label">
+          <div class="gift-option__icon">
+            {%- render 'icon-gift' -%}
+          </div>
+          <div class="gift-option__content">
+            <span class="gift-option__title">{{ 'cart.gift_options.gift_wrap' | t }}</span>
+            <span class="gift-option__price">{{ 500 | money }}</span>
+          </div>
+        </label>
+      </div>
+      
+      <div class="gift-option">
+        <input 
+          type="checkbox" 
+          id="gift-message" 
+          name="attributes[Gift Message]" 
+          value="Yes"
+          class="gift-option__checkbox"
+          {% if cart.attributes['Gift Message'] %}checked{% endif %}
+        >
+        <label for="gift-message" class="gift-option__label">
+          <div class="gift-option__icon">
+            {%- render 'icon-message' -%}
+          </div>
+          <div class="gift-option__content">
+            <span class="gift-option__title">{{ 'cart.gift_options.gift_message' | t }}</span>
+            <span class="gift-option__price">{{ 'cart.gift_options.free' | t }}</span>
+          </div>
+        </label>
+      </div>
+      
+      <div class="gift-message-input" style="display: {% if cart.attributes['Gift Message'] %}block{% else %}none{% endif %}">
+        <textarea 
+          name="attributes[Gift Message Text]" 
+          placeholder="{{ 'cart.gift_options.message_placeholder' | t }}"
+          class="gift-message-textarea"
+          maxlength="200"
+        >{{ cart.attributes['Gift Message Text'] }}</textarea>
+        <div class="gift-message-counter">
+          <span class="counter-text">0/200</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Cart Notes {%- endcomment -%}
+  <div class="cart-upsells__notes">
+    <div class="cart-notes">
+      <h3 class="cart-notes__title">
+        {{ 'cart.notes.title' | t }}
+      </h3>
+      <textarea 
+        name="note" 
+        placeholder="{{ 'cart.notes.placeholder' | t }}"
+        class="cart-notes__textarea"
+        maxlength="500"
+      >{{ cart.note }}</textarea>
+      <div class="cart-notes__counter">
+        <span class="counter-text">{{ cart.note.size | default: 0 }}/500</span>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Urgency Messaging {%- endcomment -%}
+  <div class="cart-upsells__urgency" data-urgency-messaging>
+    <div class="urgency-message">
+      <div class="urgency-message__icon">
+        {%- render 'icon-clock' -%}
+      </div>
+      <div class="urgency-message__content">
+        <p class="urgency-message__text">
+          {{ 'cart.urgency.limited_stock' | t }}
+        </p>
+        <p class="urgency-message__subtext">
+          {{ 'cart.urgency.order_soon' | t }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize cart upsells functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof CartUpsells !== 'undefined') {
+      new CartUpsells();
+    }
+  });
+</script> 

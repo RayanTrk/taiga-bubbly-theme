@@ -1,0 +1,525 @@
+{% comment %}
+  AI-Powered Navigation Integration for Shopify Taiga Theme (Bubbly Design)
+  
+  This snippet integrates the AI navigation system with Shopify's liquid templating
+  and provides the necessary data attributes and configuration for the JavaScript
+  AI navigation system.
+  
+  Usage:
+  {% render 'ai-navigation' %}
+  
+  Parameters:
+  - enabled: Enable/disable AI navigation (default: true)
+  - debug: Enable debug mode (default: false)
+  - max_suggestions: Maximum number of suggestions to show (default: 3)
+  - confidence_threshold: Minimum confidence for suggestions (default: 0.6)
+{% endcomment %}
+
+{%- liquid
+  assign ai_enabled = ai_enabled | default: true
+  assign ai_debug = ai_debug | default: false
+  assign ai_max_suggestions = ai_max_suggestions | default: 3
+  assign ai_confidence_threshold = ai_confidence_threshold | default: 0.6
+  assign ai_animation_duration = ai_animation_duration | default: 300
+-%}
+
+{% if ai_enabled %}
+  <!-- AI Navigation Data Layer -->
+  <script type="application/json" id="ai-navigation-config">
+    {
+      "enabled": {{ ai_enabled | json }},
+      "debug": {{ ai_debug | json }},
+      "maxSuggestions": {{ ai_max_suggestions | json }},
+      "confidenceThreshold": {{ ai_confidence_threshold | json }},
+      "animationDuration": {{ ai_animation_duration | json }},
+      "shopifyData": {
+        "shop": {
+          "domain": {{ shop.domain | json }},
+          "name": {{ shop.name | json }},
+          "currency": {{ shop.currency | json }},
+          "moneyFormat": {{ shop.money_format | json }}
+        },
+        "customer": {
+          {% if customer %}
+            "id": {{ customer.id | json }},
+            "email": {{ customer.email | json }},
+            "firstName": {{ customer.first_name | json }},
+            "lastName": {{ customer.last_name | json }},
+            "acceptsMarketing": {{ customer.accepts_marketing | json }},
+            "tags": {{ customer.tags | split: ', ' | json }},
+            "ordersCount": {{ customer.orders_count | json }},
+            "totalSpent": {{ customer.total_spent | money_without_currency | json }}
+          {% else %}
+            "id": null,
+            "isGuest": true
+          {% endif %}
+        },
+        "page": {
+          "template": {{ template | json }},
+          "handle": {{ page.handle | default: product.handle | default: collection.handle | default: blog.handle | default: article.handle | json }},
+          "id": {{ page.id | default: product.id | default: collection.id | default: blog.id | default: article.id | json }},
+          "title": {{ page.title | default: product.title | default: collection.title | default: blog.title | default: article.title | json }},
+          "url": {{ canonical_url | json }},
+          "type": "{{ template.name }}",
+          "suffix": "{{ template.suffix }}"
+        },
+        {% if template.name == 'product' %}
+          "product": {
+            "id": {{ product.id | json }},
+            "handle": {{ product.handle | json }},
+            "title": {{ product.title | json }},
+            "vendor": {{ product.vendor | json }},
+            "type": {{ product.type | json }},
+            "tags": {{ product.tags | split: ', ' | json }},
+            "price": {{ product.price | money_without_currency | json }},
+            "compareAtPrice": {{ product.compare_at_price | money_without_currency | json }},
+            "available": {{ product.available | json }},
+            "collections": [
+              {% for collection in product.collections %}
+                {
+                  "id": {{ collection.id | json }},
+                  "handle": {{ collection.handle | json }},
+                  "title": {{ collection.title | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ],
+            "variants": [
+              {% for variant in product.variants %}
+                {
+                  "id": {{ variant.id | json }},
+                  "title": {{ variant.title | json }},
+                  "price": {{ variant.price | money_without_currency | json }},
+                  "available": {{ variant.available | json }},
+                  "inventory": {{ variant.inventory_quantity | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ]
+          },
+        {% endif %}
+        {% if template.name == 'collection' %}
+          "collection": {
+            "id": {{ collection.id | json }},
+            "handle": {{ collection.handle | json }},
+            "title": {{ collection.title | json }},
+            "description": {{ collection.description | strip_html | truncate: 200 | json }},
+            "productsCount": {{ collection.products_count | json }},
+            "sortBy": {{ collection.sort_by | json }},
+            "tags": {{ collection.all_tags | json }}
+          },
+        {% endif %}
+        {% if template.name == 'blog' or template.name == 'article' %}
+          "blog": {
+            "id": {{ blog.id | json }},
+            "handle": {{ blog.handle | json }},
+            "title": {{ blog.title | json }}
+          },
+        {% endif %}
+        {% if template.name == 'article' %}
+          "article": {
+            "id": {{ article.id | json }},
+            "title": {{ article.title | json }},
+            "author": {{ article.author | json }},
+            "tags": {{ article.tags | split: ', ' | json }},
+            "createdAt": {{ article.created_at | date: '%Y-%m-%d' | json }}
+          },
+        {% endif %}
+        "cart": {
+          "itemCount": {{ cart.item_count | json }},
+          "totalPrice": {{ cart.total_price | money_without_currency | json }},
+          "items": [
+            {% for item in cart.items %}
+              {
+                "productId": {{ item.product_id | json }},
+                "variantId": {{ item.variant_id | json }},
+                "quantity": {{ item.quantity | json }},
+                "price": {{ item.price | money_without_currency | json }},
+                "title": {{ item.product.title | json }},
+                "handle": {{ item.product.handle | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
+        },
+        "recommendations": {
+          {% if template.name == 'product' and product %}
+            "relatedProducts": [
+              {% assign related_products = product.related_products | default: collections.all.products | where: 'type', product.type | limit: 8 %}
+              {% for related_product in related_products %}
+                {% unless related_product.id == product.id %}
+                  {
+                    "id": {{ related_product.id | json }},
+                    "handle": {{ related_product.handle | json }},
+                    "title": {{ related_product.title | json }},
+                    "price": {{ related_product.price | money_without_currency | json }},
+                    "image": {{ related_product.featured_image | image_url: width: 300 | json }},
+                    "url": {{ related_product.url | json }}
+                  }{% unless forloop.last %},{% endunless %}
+                {% endunless %}
+              {% endfor %}
+            ],
+          {% endif %}
+          "popularProducts": [
+            {% assign popular_products = collections.all.products | sort: 'best-selling' | limit: 6 %}
+            {% for popular_product in popular_products %}
+              {
+                "id": {{ popular_product.id | json }},
+                "handle": {{ popular_product.handle | json }},
+                "title": {{ popular_product.title | json }},
+                "price": {{ popular_product.price | money_without_currency | json }},
+                "image": {{ popular_product.featured_image | image_url: width: 300 | json }},
+                "url": {{ popular_product.url | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ],
+          "collections": [
+            {% for collection in collections limit: 10 %}
+              {% unless collection.handle == 'frontpage' %}
+                {
+                  "id": {{ collection.id | json }},
+                  "handle": {{ collection.handle | json }},
+                  "title": {{ collection.title | json }},
+                  "productsCount": {{ collection.products_count | json }},
+                  "image": {{ collection.featured_image | image_url: width: 300 | json }},
+                  "url": {{ collection.url | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {% endunless %}
+            {% endfor %}
+          ]
+        },
+        "navigation": {
+          "main": [
+            {% for link in linklists.main-menu.links %}
+              {
+                "title": {{ link.title | json }},
+                "url": {{ link.url | json }},
+                "active": {{ link.active | json }},
+                "childLinks": [
+                  {% for child_link in link.links %}
+                    {
+                      "title": {{ child_link.title | json }},
+                      "url": {{ child_link.url | json }},
+                      "active": {{ child_link.active | json }}
+                    }{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                ]
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ],
+          "footer": [
+            {% for link in linklists.footer.links %}
+              {
+                "title": {{ link.title | json }},
+                "url": {{ link.url | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
+        }
+      },
+      "bubblyTheme": {
+        "primaryColor": "{{ settings.color_primary | default: '#667eea' }}",
+        "secondaryColor": "{{ settings.color_secondary | default: '#764ba2' }}",
+        "accentColor": "{{ settings.color_accent | default: '#f093fb' }}",
+        "gradients": {
+          "primary": "{{ settings.gradient_primary | default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}",
+          "secondary": "{{ settings.gradient_secondary | default: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}",
+          "accent": "{{ settings.gradient_accent | default: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}"
+        },
+        "animations": {
+          "enabled": {{ settings.enable_animations | default: true | json }},
+          "duration": {{ settings.animation_duration | default: 300 | json }},
+          "easing": "{{ settings.animation_easing | default: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' }}"
+        },
+        "bubbles": {
+          "enabled": {{ settings.enable_bubbles | default: true | json }},
+          "count": {{ settings.bubble_count | default: 20 | json }},
+          "size": "{{ settings.bubble_size | default: 'medium' }}",
+          "opacity": {{ settings.bubble_opacity | default: 0.1 | json }}
+        }
+      }
+    }
+  </script>
+
+  <!-- AI Navigation Container -->
+  <div id="ai-navigation-container" class="ai-navigation-container" aria-live="polite">
+    <!-- AI suggestions will be dynamically inserted here -->
+  </div>
+
+  <!-- AI Navigation Styles -->
+  <style>
+    .ai-navigation-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      pointer-events: none;
+      max-width: 320px;
+    }
+
+    .ai-suggestion {
+      margin-bottom: 12px;
+      pointer-events: auto;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .ai-suggestion.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .suggestion-bubble {
+      background: {{ settings.gradient_primary | default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }};
+      border-radius: 20px;
+      padding: 16px 20px;
+      color: white;
+      font-family: {{ settings.type_body_font.family }}, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .suggestion-bubble:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .suggestion-bubble::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .suggestion-bubble:hover::before {
+      transform: translateX(100%);
+    }
+
+    .suggestion-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .suggestion-icon {
+      font-size: 18px;
+      opacity: 0.9;
+      min-width: 20px;
+    }
+
+    .suggestion-text {
+      flex: 1;
+    }
+
+    .suggestion-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 14px;
+    }
+
+    .suggestion-reason {
+      font-size: 12px;
+      opacity: 0.8;
+      line-height: 1.3;
+    }
+
+    .suggestion-confidence {
+      width: 3px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .confidence-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.8);
+      transition: height 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .suggestion-dismiss {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .suggestion-dismiss:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .ai-navigation-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+
+      .suggestion-bubble {
+        font-size: 13px;
+        padding: 14px 16px;
+      }
+
+      .suggestion-title {
+        font-size: 13px;
+      }
+
+      .suggestion-reason {
+        font-size: 11px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      .ai-suggestion,
+      .suggestion-bubble,
+      .suggestion-bubble::before,
+      .confidence-fill {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+      .suggestion-bubble {
+        border: 2px solid white;
+        background: #000;
+      }
+    }
+
+    /* Bubble floating animation */
+    @keyframes bubblyFloat {
+      0%, 100% { 
+        transform: translateY(0) rotate(0deg); 
+      }
+      25% { 
+        transform: translateY(-5px) rotate(1deg); 
+      }
+      50% { 
+        transform: translateY(-3px) rotate(-1deg); 
+      }
+      75% { 
+        transform: translateY(-7px) rotate(0.5deg); 
+      }
+    }
+
+    .ai-suggestion.floating {
+      animation: bubblyFloat 4s ease-in-out infinite;
+    }
+
+    /* Pop animation for dismissal */
+    @keyframes bubblyPop {
+      0% { 
+        transform: scale(1); 
+        opacity: 1; 
+      }
+      50% { 
+        transform: scale(1.1); 
+        opacity: 0.8; 
+      }
+      100% { 
+        transform: scale(0.8); 
+        opacity: 0; 
+      }
+    }
+
+    .ai-suggestion.dismissing {
+      animation: bubblyPop 0.3s ease-out forwards;
+    }
+  </style>
+
+  <!-- Load AI Navigation Script -->
+  <script src="{{ 'ai-navigation.js' | asset_url }}" defer></script>
+
+  <!-- Initialize AI Navigation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize AI Navigation with Shopify data
+      if (window.TaigaAINavigation) {
+        const config = document.getElementById('ai-navigation-config');
+        if (config) {
+          try {
+            const aiConfig = JSON.parse(config.textContent);
+            window.TaigaAINavigation.updateConfig(aiConfig);
+            console.log('[Taiga AI] Navigation system initialized with Shopify data');
+          } catch (error) {
+            console.error('[Taiga AI] Failed to parse configuration:', error);
+          }
+        }
+      }
+    });
+  </script>
+
+  <!-- Schema.org structured data for AI -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "url": {{ shop.url | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{{ routes.search_url }}?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}
+      }
+    }
+  </script>
+
+{% endif %}
+
+{% comment %}
+  Debug Information (only shown when debug=true in URL)
+{% endcomment %}
+{% if ai_debug %}
+  <div id="ai-debug-panel" style="position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 12px; max-width: 300px; z-index: 10000;">
+    <h4 style="margin: 0 0 10px 0; color: #4facfe;">AI Navigation Debug</h4>
+    <p><strong>Template:</strong> {{ template }}</p>
+    <p><strong>Handle:</strong> {{ page.handle | default: product.handle | default: collection.handle }}</p>
+    <p><strong>Customer:</strong> {% if customer %}{{ customer.email }}{% else %}Guest{% endif %}</p>
+    <p><strong>Cart Items:</strong> {{ cart.item_count }}</p>
+    <p><strong>AI Enabled:</strong> {{ ai_enabled }}</p>
+    <button onclick="this.parentElement.style.display='none'" style="position: absolute; top: 5px; right: 10px; background: none; border: none; color: white; cursor: pointer;">×</button>
+  </div>
+{% endif %} 

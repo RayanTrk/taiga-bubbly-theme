@@ -1,0 +1,112 @@
+{
+  "sections": {
+    "collection-header": {
+      "type": "collection-header",
+      "settings": {
+        "show_collection_image": true,
+        "collection_image_height": "medium",
+        "show_collection_description": true,
+        "header_text_alignment": "center",
+        "overlay_opacity": 30,
+        "text_color": "#ffffff",
+        "enable_parallax": true,
+        "enable_breadcrumbs": true,
+        "breadcrumb_style": "modern"
+      }
+    },
+    "collection-filters": {
+      "type": "collection-filters",
+      "settings": {
+        "enable_filtering": true,
+        "enable_sorting": true,
+        "filter_layout": "sidebar",
+        "show_results_count": true,
+        "enable_clear_filters": true,
+        "filter_style": "bubbly",
+        "mobile_filter_style": "drawer",
+        "show_active_filters": true,
+        "enable_price_filter": true,
+        "enable_availability_filter": true,
+        "enable_vendor_filter": true,
+        "enable_color_swatches": true,
+        "swatch_style": "circle"
+      }
+    },
+    "main": {
+      "type": "main-collection-product-grid",
+      "settings": {
+        "products_per_row_desktop": 4,
+        "products_per_row_tablet": 2,
+        "products_per_row_mobile": 1,
+        "enable_quick_view": true,
+        "enable_quick_add": true,
+        "show_vendor": false,
+        "show_rating": true,
+        "show_compare_price": true,
+        "image_ratio": "adapt",
+        "image_hover_effect": "zoom",
+        "enable_product_badges": true,
+        "badge_style": "bubbly",
+        "grid_spacing": "medium",
+        "enable_infinite_scroll": false,
+        "pagination_style": "numbered",
+        "products_per_page": 24,
+        "enable_lazy_loading": true,
+        "show_product_count": true,
+        "enable_wishlist": true,
+        "card_style": "bubbly",
+        "enable_animations": true,
+        "animation_delay": 100
+      }
+    },
+    "collection-content": {
+      "type": "collection-content",
+      "blocks": [
+        {
+          "type": "rich_text",
+          "settings": {
+            "title": "About This Collection",
+            "text": "<p>Discover our carefully curated selection of premium products.</p>",
+            "text_alignment": "center",
+            "enable_section": false
+          }
+        },
+        {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "",
+            "title": "You Might Also Like",
+            "products_to_show": 4,
+            "enable_section": false
+          }
+        }
+      ],
+      "block_order": [
+        "rich_text",
+        "featured_collection"
+      ],
+      "settings": {
+        "enable_content_sections": false,
+        "content_position": "bottom",
+        "section_spacing": "large"
+      }
+    },
+    "quick-view-modal": {
+      "type": "quick-view-modal",
+      "settings": {
+        "enable_zoom": true,
+        "enable_social_sharing": false,
+        "show_vendor": true,
+        "show_sku": false,
+        "modal_style": "bubbly"
+      }
+    }
+  },
+  "order": [
+    "collection-header",
+    "collection-filters", 
+    "main",
+    "collection-content",
+    "quick-view-modal"
+  ]
+} 

@@ -1,0 +1,319 @@
+{% comment %}
+  Image Gallery Section - Taiga Theme Bubbly Style
+  Displays images in a responsive grid layout
+  Follows shopirule.mdc specifications
+{% endcomment %}
+
+{{ 'section-image-gallery.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign section_width = section.settings.section_width
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_tablet = section.settings.columns_tablet
+  assign columns_mobile = section.settings.columns_mobile
+  assign show_captions = section.settings.show_captions
+  assign enable_lightbox = section.settings.enable_lightbox
+-%}
+
+<div class="image-gallery image-gallery--{{ section_width }}" 
+     data-section-id="{{ section.id }}"
+     data-columns-desktop="{{ columns_desktop }}"
+     data-columns-tablet="{{ columns_tablet }}"
+     data-columns-mobile="{{ columns_mobile }}"
+     data-enable-lightbox="{{ enable_lightbox }}">
+  
+  {%- if section.settings.show_decorative_elements -%}
+    <div class="image-gallery__bubbles" aria-hidden="true">
+      <div class="image-gallery__bubble image-gallery__bubble--1"></div>
+      <div class="image-gallery__bubble image-gallery__bubble--2"></div>
+      <div class="image-gallery__bubble image-gallery__bubble--3"></div>
+      <div class="image-gallery__bubble image-gallery__bubble--4"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="image-gallery__container">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="image-gallery__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="image-gallery__heading">
+            {{ section.settings.heading | escape }}
+          </h2>
+        {%- endif -%}
+        
+        {%- if section.settings.subheading != blank -%}
+          <p class="image-gallery__subheading">
+            {{ section.settings.subheading | escape }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="image-gallery__grid image-gallery__grid--{{ columns_desktop }}-desktop image-gallery__grid--{{ columns_tablet }}-tablet image-gallery__grid--{{ columns_mobile }}-mobile">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'image' -%}
+              <div class="image-gallery__item" 
+                   data-block-id="{{ block.id }}"
+                   {{ block.shopify_attributes }}>
+                
+                {%- if block.settings.image != blank -%}
+                  <div class="image-gallery__image-wrapper">
+                    {%- if enable_lightbox -%}
+                      <button class="image-gallery__image-button" 
+                              type="button"
+                              data-image-src="{{ block.settings.image | image_url: width: 1920 }}"
+                              data-image-alt="{{ block.settings.image.alt | default: block.settings.caption | escape }}"
+                              aria-label="{{ 'sections.image_gallery.open_image' | t }}">
+                    {%- elsif block.settings.link != blank -%}
+                      <a href="{{ block.settings.link }}" 
+                         class="image-gallery__image-link"
+                         {% if block.settings.link contains 'http' %}target="_blank" rel="noopener"{% endif %}>
+                    {%- endif -%}
+                    
+                    <div class="image-gallery__image-container">
+                      <img class="image-gallery__image"
+                           src="{{ block.settings.image | image_url: width: 600 }}"
+                           alt="{{ block.settings.image.alt | default: block.settings.caption | escape }}"
+                           width="{{ block.settings.image.width }}"
+                           height="{{ block.settings.image.height }}"
+                           loading="lazy"
+                           sizes="(min-width: 990px) {{ 100 | divided_by: columns_desktop }}vw, (min-width: 750px) {{ 100 | divided_by: columns_tablet }}vw, {{ 100 | divided_by: columns_mobile }}vw">
+                      
+                      {%- if enable_lightbox -%}
+                        <div class="image-gallery__overlay">
+                          <span class="image-gallery__zoom-icon">
+                            {%- render 'icon-zoom-in' -%}
+                          </span>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                    
+                    {%- if enable_lightbox -%}
+                      </button>
+                    {%- elsif block.settings.link != blank -%}
+                      </a>
+                    {%- endif -%}
+                  </div>
+                  
+                  {%- if show_captions and block.settings.caption != blank -%}
+                    <div class="image-gallery__caption">
+                      {{ block.settings.caption }}
+                    </div>
+                  {%- endif -%}
+                {%- else -%}
+                  <div class="image-gallery__placeholder">
+                    {%- render 'icon-image' -%}
+                    <p>{{ 'sections.image_gallery.add_image' | t }}</p>
+                  </div>
+                {%- endif -%}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="image-gallery__empty">
+        <div class="image-gallery__empty-icon">
+          {%- render 'icon-image' -%}
+        </div>
+        <h3 class="image-gallery__empty-title">{{ 'sections.image_gallery.empty_title' | t }}</h3>
+        <p class="image-gallery__empty-text">{{ 'sections.image_gallery.empty_text' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if enable_lightbox -%}
+  <div class="image-gallery__lightbox" id="image-lightbox-{{ section.id }}" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="image-gallery__lightbox-overlay" aria-label="{{ 'sections.image_gallery.close_lightbox' | t }}"></div>
+    <div class="image-gallery__lightbox-content">
+      <button class="image-gallery__lightbox-close" 
+              type="button" 
+              aria-label="{{ 'sections.image_gallery.close_lightbox' | t }}">
+        {%- render 'icon-close' -%}
+      </button>
+      <div class="image-gallery__lightbox-image-container">
+        <img class="image-gallery__lightbox-image" src="" alt="">
+      </div>
+      <div class="image-gallery__lightbox-navigation">
+        <button class="image-gallery__lightbox-prev" 
+                type="button" 
+                aria-label="{{ 'sections.image_gallery.previous_image' | t }}">
+          {%- render 'icon-arrow-left' -%}
+        </button>
+        <button class="image-gallery__lightbox-next" 
+                type="button" 
+                aria-label="{{ 'sections.image_gallery.next_image' | t }}">
+          {%- render 'icon-arrow-right' -%}
+        </button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<script src="{{ 'section-image-gallery.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Image Gallery",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Gallery Settings"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 3,
+      "label": "Columns on Desktop",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 3,
+      "label": "Columns on Tablet",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "label": "Columns on Mobile",
+      "default": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "show_captions",
+      "label": "Show Image Captions",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable Lightbox",
+      "default": true,
+      "info": "Allow images to be viewed in full-screen lightbox"
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section Width",
+      "options": [
+        {
+          "value": "full-width",
+          "label": "Full Width"
+        },
+        {
+          "value": "contained",
+          "label": "Contained"
+        }
+      ],
+      "default": "contained"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_elements",
+      "label": "Show Decorative Bubbles",
+      "default": true,
+      "info": "Display floating bubble animations (Bubbly style)"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "info": "Optional caption for the image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Optional link when image is clicked (only if lightbox is disabled)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Gallery",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

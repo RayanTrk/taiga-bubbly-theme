@@ -1,0 +1,153 @@
+{
+  "sections": {
+    "page-header": {
+      "type": "page-header",
+      "settings": {
+        "show_page_image": true,
+        "page_image_height": "small",
+        "header_text_alignment": "center",
+        "overlay_opacity": 30,
+        "text_color": "#ffffff",
+        "enable_parallax": false,
+        "enable_breadcrumbs": true,
+        "breadcrumb_style": "bubbly"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "page_style": "bubbly",
+        "content_width": "narrow",
+        "enable_animations": true
+      }
+    },
+    "contact-info": {
+      "type": "contact-information",
+      "settings": {
+        "heading": "Get in Touch",
+        "subheading": "We'd love to hear from you",
+        "show_address": true,
+        "show_phone": true,
+        "show_email": true,
+        "show_hours": true,
+        "section_style": "bubbly",
+        "layout": "cards"
+      },
+      "blocks": [
+        {
+          "type": "address",
+          "settings": {
+            "icon": "location",
+            "title": "Visit Our Store",
+            "content": "123 Sustainable Street<br>Green City, GC 12345<br>United States"
+          }
+        },
+        {
+          "type": "phone",
+          "settings": {
+            "icon": "phone",
+            "title": "Call Us",
+            "content": "+1 (555) 123-4567<br>Monday - Friday: 9AM - 6PM"
+          }
+        },
+        {
+          "type": "email",
+          "settings": {
+            "icon": "message",
+            "title": "Email Us",
+            "content": "hello@yourstore.com<br>support@yourstore.com"
+          }
+        },
+        {
+          "type": "hours",
+          "settings": {
+            "icon": "clock",
+            "title": "Store Hours",
+            "content": "Monday - Friday: 9AM - 7PM<br>Saturday: 10AM - 6PM<br>Sunday: 12PM - 5PM"
+          }
+        }
+      ]
+    },
+    "contact-form": {
+      "type": "contact-form",
+      "settings": {
+        "heading": "Send Us a Message",
+        "subheading": "We'll get back to you within 24 hours",
+        "form_style": "bubbly",
+        "show_subject_field": true,
+        "show_phone_field": true,
+        "enable_file_upload": false,
+        "success_message": "Thank you for your message! We'll get back to you soon.",
+        "button_text": "Send Message"
+      }
+    },
+    "map-section": {
+      "type": "map-section",
+      "settings": {
+        "heading": "Find Us",
+        "map_address": "123 Sustainable Street, Green City, GC 12345",
+        "map_zoom": 15,
+        "map_style": "roadmap",
+        "show_marker": true,
+        "marker_color": "#667eea",
+        "section_style": "bubbly",
+        "map_height": "medium"
+      }
+    },
+    "faq-section": {
+      "type": "faq-section",
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "subheading": "Quick answers to common questions",
+        "faq_style": "accordion",
+        "section_style": "bubbly",
+        "allow_multiple_open": false
+      },
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What are your shipping times?",
+            "answer": "We typically ship within 1-2 business days. Standard shipping takes 3-5 business days, while express shipping takes 1-2 business days."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Do you offer international shipping?",
+            "answer": "Yes, we ship to most countries worldwide. International shipping times vary by location but typically take 7-14 business days."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "We offer a 30-day return policy for all unused items in their original packaging. Return shipping is free for defective items."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Are your products really sustainable?",
+            "answer": "Absolutely! All our products are carefully vetted for sustainability. We work only with suppliers who share our commitment to environmental responsibility."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "Once your order ships, you'll receive a tracking number via email. You can also check your order status in your account dashboard."
+          }
+        }
+      ]
+    }
+  },
+  "order": [
+    "page-header",
+    "main",
+    "contact-info",
+    "contact-form",
+    "map-section",
+    "faq-section"
+  ]
+} 

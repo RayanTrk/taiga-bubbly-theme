@@ -1,0 +1,345 @@
+{% comment %}
+  Team Showcase Section
+  Displays team members in a grid layout with social links and bios
+{% endcomment %}
+
+{{ 'section-team-showcase.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-team-showcase.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign team_layout = section.settings.team_layout
+  assign members_per_row = section.settings.members_per_row
+  assign show_social_links = section.settings.show_social_links
+  assign enable_hover_effects = section.settings.enable_hover_effects
+  assign section_style = section.settings.section_style
+-%}
+
+<div class="team-showcase team-showcase--{{ team_layout }} team-showcase--{{ section_style }}"
+     data-team-showcase
+     data-hover-effects="{{ enable_hover_effects }}">
+  
+  <div class="team-showcase__container page-width">
+    
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="team-showcase__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="team-showcase__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="team-showcase__subheading">{{ section.settings.subheading | escape }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    
+    {%- if section.blocks.size > 0 -%}
+      <div class="team-showcase__grid"
+           style="--members-per-row: {{ members_per_row }};">
+        
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'team_member' -%}
+              <div class="team-showcase__member team-member team-member--{{ section_style }}"
+                   data-team-member
+                   data-animation-delay="{{ forloop.index | times: 100 }}"
+                   {{ block.shopify_attributes }}>
+                
+                {%- if block.settings.image -%}
+                  <div class="team-member__image-container">
+                    <img class="team-member__image"
+                         src="{{ block.settings.image | image_url: width: 400 }}"
+                         alt="{{ block.settings.image.alt | escape | default: block.settings.name | escape }}"
+                         width="{{ block.settings.image.width }}"
+                         height="{{ block.settings.image.height }}"
+                         loading="lazy">
+                    
+                    {%- if show_social_links -%}
+                      <div class="team-member__social-overlay">
+                        <div class="team-member__social-links">
+                          
+                          {%- if block.settings.facebook_url != blank -%}
+                            <a href="{{ block.settings.facebook_url }}"
+                               class="team-member__social-link team-member__social-link--facebook"
+                               target="_blank"
+                               rel="noopener"
+                               aria-label="{{ 'general.social.facebook' | t }}: {{ block.settings.name }}">
+                              {%- render 'icon-facebook' -%}
+                            </a>
+                          {%- endif -%}
+                          
+                          {%- if block.settings.twitter_url != blank -%}
+                            <a href="{{ block.settings.twitter_url }}"
+                               class="team-member__social-link team-member__social-link--twitter"
+                               target="_blank"
+                               rel="noopener"
+                               aria-label="{{ 'general.social.twitter' | t }}: {{ block.settings.name }}">
+                              {%- render 'icon-twitter' -%}
+                            </a>
+                          {%- endif -%}
+                          
+                          {%- if block.settings.instagram_url != blank -%}
+                            <a href="{{ block.settings.instagram_url }}"
+                               class="team-member__social-link team-member__social-link--instagram"
+                               target="_blank"
+                               rel="noopener"
+                               aria-label="{{ 'general.social.instagram' | t }}: {{ block.settings.name }}">
+                              {%- render 'icon-instagram' -%}
+                            </a>
+                          {%- endif -%}
+                          
+                          {%- if block.settings.linkedin_url != blank -%}
+                            <a href="{{ block.settings.linkedin_url }}"
+                               class="team-member__social-link team-member__social-link--linkedin"
+                               target="_blank"
+                               rel="noopener"
+                               aria-label="{{ 'general.social.linkedin' | t }}: {{ block.settings.name }}">
+                              {%- render 'icon-linkedin' -%}
+                            </a>
+                          {%- endif -%}
+                          
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+                
+                <div class="team-member__content">
+                  
+                  {%- if block.settings.name != blank -%}
+                    <h3 class="team-member__name">{{ block.settings.name | escape }}</h3>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.position != blank -%}
+                    <p class="team-member__position">{{ block.settings.position | escape }}</p>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.bio != blank -%}
+                    <div class="team-member__bio">
+                      {{ block.settings.bio | newline_to_br }}
+                    </div>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.email != blank -%}
+                    <div class="team-member__contact">
+                      <a href="mailto:{{ block.settings.email }}"
+                         class="team-member__email">
+                        {%- render 'icon-email' -%}
+                        {{ block.settings.email }}
+                      </a>
+                    </div>
+                  {%- endif -%}
+                  
+                </div>
+                
+                {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+                {%- if section_style == 'bubbly' -%}
+                  <div class="team-member__decorative-elements" aria-hidden="true">
+                    <div class="team-member__bubble team-member__bubble--1"></div>
+                    <div class="team-member__bubble team-member__bubble--2"></div>
+                  </div>
+                {%- endif -%}
+                
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+        
+      </div>
+    {%- else -%}
+      
+      <div class="team-showcase__empty">
+        <p class="team-showcase__empty-text">{{ 'sections.team.no_members' | t }}</p>
+      </div>
+      
+    {%- endif -%}
+    
+  </div>
+  
+  {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+  {%- if section_style == 'bubbly' -%}
+    <div class="team-showcase__decorative-elements" aria-hidden="true">
+      <div class="team-showcase__bubble team-showcase__bubble--1"></div>
+      <div class="team-showcase__bubble team-showcase__bubble--2"></div>
+      <div class="team-showcase__bubble team-showcase__bubble--3"></div>
+    </div>
+  {%- endif -%}
+  
+</div>
+
+{% schema %}
+{
+  "name": "Team Showcase",
+  "class": "team-showcase-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Meet Our Team"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "The passionate people behind our brand"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "team_layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        },
+        {
+          "value": "masonry",
+          "label": "Masonry"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "members_per_row",
+      "label": "Members per row (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_links",
+      "label": "Show social links",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_effects",
+      "label": "Enable hover effects",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "Section style",
+      "options": [
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "transparent"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "team_member",
+      "name": "Team Member",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Team Member"
+        },
+        {
+          "type": "text",
+          "id": "position",
+          "label": "Position",
+          "default": "Job Title"
+        },
+        {
+          "type": "textarea",
+          "id": "bio",
+          "label": "Bio",
+          "default": "Brief description about this team member and their role."
+        },
+        {
+          "type": "email",
+          "id": "email",
+          "label": "Email address"
+        },
+        {
+          "type": "header",
+          "content": "Social Links"
+        },
+        {
+          "type": "url",
+          "id": "facebook_url",
+          "label": "Facebook URL"
+        },
+        {
+          "type": "url",
+          "id": "twitter_url",
+          "label": "Twitter URL"
+        },
+        {
+          "type": "url",
+          "id": "instagram_url",
+          "label": "Instagram URL"
+        },
+        {
+          "type": "url",
+          "id": "linkedin_url",
+          "label": "LinkedIn URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Team Showcase",
+      "blocks": [
+        {
+          "type": "team_member"
+        },
+        {
+          "type": "team_member"
+        },
+        {
+          "type": "team_member"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 

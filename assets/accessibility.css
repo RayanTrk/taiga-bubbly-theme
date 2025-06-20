@@ -1,0 +1,619 @@
+/*
+* Accessibility Styles - Taiga Theme Bubbly Style
+* Conforme aux standards WCAG 2.1 AA selon les règles shopirule
+* Support pour lecteurs d'écran, navigation clavier et contraste élevé
+*/
+
+/* Classes utilitaires d'accessibilité selon shopirule */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.visually-hidden:focus {
+  position: absolute !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+  background: var(--color-primary) !important;
+  color: white !important;
+  border: 2px solid var(--color-background) !important;
+  border-radius: 4px !important;
+  z-index: 9999 !important;
+  top: 8px !important;
+  left: 8px !important;
+}
+
+/* Skip link selon les meilleures pratiques */
+.skip-to-content-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  z-index: 9999;
+  color: var(--color-background);
+  background: var(--color-primary);
+  padding: 12px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transform: translateY(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+}
+
+.skip-to-content-link:focus {
+  transform: translateY(0%);
+  outline: 2px solid var(--color-background);
+  outline-offset: 2px;
+}
+
+/* États de focus améliorés selon shopirule */
+*:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Focus visible uniquement pour la navigation clavier */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Styles de focus spécifiques pour différents éléments */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Navigation et liens améliorés pour l'accessibilité */
+.nav-link:focus-visible,
+.mobile-nav-link:focus-visible {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Boutons et éléments interactifs */
+.header__search-toggle:focus-visible,
+.header__account-link:focus-visible,
+.header__cart-link:focus-visible,
+.mobile-nav-toggle:focus-visible {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+/* Amélioration des contrastes pour l'accessibilité */
+:root {
+  --color-focus: #0066CC;
+  --color-focus-bg: rgba(0, 102, 204, 0.1);
+  --minimum-contrast-ratio: 4.5;
+}
+
+/* Support pour prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .announcement-bar::before {
+    animation: none !important;
+  }
+}
+
+/* Support pour prefers-contrast: high */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #0000EE;
+    --color-secondary: #0000AA;
+    --color-text: #000000;
+    --color-background: #FFFFFF;
+    --color-border: #000000;
+  }
+  
+  .nav-link::after {
+    background: currentColor !important;
+  }
+  
+  .header__cart-count {
+    border: 2px solid var(--color-background) !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+  }
+  
+  .social-icon {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+  }
+  
+  .newsletter-form__submit {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+  }
+}
+
+/* Amélioration des tailles de cibles tactiles (44x44px minimum) */
+.header__search-toggle,
+.header__account-link,
+.header__cart-link,
+.mobile-nav-toggle,
+.mobile-navigation__close,
+.newsletter-form__submit,
+.social-icon {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Amélioration de la lisibilité des textes */
+.footer-nav__link,
+.mobile-nav-link,
+.nav-link {
+  line-height: 1.5;
+  word-spacing: 0.1em;
+}
+
+/* Indicateurs d'état améliorés */
+[aria-expanded="true"] .nav-link__icon,
+[aria-expanded="true"] .mobile-nav-link__icon {
+  transform: rotate(180deg);
+}
+
+[aria-hidden="true"] {
+  display: none !important;
+}
+
+/* Messages d'erreur et de succès accessibles */
+.newsletter-form__error,
+.newsletter-form__success {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.newsletter-form__error {
+  background-color: rgba(255, 68, 68, 0.1);
+  color: #D93025;
+  border: 1px solid #D93025;
+}
+
+.newsletter-form__success {
+  background-color: rgba(0, 200, 81, 0.1);
+  color: #137333;
+  border: 1px solid #137333;
+}
+
+/* Amélioration des menus déroulants pour l'accessibilité */
+.nav-submenu[aria-hidden="false"],
+.mobile-nav-submenu[aria-hidden="false"] {
+  display: block;
+}
+
+.nav-submenu[aria-hidden="true"],
+.mobile-nav-submenu[aria-hidden="true"] {
+  display: none;
+}
+
+/* Navigation par tabulation améliorée */
+.nav-list,
+.mobile-nav-list {
+  position: relative;
+}
+
+.nav-item:focus-within .nav-submenu,
+.mobile-nav-item:focus-within .mobile-nav-submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Support pour les technologies d'assistance */
+[role="button"] {
+  cursor: pointer;
+}
+
+[role="button"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Amélioration des contrastes de couleur */
+.announcement-bar {
+  background: linear-gradient(135deg, #0066CC, #004499) !important;
+  color: #FFFFFF !important;
+}
+
+.footer-nav__link:hover,
+.mobile-nav-link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Indicateurs visuels pour les éléments interactifs */
+button,
+[role="button"],
+.nav-link,
+.footer-nav__link,
+.social-icon {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+button:hover,
+[role="button"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Support pour les lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Amélioration de l'accessibilité des formulaires */
+.newsletter-form__input:invalid {
+  border-color: #D93025;
+  box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.2);
+}
+
+.newsletter-form__input:valid {
+  border-color: #137333;
+}
+
+/* Messages d'aide pour les formulaires */
+.form-help {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Amélioration des états de chargement */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-top: 2px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mode sombre accessible */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #66B3FF;
+    --color-secondary: #4A9EFF;
+    --color-text: #FFFFFF;
+    --color-text-secondary: #CCCCCC;
+    --color-background: #121212;
+    --color-background-alt: #1E1E1E;
+    --color-border: #333333;
+  }
+  
+  .newsletter-form__input {
+    background-color: var(--color-background-alt);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+  
+  .newsletter-form__error {
+    background-color: rgba(255, 68, 68, 0.2);
+    color: #FF6B6B;
+  }
+  
+  .newsletter-form__success {
+    background-color: rgba(0, 200, 81, 0.2);
+    color: #66D9A0;
+  }
+}
+
+/* Support pour les appareils à faible bande passante */
+@media (prefers-reduced-data: reduce) {
+  .announcement-bar::before {
+    animation: none;
+  }
+  
+  /* Désactiver les animations coûteuses */
+  .social-icon:hover {
+    transform: none;
+  }
+}
+
+/* Amélioration de l'accessibilité mobile */
+@media (max-width: 750px) {
+  .header__search-toggle,
+  .header__account-link,
+  .header__cart-link {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  .mobile-nav-toggle {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 12px;
+  }
+  
+  /* Amélioration de l'espace entre les éléments tactiles */
+  .header__actions {
+    gap: 16px;
+  }
+}
+
+/* Support pour l'orientation landscape sur mobile */
+@media (max-height: 480px) and (orientation: landscape) {
+  .mobile-navigation__content {
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Amélioration de l'accessibilité pour les utilisateurs de technologies d'assistance */
+[aria-live="polite"],
+[aria-live="assertive"] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live="polite"]:not(:empty),
+[aria-live="assertive"]:not(:empty) {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+/* Style pour les liens externes */
+a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.8em;
+  text-decoration: none;
+}
+
+/* Amélioration de la visibilité des éléments focus */
+.focus-ring {
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-primary);
+  border-radius: 4px;
+}
+
+/* Support pour Windows High Contrast Mode */
+@media (forced-colors: active) {
+  .social-icon {
+    border: 1px solid ButtonText;
+  }
+  
+  .newsletter-form__submit {
+    border: 1px solid ButtonText;
+  }
+  
+  .header__cart-count {
+    border: 1px solid ButtonText;
+  }
+}
+
+/* ===== AMÉLIORATIONS HEADER ET FOOTER SELON SHOPIRULE ===== */
+
+/* Skip navigation amélioré pour Bubbly style */
+.skip-to-content-link {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.skip-to-content-link:focus {
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4);
+  transform: translateY(0%) scale(1.05);
+}
+
+/* Header accessibility selon shopirule */
+.site-header:focus-within {
+  z-index: 1000;
+}
+
+/* Navigation principale - ARIA et landmarks selon shopirule */
+.nav-link[aria-current="page"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  border-radius: 2px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Mobile navigation accessibility selon shopirule */
+.mobile-navigation[aria-hidden="false"] {
+  overflow: hidden; /* Empêche le scroll de la page derrière */
+}
+
+.mobile-navigation__content {
+  isolation: isolate;
+}
+
+/* Focus management pour mobile navigation selon shopirule */
+.mobile-nav-toggle[aria-expanded="true"] {
+  position: fixed;
+  z-index: 1001;
+}
+
+/* États de focus améliorés selon le style Bubbly */
+.mobile-nav-link:focus-visible {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(var(--color-primary-rgb), 0.2) 100%);
+  outline: 3px solid var(--color-primary);
+  outline-offset: -3px;
+  transform: scale(1.02);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.mobile-nav-submenu-link:focus-visible {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(var(--color-primary-rgb), 0.15) 100%);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+  transform: translateX(8px) scale(1.02);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.15);
+}
+
+/* Footer accessibility selon shopirule */
+.footer-nav__link:focus-visible {
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1) 0%, rgba(var(--color-primary-rgb), 0.05) 100%);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--border-radius);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Newsletter form accessibility selon shopirule */
+.newsletter-form__input:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.02);
+}
+
+.newsletter-form__submit:focus-visible {
+  outline: 3px solid var(--color-background);
+  outline-offset: 2px;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+/* Social media links accessibility selon shopirule */
+.social-icon:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Screen reader improvements selon shopirule */
+.sr-announcement {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Indicateurs visuels pour états selon shopirule */
+.nav-link[aria-expanded="true"] {
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1) 0%, rgba(var(--color-primary-rgb), 0.05) 100%);
+  border-radius: var(--border-radius);
+}
+
+.mobile-nav-link[aria-expanded="true"] {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(var(--color-primary-rgb), 0.15) 100%);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* High contrast mode selon shopirule */
+@media (prefers-contrast: high) {
+  .nav-link[aria-current="page"]::before {
+    background: #000000 !important;
+    height: 4px !important;
+  }
+  
+  .mobile-nav-link:focus-visible,
+  .mobile-nav-submenu-link:focus-visible,
+  .footer-nav__link:focus-visible {
+    outline: 4px solid #000000 !important;
+    background: #FFFF00 !important;
+    color: #000000 !important;
+  }
+}
+
+/* Responsive accessibility selon shopirule */
+@media (max-width: 768px) {
+  .skip-to-content-link {
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    padding: 16px 24px;
+    font-size: 18px;
+    min-width: 200px;
+    text-align: center;
+  }
+  
+  .skip-to-content-link:focus {
+    transform: translateX(-50%) translateY(0%) scale(1.05);
+  }
+  
+  .mobile-nav-link,
+  .mobile-nav-submenu-link {
+    min-height: 48px; /* Cibles tactiles plus grandes sur mobile */
+  }
+}
+
+/* Support pour Windows High Contrast Mode selon shopirule */
+@media (forced-colors: active) {
+  .nav-link[aria-current="page"]::before {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  
+  .mobile-nav-link:focus-visible,
+  .footer-nav__link:focus-visible {
+    outline: 2px solid Highlight;
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+} 

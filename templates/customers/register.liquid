@@ -1,0 +1,240 @@
+{{ 'section-customer-register.css' | asset_url | stylesheet_tag }}
+{{ 'section-customer-register.js' | asset_url | script_tag: defer: true }}
+
+<div class="customer-register-wrapper">
+  <!-- Floating Bubbles Background -->
+  <div class="floating-bubbles" aria-hidden="true">
+    {%- for i in (1..12) -%}
+      <div class="bubble bubble-{{ i }}"></div>
+    {%- endfor -%}
+  </div>
+
+  <div class="page-width">
+    <div class="customer-register-container">
+      <div class="customer-register-header">
+        <h1 class="customer-register-title">{{ 'customer.register.title' | t }}</h1>
+        <p class="customer-register-subtitle">{{ 'customer.register.subtitle' | t }}</p>
+      </div>
+
+      <div class="customer-register-content">
+        <div class="customer-register-form-wrapper">
+          <div class="customer-register-form-container">
+            <h2 class="form-title">{{ 'customer.register.form_title' | t }}</h2>
+            
+            {%- form 'create_customer', novalidate: 'novalidate', class: 'customer-register-form' -%}
+              {%- if form.errors -%}
+                <div class="form-errors" role="alert" aria-live="polite">
+                  <div class="form-errors-icon">
+                    <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm3.5 11L12 14.5 10 12.5 8 14.5 6.5 13l2-2-2-2L8 7.5l2 2 2-2L13.5 9l-2 2 2 2z"/>
+                    </svg>
+                  </div>
+                  <div class="form-errors-content">
+                    <h3 class="form-errors-title">{{ 'customer.register.error_title' | t }}</h3>
+                    <ul class="form-errors-list">
+                      {%- for error in form.errors -%}
+                        <li>{{ error }}</li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="RegisterFirstName" class="form-label">
+                    {{ 'customer.register.first_name' | t }}
+                    <span class="form-required" aria-label="{{ 'customer.register.required' | t }}">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="customer[first_name]"
+                    id="RegisterFirstName"
+                    class="form-input"
+                    autocomplete="given-name"
+                    value="{{ form.first_name }}"
+                    required
+                    aria-describedby="first-name-error"
+                  >
+                  <span id="first-name-error" class="form-error-message" role="alert" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="RegisterLastName" class="form-label">
+                    {{ 'customer.register.last_name' | t }}
+                    <span class="form-required" aria-label="{{ 'customer.register.required' | t }}">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="customer[last_name]"
+                    id="RegisterLastName"
+                    class="form-input"
+                    autocomplete="family-name"
+                    value="{{ form.last_name }}"
+                    required
+                    aria-describedby="last-name-error"
+                  >
+                  <span id="last-name-error" class="form-error-message" role="alert" aria-live="polite"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="RegisterEmail" class="form-label">
+                  {{ 'customer.register.email' | t }}
+                  <span class="form-required" aria-label="{{ 'customer.register.required' | t }}">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="customer[email]"
+                  id="RegisterEmail"
+                  class="form-input"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  value="{{ form.email }}"
+                  required
+                  aria-describedby="email-error"
+                >
+                <span id="email-error" class="form-error-message" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="RegisterPassword" class="form-label">
+                  {{ 'customer.register.password' | t }}
+                  <span class="form-required" aria-label="{{ 'customer.register.required' | t }}">*</span>
+                </label>
+                <div class="password-input-wrapper">
+                  <input
+                    type="password"
+                    name="customer[password]"
+                    id="RegisterPassword"
+                    class="form-input password-input"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    aria-describedby="password-error password-requirements"
+                  >
+                  <button type="button" class="password-toggle" aria-label="{{ 'customer.register.show_password' | t }}">
+                    <svg class="password-toggle-show" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M10 4C5.5 4 1.7 6.9 0 11c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 11.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zm0-7c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z"/>
+                    </svg>
+                    <svg class="password-toggle-hide" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="display: none;">
+                      <path fill="currentColor" d="M10 4C5.5 4 1.7 6.9 0 11c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 11.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zm0-7c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z"/>
+                      <path fill="currentColor" d="M2 2l16 16-1.4 1.4L15 17.8c-1.5.8-3.2 1.2-5 1.2-4.5 0-8.3-2.9-10-7 .8-2 2.2-3.7 4-4.9L2.6 3.4 2 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <div id="password-requirements" class="password-requirements">
+                  <p class="requirements-title">{{ 'customer.register.password_requirements' | t }}</p>
+                  <ul class="requirements-list">
+                    <li class="requirement" data-requirement="length">
+                      <svg class="requirement-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                      </svg>
+                      {{ 'customer.register.password_length' | t }}
+                    </li>
+                    <li class="requirement" data-requirement="letter">
+                      <svg class="requirement-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                      </svg>
+                      {{ 'customer.register.password_letter' | t }}
+                    </li>
+                    <li class="requirement" data-requirement="number">
+                      <svg class="requirement-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M13.5 2L6 9.5 2.5 6 1 7.5 6 12.5 15 4.5z"/>
+                      </svg>
+                      {{ 'customer.register.password_number' | t }}
+                    </li>
+                  </ul>
+                </div>
+                <span id="password-error" class="form-error-message" role="alert" aria-live="polite"></span>
+              </div>
+
+              {%- if shop.checkout.guest_login -%}
+                <div class="form-group form-checkbox">
+                  <input
+                    type="checkbox"
+                    name="customer[accepts_marketing]"
+                    id="RegisterAcceptsMarketing"
+                    class="form-checkbox-input"
+                    value="1"
+                    {% if form.accepts_marketing %}checked{% endif %}
+                  >
+                  <label for="RegisterAcceptsMarketing" class="form-checkbox-label">
+                    {{ 'customer.register.accepts_marketing' | t }}
+                  </label>
+                </div>
+              {%- endif -%}
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full-width">
+                  <span class="btn-text">{{ 'customer.register.submit' | t }}</span>
+                  <div class="btn-loading" aria-hidden="true">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="form-links">
+                <p class="login-link-text">{{ 'customer.register.already_have_account' | t }}</p>
+                <a href="{{ routes.account_login_url }}" class="link-underline">
+                  {{ 'customer.register.sign_in' | t }}
+                </a>
+              </div>
+            {%- endform -%}
+          </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="register-benefits-wrapper">
+          <div class="register-benefits-container">
+            <h2 class="benefits-title">{{ 'customer.register.benefits_title' | t }}</h2>
+            <p class="benefits-subtitle">{{ 'customer.register.benefits_subtitle' | t }}</p>
+            
+            <div class="benefits-grid">
+              <div class="benefit-card">
+                <div class="benefit-icon">
+                  <svg aria-hidden="true" focusable="false" width="32" height="32" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M16 2L21 12H31L23 18L26 28L16 22L6 28L9 18L1 12H11L16 2Z"/>
+                  </svg>
+                </div>
+                <h3 class="benefit-title">{{ 'customer.register.benefit_1_title' | t }}</h3>
+                <p class="benefit-description">{{ 'customer.register.benefit_1_description' | t }}</p>
+              </div>
+
+              <div class="benefit-card">
+                <div class="benefit-icon">
+                  <svg aria-hidden="true" focusable="false" width="32" height="32" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm6 13h-5v5h-2v-5H10v-2h5v-5h2v5h5v2z"/>
+                  </svg>
+                </div>
+                <h3 class="benefit-title">{{ 'customer.register.benefit_2_title' | t }}</h3>
+                <p class="benefit-description">{{ 'customer.register.benefit_2_description' | t }}</p>
+              </div>
+
+              <div class="benefit-card">
+                <div class="benefit-icon">
+                  <svg aria-hidden="true" focusable="false" width="32" height="32" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M26 8H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 2v2.4L16 18 6 12.4V10h20zm0 12H6v-7.6l10 5.6 10-5.6V22z"/>
+                  </svg>
+                </div>
+                <h3 class="benefit-title">{{ 'customer.register.benefit_3_title' | t }}</h3>
+                <p class="benefit-description">{{ 'customer.register.benefit_3_description' | t }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "{{ 'customer.register.title' | t }}",
+  "description": "{{ 'customer.register.subtitle' | t }}",
+  "url": "{{ shop.url }}{{ routes.account_register_url }}"
+}
+</script> 

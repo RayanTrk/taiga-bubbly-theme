@@ -1,0 +1,358 @@
+{% comment %}
+  Collection Pagination Section
+  Provides pagination and infinite scroll functionality
+{% endcomment %}
+
+{%- liquid
+  assign current_page = paginate.current_page
+  assign total_pages = paginate.pages
+  assign per_page = paginate.page_size
+  assign total_items = paginate.items
+  assign has_prev = paginate.previous
+  assign has_next = paginate.next
+  
+  assign pagination_type = section.settings.pagination_type | default: 'traditional'
+  assign show_page_numbers = section.settings.show_page_numbers
+  assign max_page_links = section.settings.max_page_links | default: 5
+-%}
+
+<div class="collection-pagination collection-pagination--{{ section.settings.style }} collection-pagination--{{ pagination_type }}" 
+     data-section-id="{{ section.id }}" 
+     data-section-type="collection-pagination"
+     data-pagination-type="{{ pagination_type }}"
+     data-current-page="{{ current_page }}"
+     data-total-pages="{{ total_pages }}"
+     data-per-page="{{ per_page }}">
+
+  {%- if pagination_type == 'traditional' and total_pages > 1 -%}
+    
+    <nav class="collection-pagination__nav" 
+         aria-label="{{ 'collections.pagination.navigation' | t }}"
+         role="navigation">
+      
+      <div class="collection-pagination__container">
+        
+        {%- comment -%} Previous Page Button {%- endcomment -%}
+        {%- if has_prev -%}
+          <a href="{{ paginate.previous.url }}" 
+             class="collection-pagination__button collection-pagination__button--prev"
+             aria-label="{{ 'collections.pagination.previous_page' | t }}">
+            {%- render 'icon-arrow-left' -%}
+            <span class="collection-pagination__button-text">
+              {{ 'collections.pagination.previous' | t }}
+            </span>
+          </a>
+        {%- else -%}
+          <span class="collection-pagination__button collection-pagination__button--prev collection-pagination__button--disabled"
+                aria-disabled="true">
+            {%- render 'icon-arrow-left' -%}
+            <span class="collection-pagination__button-text">
+              {{ 'collections.pagination.previous' | t }}
+            </span>
+          </span>
+        {%- endif -%}
+        
+        {%- if show_page_numbers -%}
+          <div class="collection-pagination__pages">
+            
+            {%- liquid
+              assign start_page = current_page | minus: 2
+              if start_page < 1
+                assign start_page = 1
+              endif
+              
+              assign end_page = current_page | plus: 2
+              if end_page > total_pages
+                assign end_page = total_pages
+              endif
+              
+              if end_page | minus: start_page | plus: 1 < max_page_links
+                if start_page > 1
+                  assign diff = max_page_links | minus: end_page | plus: start_page | minus: 1
+                  assign start_page = start_page | minus: diff
+                  if start_page < 1
+                    assign start_page = 1
+                  endif
+                endif
+                
+                if end_page < total_pages
+                  assign diff = max_page_links | minus: end_page | plus: start_page | minus: 1
+                  assign end_page = end_page | plus: diff
+                  if end_page > total_pages
+                    assign end_page = total_pages
+                  endif
+                endif
+              endif
+            -%}
+            
+            {%- comment -%} First page link {%- endcomment -%}
+            {%- if start_page > 1 -%}
+              <a href="{{ paginate.parts.first.url }}" 
+                 class="collection-pagination__page-link"
+                 aria-label="{{ 'collections.pagination.page' | t: number: 1 }}">
+                1
+              </a>
+              
+              {%- if start_page > 2 -%}
+                <span class="collection-pagination__ellipsis" aria-hidden="true">…</span>
+              {%- endif -%}
+            {%- endif -%}
+            
+            {%- comment -%} Page number links {%- endcomment -%}
+            {%- for i in (start_page..end_page) -%}
+              {%- if i == current_page -%}
+                <span class="collection-pagination__page-link collection-pagination__page-link--current"
+                      aria-current="page"
+                      aria-label="{{ 'collections.pagination.current_page' | t: number: i }}">
+                  {{ i }}
+                </span>
+              {%- else -%}
+                <a href="{{ paginate.parts[i].url }}" 
+                   class="collection-pagination__page-link"
+                   aria-label="{{ 'collections.pagination.page' | t: number: i }}">
+                  {{ i }}
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+            
+            {%- comment -%} Last page link {%- endcomment -%}
+            {%- if end_page < total_pages -%}
+              {%- if end_page < total_pages | minus: 1 -%}
+                <span class="collection-pagination__ellipsis" aria-hidden="true">…</span>
+              {%- endif -%}
+              
+              <a href="{{ paginate.parts.last.url }}" 
+                 class="collection-pagination__page-link"
+                 aria-label="{{ 'collections.pagination.page' | t: number: total_pages }}">
+                {{ total_pages }}
+              </a>
+            {%- endif -%}
+            
+          </div>
+        {%- endif -%}
+        
+        {%- comment -%} Next Page Button {%- endcomment -%}
+        {%- if has_next -%}
+          <a href="{{ paginate.next.url }}" 
+             class="collection-pagination__button collection-pagination__button--next"
+             aria-label="{{ 'collections.pagination.next_page' | t }}">
+            <span class="collection-pagination__button-text">
+              {{ 'collections.pagination.next' | t }}
+            </span>
+            {%- render 'icon-arrow-right' -%}
+          </a>
+        {%- else -%}
+          <span class="collection-pagination__button collection-pagination__button--next collection-pagination__button--disabled"
+                aria-disabled="true">
+            <span class="collection-pagination__button-text">
+              {{ 'collections.pagination.next' | t }}
+            </span>
+            {%- render 'icon-arrow-right' -%}
+          </span>
+        {%- endif -%}
+        
+      </div>
+      
+      {%- if section.settings.show_page_info -%}
+        <div class="collection-pagination__info">
+          <span class="collection-pagination__info-text">
+            {{ 'collections.pagination.page_info' | t: current: current_page, total: total_pages }}
+          </span>
+        </div>
+      {%- endif -%}
+      
+    </nav>
+    
+  {%- elsif pagination_type == 'infinite' -%}
+    
+    <div class="collection-pagination__infinite" 
+         data-infinite-scroll
+         data-next-url="{{ paginate.next.url | default: '' }}"
+         data-threshold="{{ section.settings.infinite_threshold | default: 200 }}">
+      
+      {%- if has_next -%}
+        <div class="collection-pagination__infinite-trigger" data-infinite-trigger>
+          <button type="button" 
+                  class="collection-pagination__load-more-button"
+                  data-load-more
+                  aria-label="{{ 'collections.pagination.load_more' | t }}">
+            <span class="collection-pagination__load-more-text">
+              {{ 'collections.pagination.load_more' | t }}
+            </span>
+            <div class="collection-pagination__load-more-spinner" aria-hidden="true">
+              {%- render 'icon-spinner' -%}
+            </div>
+          </button>
+        </div>
+        
+        <div class="collection-pagination__infinite-status" 
+             data-infinite-status 
+             aria-live="polite" 
+             aria-atomic="true">
+          <span class="collection-pagination__status-text" data-status-text></span>
+        </div>
+      {%- else -%}
+        <div class="collection-pagination__end-message">
+          <span class="collection-pagination__end-text">
+            {{ 'collections.pagination.no_more_products' | t }}
+          </span>
+        </div>
+      {%- endif -%}
+      
+    </div>
+    
+  {%- endif -%}
+  
+  {%- comment -%} Loading overlay for AJAX requests {%- endcomment -%}
+  <div class="collection-pagination__loading-overlay" 
+       data-loading-overlay 
+       aria-hidden="true">
+    <div class="collection-pagination__loading-content">
+      <div class="collection-pagination__loading-spinner">
+        {%- render 'icon-spinner' -%}
+      </div>
+      <span class="collection-pagination__loading-text">
+        {{ 'collections.pagination.loading' | t }}
+      </span>
+    </div>
+  </div>
+  
+  {%- comment -%} Decorative elements for Bubbly style {%- endcomment -%}
+  {%- if section.settings.style == 'bubbly' -%}
+    <div class="collection-pagination__decorative-elements" aria-hidden="true">
+      <div class="collection-pagination__bubble collection-pagination__bubble--1"></div>
+      <div class="collection-pagination__bubble collection-pagination__bubble--2"></div>
+      <div class="collection-pagination__bubble collection-pagination__bubble--3"></div>
+      <div class="collection-pagination__bubble collection-pagination__bubble--4"></div>
+    </div>
+  {%- endif -%}
+  
+</div>
+
+<script>
+  // Initialize pagination functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const paginationSection = document.querySelector('[data-section-id="{{ section.id }}"]');
+    if (paginationSection && typeof CollectionPaginationManager !== 'undefined') {
+      new CollectionPaginationManager(paginationSection);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Collection Pagination",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Pagination Settings"
+    },
+    {
+      "type": "select",
+      "id": "pagination_type",
+      "label": "Pagination type",
+      "options": [
+        {
+          "value": "traditional",
+          "label": "Traditional pagination"
+        },
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        }
+      ],
+      "default": "traditional"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "bubbly",
+          "label": "Bubbly"
+        }
+      ],
+      "default": "bubbly"
+    },
+    {
+      "type": "header",
+      "content": "Traditional Pagination"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_page_numbers",
+      "label": "Show page numbers",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "max_page_links",
+      "label": "Maximum page links to show",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_page_info",
+      "label": "Show page information",
+      "default": true,
+      "info": "Shows current page and total pages"
+    },
+    {
+      "type": "header",
+      "content": "Infinite Scroll"
+    },
+    {
+      "type": "range",
+      "id": "infinite_threshold",
+      "label": "Load threshold (pixels)",
+      "min": 100,
+      "max": 500,
+      "step": 50,
+      "default": 200,
+      "info": "Distance from bottom to trigger loading"
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_auto_load",
+      "label": "Auto load on scroll",
+      "default": true,
+      "info": "Automatically load more products when scrolling"
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animations",
+      "label": "Enable animations",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation speed",
+      "min": 0.2,
+      "max": 1.0,
+      "step": 0.1,
+      "default": 0.3,
+      "info": "Animation duration in seconds"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Pagination"
+    }
+  ]
+}
+{% endschema %} 

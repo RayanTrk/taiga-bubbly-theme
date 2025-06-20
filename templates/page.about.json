@@ -1,0 +1,154 @@
+{
+  "sections": {
+    "page-header": {
+      "type": "page-header",
+      "settings": {
+        "show_page_image": true,
+        "page_image_height": "medium",
+        "header_text_alignment": "center",
+        "overlay_opacity": 20,
+        "text_color": "#ffffff",
+        "enable_parallax": true,
+        "enable_breadcrumbs": true,
+        "breadcrumb_style": "bubbly"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "page_style": "bubbly",
+        "content_width": "narrow",
+        "enable_animations": true
+      }
+    },
+    "team-section": {
+      "type": "team-showcase",
+      "settings": {
+        "heading": "Meet Our Team",
+        "subheading": "The passionate people behind our brand",
+        "team_layout": "grid",
+        "members_per_row": 3,
+        "show_social_links": true,
+        "enable_hover_effects": true,
+        "section_style": "bubbly"
+      },
+      "blocks": [
+        {
+          "type": "team_member",
+          "settings": {
+            "name": "Sarah Johnson",
+            "position": "Founder & CEO",
+            "bio": "Sarah founded our company with a vision to create sustainable, beautiful products that make a difference.",
+            "facebook_url": "",
+            "twitter_url": "",
+            "instagram_url": "",
+            "linkedin_url": ""
+          }
+        },
+        {
+          "type": "team_member",
+          "settings": {
+            "name": "Mike Chen",
+            "position": "Head of Design",
+            "bio": "Mike brings over 10 years of design experience to create products that are both functional and beautiful.",
+            "facebook_url": "",
+            "twitter_url": "",
+            "instagram_url": "",
+            "linkedin_url": ""
+          }
+        },
+        {
+          "type": "team_member",
+          "settings": {
+            "name": "Emma Rodriguez",
+            "position": "Sustainability Director",
+            "bio": "Emma ensures all our products meet the highest standards of environmental responsibility.",
+            "facebook_url": "",
+            "twitter_url": "",
+            "instagram_url": "",
+            "linkedin_url": ""
+          }
+        }
+      ]
+    },
+    "values-section": {
+      "type": "values-showcase",
+      "settings": {
+        "heading": "Our Values",
+        "subheading": "What drives us every day",
+        "values_layout": "cards",
+        "values_per_row": 2,
+        "section_style": "bubbly",
+        "enable_icons": true
+      },
+      "blocks": [
+        {
+          "type": "value",
+          "settings": {
+            "icon": "leaf",
+            "title": "Sustainability",
+            "description": "We're committed to protecting our planet through eco-friendly practices and sustainable materials."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "icon": "heart",
+            "title": "Quality",
+            "description": "Every product is crafted with attention to detail and built to last, ensuring you get the best value."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "icon": "globe",
+            "title": "Community",
+            "description": "We believe in giving back and supporting the communities that make our work possible."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "icon": "shield",
+            "title": "Trust",
+            "description": "Transparency and honesty are at the core of everything we do, from sourcing to customer service."
+          }
+        }
+      ]
+    },
+    "story-section": {
+      "type": "rich-text-with-image",
+      "settings": {
+        "heading": "Our Story",
+        "subheading": "How it all began",
+        "text": "<p>Founded in 2020, our journey started with a simple belief: that beautiful, high-quality products shouldn't come at the cost of our planet's health. What began as a small idea in Sarah's garage has grown into a movement of conscious consumers who believe in making better choices.</p><p>Today, we're proud to offer a curated selection of sustainable products that don't compromise on style or functionality. Every item in our collection is carefully chosen based on our strict criteria for quality, sustainability, and ethical production.</p>",
+        "image_position": "left",
+        "image_width": 50,
+        "content_alignment": "left",
+        "section_style": "bubbly",
+        "enable_parallax": false
+      }
+    },
+    "cta-section": {
+      "type": "call-to-action",
+      "settings": {
+        "heading": "Ready to Join Our Mission?",
+        "subheading": "Discover our collection of sustainable, beautiful products",
+        "button_text": "Shop Now",
+        "button_url": "/collections/all",
+        "button_style": "primary",
+        "section_style": "bubbly",
+        "background_color": "#667eea",
+        "text_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "page-header",
+    "main",
+    "story-section",
+    "values-section",
+    "team-section",
+    "cta-section"
+  ]
+} 

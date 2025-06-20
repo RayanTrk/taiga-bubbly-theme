@@ -1,0 +1,163 @@
+{% comment %} Product Recommendations Snippet for Taiga Theme - Bubbly Style {% endcomment %}
+
+{%- liquid
+  assign product_id = product_id | default: product.id
+  assign limit = limit | default: 4
+  assign intent = intent | default: 'related'
+  assign show_vendor = show_vendor | default: false
+  assign show_rating = show_rating | default: false
+  assign section_id = section_id | default: 'recommendations'
+-%}
+
+<div class="product-recommendations" 
+     data-recommendations 
+     data-url="{{ routes.product_recommendations_url }}?section_id={{ section_id }}&product_id={{ product_id }}&limit={{ limit }}&intent={{ intent }}"
+     data-product-id="{{ product_id }}"
+     data-limit="{{ limit }}"
+     data-intent="{{ intent }}">
+  
+  {% if recommendations.performed and recommendations.products_count > 0 %}
+    <div class="product-recommendations__inner">
+      <h2 class="product-recommendations__title">
+        {%- case intent -%}
+          {%- when 'related' -%}
+            {{ 'sections.product-recommendations.heading' | t }}
+          {%- when 'complementary' -%}
+            {{ 'sections.product-recommendations.complementary_heading' | t }}
+          {%- else -%}
+            {{ heading | default: 'You might also like' }}
+        {%- endcase -%}
+      </h2>
+      
+      <div class="product-recommendations__grid">
+        {%- for recommended_product in recommendations.products -%}
+          <div class="product-recommendations__item" data-product-item>
+            <div class="product-card">
+              {%- comment -%} Product Image {%- endcomment -%}
+              <div class="product-card__media">
+                <a href="{{ recommended_product.url }}" 
+                   class="product-card__link"
+                   aria-label="{{ recommended_product.title | escape }}">
+                  
+                  {%- if recommended_product.featured_media -%}
+                    <img
+                      srcset="{%- if recommended_product.featured_media.width >= 165 -%}{{ recommended_product.featured_media | image_url: width: 165 }} 165w,{%- endif -%}
+                              {%- if recommended_product.featured_media.width >= 360 -%}{{ recommended_product.featured_media | image_url: width: 360 }} 360w,{%- endif -%}
+                              {%- if recommended_product.featured_media.width >= 535 -%}{{ recommended_product.featured_media | image_url: width: 535 }} 535w,{%- endif -%}
+                              {%- if recommended_product.featured_media.width >= 720 -%}{{ recommended_product.featured_media | image_url: width: 720 }} 720w,{%- endif -%}
+                              {{ recommended_product.featured_media | image_url }} {{ recommended_product.featured_media.width }}w"
+                      src="{{ recommended_product.featured_media | image_url: width: 360 }}"
+                      sizes="(min-width: 1200px) 267px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                      alt="{{ recommended_product.featured_media.alt | escape }}"
+                      class="product-card__image"
+                      loading="lazy"
+                      width="{{ recommended_product.featured_media.width }}"
+                      height="{{ recommended_product.featured_media.height }}">
+                    
+                    {%- if recommended_product.media[1] -%}
+                      <img
+                        srcset="{%- if recommended_product.media[1].width >= 165 -%}{{ recommended_product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
+                                {%- if recommended_product.media[1].width >= 360 -%}{{ recommended_product.media[1] | image_url: width: 360 }} 360w,{%- endif -%}
+                                {%- if recommended_product.media[1].width >= 535 -%}{{ recommended_product.media[1] | image_url: width: 535 }} 535w,{%- endif -%}
+                                {%- if recommended_product.media[1].width >= 720 -%}{{ recommended_product.media[1] | image_url: width: 720 }} 720w,{%- endif -%}
+                                {{ recommended_product.media[1] | image_url }} {{ recommended_product.media[1].width }}w"
+                        src="{{ recommended_product.media[1] | image_url: width: 360 }}"
+                        sizes="(min-width: 1200px) 267px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                        alt="{{ recommended_product.media[1].alt | escape }}"
+                        class="product-card__image product-card__image--hover"
+                        loading="lazy"
+                        width="{{ recommended_product.media[1].width }}"
+                        height="{{ recommended_product.media[1].height }}">
+                    {%- endif -%}
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg product-card__image' }}
+                  {%- endif -%}
+                </a>
+
+                {%- comment -%} Product Badges {%- endcomment -%}
+                {%- if recommended_product.compare_at_price > recommended_product.price -%}
+                  <div class="product-card__badge badge badge--sale">
+                    {{ 'products.product.sale' | t }}
+                  </div>
+                {%- endif -%}
+                
+                {%- if recommended_product.available == false -%}
+                  <div class="product-card__badge badge badge--sold-out">
+                    {{ 'products.product.sold_out' | t }}
+                  </div>
+                {%- endif -%}
+
+                {%- comment -%} Quick Buy Button {%- endcomment -%}
+                <div class="product-card__actions">
+                  <button type="button" 
+                          class="product-card__quick-add button button--primary button--small"
+                          data-quick-buy="{{ recommended_product.id }}"
+                          aria-label="{{ 'products.product.quick_add' | t: product_title: recommended_product.title }}">
+                    {% render 'icon-plus' %}
+                    <span class="visually-hidden">{{ 'products.product.quick_add' | t }}</span>
+                  </button>
+                </div>
+              </div>
+
+              {%- comment -%} Product Details {%- endcomment -%}
+              <div class="product-card__content">
+                {%- if show_vendor and recommended_product.vendor != blank -%}
+                  <p class="product-card__vendor">{{ recommended_product.vendor }}</p>
+                {%- endif -%}
+
+                <h3 class="product-card__title">
+                  <a href="{{ recommended_product.url }}" class="full-unstyled-link">
+                    {{ recommended_product.title | escape }}
+                  </a>
+                </h3>
+
+                {%- if show_rating and recommended_product.metafields.reviews.rating.value != blank -%}
+                  <div class="product-card__rating">
+                    {% render 'product-rating', product: recommended_product %}
+                  </div>
+                {%- endif -%}
+
+                <div class="product-card__price">
+                  <div class="price">
+                    {%- if recommended_product.compare_at_price > recommended_product.price -%}
+                      <dl class="price__container">
+                        <dt class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</dt>
+                        <dd class="price__regular">
+                          <s class="price-item price-item--regular">
+                            {{ recommended_product.compare_at_price | money }}
+                          </s>
+                        </dd>
+                        <dt class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</dt>
+                        <dd class="price__sale">
+                          <span class="price-item price-item--sale price-item--last">
+                            {{ recommended_product.price | money }}
+                          </span>
+                        </dd>
+                      </dl>
+                    {%- else -%}
+                      <span class="price-item price-item--regular">
+                        {{ recommended_product.price | money }}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  if (typeof window.aiNavigation !== 'undefined') {
+    window.aiNavigation.trackEvent('product_recommendations_displayed', {
+      product_id: {{ product_id | json }},
+      recommendations_count: {{ recommendations.products_count | default: 0 }},
+      intent: {{ intent | json }},
+      timestamp: Date.now()
+    });
+  }
+</script> 

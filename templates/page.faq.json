@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "page-header": {
+      "type": "page-header"
+    },
+    "main": {
+      "type": "main-page"
+    }
+  },
+  "order": [
+    "page-header",
+    "main"
+  ]
+}

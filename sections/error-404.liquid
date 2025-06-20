@@ -1,0 +1,273 @@
+{{ 'section-error-404.css' | asset_url | stylesheet_tag }}
+{{ 'section-error-404.js' | asset_url | script_tag: defer: true }}
+
+<div class="error-404-wrapper">
+  <!-- Floating Bubbles Background -->
+  <div class="floating-bubbles" aria-hidden="true">
+    {%- for i in (1..12) -%}
+      <div class="bubble bubble-{{ i }}"></div>
+    {%- endfor -%}
+  </div>
+
+  <div class="page-width">
+    <div class="error-404-container">
+      
+      <!-- Error Display -->
+      <div class="error-display">
+        <div class="error-code">{{ section.settings.error_code | default: '404' }}</div>
+        <h1 class="error-title">{{ section.settings.error_title | default: 'Page Not Found' }}</h1>
+        <p class="error-message">{{ section.settings.error_message | default: "The page you're looking for doesn't exist." }}</p>
+        
+        <div class="error-actions">
+          <a href="{{ section.settings.button_url | default: routes.root_url }}" class="btn btn-primary">
+            <span class="btn-text">{{ section.settings.button_text | default: 'Go to Homepage' }}</span>
+            <span class="btn-loading">
+              <div class="spinner"></div>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      {%- if section.settings.show_search -%}
+      <div class="error-search">
+        <h2 class="search-title">{{ section.settings.search_title | default: 'Search Our Store' }}</h2>
+        <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+          <div class="search-input-wrapper">
+            <input 
+              type="search" 
+              name="q" 
+              class="search-input"
+              placeholder="{{ section.settings.search_placeholder | default: 'Search products...' }}"
+              aria-label="Search products"
+              autocomplete="off"
+            >
+            <button type="submit" class="search-button" aria-label="Submit search">
+              {% render 'icon-search' %}
+            </button>
+          </div>
+        </form>
+      </div>
+      {%- endif -%}
+
+      <!-- Popular Links -->
+      {%- if section.settings.show_popular_links -%}
+      <div class="error-links">
+        <h3 class="links-title">{{ section.settings.popular_links_title | default: 'Popular Pages' }}</h3>
+        <div class="links-grid">
+          <a href="{{ routes.collections_url }}" class="link-card">
+            <div class="link-icon">{% render 'icon-collection' %}</div>
+            <span class="link-text">All Collections</span>
+          </a>
+          <a href="{{ routes.all_products_collection_url }}" class="link-card">
+            <div class="link-icon">{% render 'icon-grid' %}</div>
+            <span class="link-text">All Products</span>
+          </a>
+          <a href="{{ routes.cart_url }}" class="link-card">
+            <div class="link-icon">{% render 'icon-cart' %}</div>
+            <span class="link-text">Shopping Cart</span>
+          </a>
+          <a href="{{ routes.account_url }}" class="link-card">
+            <div class="link-icon">{% render 'icon-account' %}</div>
+            <span class="link-text">My Account</span>
+          </a>
+        </div>
+      </div>
+      {%- endif -%}
+
+      <!-- Categories -->
+      {%- if section.settings.show_categories -%}
+      <div class="error-categories">
+        <h3 class="categories-title">{{ section.settings.categories_title | default: 'Shop by Category' }}</h3>
+        <div class="categories-grid">
+          {%- for collection in collections limit: 6 -%}
+            {%- unless collection.handle == 'frontpage' -%}
+            <a href="{{ collection.url }}" class="category-card">
+              {%- if collection.featured_image -%}
+                <div class="category-image">
+                  <img 
+                    src="{{ collection.featured_image | image_url: width: 200 }}"
+                    alt="{{ collection.title | escape }}"
+                    loading="lazy"
+                    width="200"
+                    height="200"
+                  >
+                </div>
+              {%- endif -%}
+              <div class="category-info">
+                <h4 class="category-title">{{ collection.title }}</h4>
+                <span class="category-count">{{ collection.products_count }} products</span>
+              </div>
+            </a>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      </div>
+      {%- endif -%}
+
+      <!-- Contact Info -->
+      {%- if section.settings.show_contact_info -%}
+      <div class="error-contact">
+        <h3 class="contact-title">{{ section.settings.contact_title | default: 'Need Help?' }}</h3>
+        <p class="contact-message">{{ section.settings.contact_message | default: 'Contact us if you need assistance.' }}</p>
+        <div class="contact-methods">
+          {%- if shop.email -%}
+          <a href="mailto:{{ shop.email }}" class="contact-method">
+            <div class="contact-icon">{% render 'icon-email' %}</div>
+            <span class="contact-text">{{ shop.email }}</span>
+          </a>
+          {%- endif -%}
+          {%- if shop.phone -%}
+          <a href="tel:{{ shop.phone }}" class="contact-method">
+            <div class="contact-icon">{% render 'icon-phone' %}</div>
+            <span class="contact-text">{{ shop.phone }}</span>
+          </a>
+          {%- endif -%}
+        </div>
+      </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404 Error Page",
+  "settings": [
+    {
+      "type": "text",
+      "id": "error_code",
+      "label": "Error Code",
+      "default": "404"
+    },
+    {
+      "type": "text",
+      "id": "error_title",
+      "label": "Error Title",
+      "default": "Page Not Found"
+    },
+    {
+      "type": "textarea",
+      "id": "error_message",
+      "label": "Error Message",
+      "default": "The page you're looking for might have been moved, deleted, or doesn't exist."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Go to Homepage"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL",
+      "default": "/"
+    },
+    {
+      "type": "header",
+      "content": "Search Section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_title",
+      "label": "Search Title",
+      "default": "Search Our Store"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "Search products..."
+    },
+    {
+      "type": "header",
+      "content": "Popular Links"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_links",
+      "label": "Show Popular Links",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "popular_links_title",
+      "label": "Popular Links Title",
+      "default": "Popular Pages"
+    },
+    {
+      "type": "header",
+      "content": "Categories"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_categories",
+      "label": "Show Categories",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "categories_title",
+      "label": "Categories Title",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "header",
+      "content": "Contact Info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_info",
+      "label": "Show Contact Info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "contact_title",
+      "label": "Contact Title",
+      "default": "Need Help?"
+    },
+    {
+      "type": "textarea",
+      "id": "contact_message",
+      "label": "Contact Message",
+      "default": "Contact us if you need assistance."
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_bubbles",
+      "label": "Show Decorative Bubbles",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f093fb"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "404 Error Page"
+    }
+  ]
+}
+{% endschema %} 

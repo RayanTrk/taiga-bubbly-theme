@@ -1,0 +1,143 @@
+{% comment %}
+  Quick Buy snippet - Allows immediate purchase without going to cart
+  Follows Taiga theme Bubbly style with smooth animations
+{% endcomment %}
+
+<div class="quick-buy" data-product-id="{{ product.id }}" data-url="{{ product.url }}">
+  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="quick-buy__form">
+    <div class="quick-buy__product-info">
+      <div class="quick-buy__image">
+        {%- if product.featured_media -%}
+          <img
+            src="{{ product.featured_media | image_url: width: 120 }}"
+            alt="{{ product.featured_media.alt | escape }}"
+            width="120"
+            height="120"
+            loading="lazy"
+            class="quick-buy__product-image"
+          >
+        {%- else -%}
+          <div class="quick-buy__placeholder">
+            {% render 'icon-cart' %}
+          </div>
+        {%- endif -%}
+      </div>
+      
+      <div class="quick-buy__details">
+        <h3 class="quick-buy__title">{{ product.title | escape }}</h3>
+        <div class="quick-buy__price">
+          {% render 'price', product: product, use_variant: true, show_badges: false %}
+        </div>
+      </div>
+    </div>
+
+    {%- if product.has_only_default_variant -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+    {%- else -%}
+      <div class="quick-buy__variants">
+        <label for="quick-buy-variant-{{ product.id }}" class="visually-hidden">
+          {{ 'products.product.product_variants' | t }}
+        </label>
+        <select
+          id="quick-buy-variant-{{ product.id }}"
+          name="id"
+          class="quick-buy__variant-select"
+          aria-label="{{ 'products.product.product_variants' | t }}"
+        >
+          {%- for variant in product.variants -%}
+            <option
+              value="{{ variant.id }}"
+              {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %}
+              {% unless variant.available %}disabled{% endunless %}
+            >
+              {{ variant.title }}
+              {%- if variant.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}
+              - {{ variant.price | money }}
+            </option>
+          {%- endfor -%}
+        </select>
+      </div>
+    {%- endif -%}
+
+    <div class="quick-buy__quantity">
+      <label for="quick-buy-qty-{{ product.id }}" class="quick-buy__quantity-label">
+        {{ 'products.product.quantity.label' | t }}
+      </label>
+      <div class="quantity">
+        <button
+          class="quantity__button no-js-hidden"
+          name="minus"
+          type="button"
+          aria-label="{{ 'products.product.quantity.decrease' | t: product: product.title | escape }}"
+        >
+          {% render 'icon-minus' %}
+        </button>
+        <input
+          class="quantity__input"
+          type="number"
+          name="quantity"
+          id="quick-buy-qty-{{ product.id }}"
+          min="1"
+          value="1"
+          form="quick-buy-form-{{ product.id }}"
+          aria-label="{{ 'products.product.quantity.input_label' | t: product: product.title | escape }}"
+        >
+        <button
+          class="quantity__button no-js-hidden"
+          name="plus"
+          type="button"
+          aria-label="{{ 'products.product.quantity.increase' | t: product: product.title | escape }}"
+        >
+          {% render 'icon-plus' %}
+        </button>
+      </div>
+    </div>
+
+    <div class="quick-buy__actions">
+      <button
+        type="submit"
+        name="add"
+        class="quick-buy__button button button--primary"
+        {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
+        aria-describedby="quick-buy-error-{{ product.id }}"
+        data-product-url="{{ product.url }}"
+      >
+        <span class="quick-buy__button-text">
+          {%- if product.selected_or_first_available_variant.available -%}
+            {{ 'products.product.add_to_cart' | t }}
+          {%- else -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- endif -%}
+        </span>
+        <span class="quick-buy__button-loading">
+          <div class="loading-overlay__spinner">
+            <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+            </svg>
+          </div>
+        </span>
+      </button>
+      
+      <button
+        type="button" 
+        class="quick-buy__details-link button button--secondary"
+        onclick="window.location.href='{{ product.url }}'"
+      >
+        {{ 'products.product.view_full_details' | t }}
+      </button>
+    </div>
+
+    <div id="quick-buy-error-{{ product.id }}" class="quick-buy__error" role="alert" aria-hidden="true">
+      <!-- Error messages will be inserted here -->
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const quickBuyElement = document.querySelector('.quick-buy[data-product-id="{{ product.id }}"]');
+    if (quickBuyElement) {
+      new QuickBuy(quickBuyElement);
+    }
+  });
+</script> 

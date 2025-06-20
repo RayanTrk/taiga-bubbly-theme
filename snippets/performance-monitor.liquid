@@ -1,0 +1,460 @@
+{% comment %}
+  Performance Monitor Snippet - Bubbly Style
+  Monitors Core Web Vitals and performance metrics
+{% endcomment %}
+
+<script>
+  // Performance monitoring configuration
+  window.performanceConfig = {
+    enableMonitoring: {{ settings.enable_performance_monitoring | default: true | json }},
+    enableCoreWebVitals: {{ settings.enable_core_web_vitals | default: true | json }},
+    enableAINavigation: {{ settings.enable_ai_navigation | default: true | json }},
+    reportInterval: {{ settings.performance_report_interval | default: 30000 | json }},
+    debug: {{ settings.debug_performance | default: false | json }}
+  };
+
+  // Core Web Vitals monitoring
+  if (window.performanceConfig.enableCoreWebVitals) {
+    // Largest Contentful Paint (LCP)
+    function measureLCP() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((entryList) => {
+          const entries = entryList.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          
+          // Track LCP
+          if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+            window.AINavigation.trackEvent('core_web_vital', {
+              name: 'LCP',
+              value: lastEntry.startTime,
+              element: lastEntry.element ? lastEntry.element.tagName : 'unknown',
+              url: lastEntry.url || window.location.href,
+              timestamp: Date.now()
+            });
+          }
+          
+          // Send to analytics
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'web_vitals', {
+              event_category: 'performance',
+              event_label: 'LCP',
+              value: Math.round(lastEntry.startTime)
+            });
+          }
+          
+          if (window.performanceConfig.debug) {
+            console.log('LCP:', lastEntry.startTime, lastEntry);
+          }
+        });
+        
+        observer.observe({ entryTypes: ['largest-contentful-paint'] });
+      }
+    }
+
+    // First Input Delay (FID)
+    function measureFID() {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((entryList) => {
+          const entries = entryList.getEntries();
+          
+          entries.forEach((entry) => {
+            // Track FID
+            if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+              window.AINavigation.trackEvent('core_web_vital', {
+                name: 'FID',
+                value: entry.processingStart - entry.startTime,
+                eventType: entry.name,
+                timestamp: Date.now()
+              });
+            }
+            
+            // Send to analytics
+            if (typeof gtag !== 'undefined') {
+              gtag('event', 'web_vitals', {
+                event_category: 'performance',
+                event_label: 'FID',
+                value: Math.round(entry.processingStart - entry.startTime)
+              });
+            }
+            
+            if (window.performanceConfig.debug) {
+              console.log('FID:', entry.processingStart - entry.startTime, entry);
+            }
+          });
+        });
+        
+        observer.observe({ entryTypes: ['first-input'] });
+      }
+    }
+
+    // Cumulative Layout Shift (CLS)
+    function measureCLS() {
+      if ('PerformanceObserver' in window) {
+        let clsValue = 0;
+        
+        const observer = new PerformanceObserver((entryList) => {
+          const entries = entryList.getEntries();
+          
+          entries.forEach((entry) => {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+            }
+          });
+          
+          // Track CLS periodically
+          if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+            window.AINavigation.trackEvent('core_web_vital', {
+              name: 'CLS',
+              value: clsValue,
+              timestamp: Date.now()
+            });
+          }
+          
+          if (window.performanceConfig.debug) {
+            console.log('CLS:', clsValue);
+          }
+        });
+        
+        observer.observe({ entryTypes: ['layout-shift'] });
+        
+        // Report final CLS on page unload
+        window.addEventListener('beforeunload', () => {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'web_vitals', {
+              event_category: 'performance',
+              event_label: 'CLS',
+              value: Math.round(clsValue * 1000)
+            });
+          }
+        });
+      }
+    }
+
+    // Time to First Byte (TTFB)
+    function measureTTFB() {
+      if ('performance' in window && 'getEntriesByType' in performance) {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation) {
+          const ttfb = navigation.responseStart - navigation.requestStart;
+          
+          // Track TTFB
+          if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+            window.AINavigation.trackEvent('core_web_vital', {
+              name: 'TTFB',
+              value: ttfb,
+              timestamp: Date.now()
+            });
+          }
+          
+          // Send to analytics
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'web_vitals', {
+              event_category: 'performance',
+              event_label: 'TTFB',
+              value: Math.round(ttfb)
+            });
+          }
+          
+          if (window.performanceConfig.debug) {
+            console.log('TTFB:', ttfb);
+          }
+        }
+      }
+    }
+
+    // Initialize Core Web Vitals monitoring
+    document.addEventListener('DOMContentLoaded', () => {
+      measureLCP();
+      measureFID();
+      measureCLS();
+      measureTTFB();
+    });
+  }
+
+  // Custom performance metrics
+  if (window.performanceConfig.enableMonitoring) {
+    // Page load performance
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const perfData = performance.timing;
+        const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+        const domReady = perfData.domContentLoadedEventEnd - perfData.navigationStart;
+        const firstPaint = performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint');
+        const firstContentfulPaint = performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint');
+        
+        const metrics = {
+          loadTime: loadTime,
+          domReady: domReady,
+          firstPaint: firstPaint ? firstPaint.startTime : null,
+          firstContentfulPaint: firstContentfulPaint ? firstContentfulPaint.startTime : null,
+          timestamp: Date.now(),
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+          connection: navigator.connection ? {
+            effectiveType: navigator.connection.effectiveType,
+            downlink: navigator.connection.downlink,
+            rtt: navigator.connection.rtt
+          } : null
+        };
+        
+        // Track with AI Navigation
+        if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+          window.AINavigation.trackEvent('page_performance', metrics);
+        }
+        
+        // Send to analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'page_load_time', {
+            event_category: 'performance',
+            value: Math.round(loadTime)
+          });
+        }
+        
+        if (window.performanceConfig.debug) {
+          console.log('Page Performance:', metrics);
+        }
+      }, 100);
+    });
+
+    // Resource loading performance
+    function trackResourcePerformance() {
+      const resources = performance.getEntriesByType('resource');
+      const slowResources = resources.filter(resource => resource.duration > 1000);
+      
+      if (slowResources.length > 0 && window.AINavigation && window.performanceConfig.enableAINavigation) {
+        slowResources.forEach(resource => {
+          window.AINavigation.trackEvent('slow_resource', {
+            name: resource.name,
+            duration: resource.duration,
+            size: resource.transferSize,
+            type: resource.initiatorType,
+            timestamp: Date.now()
+          });
+        });
+      }
+      
+      if (window.performanceConfig.debug && slowResources.length > 0) {
+        console.log('Slow Resources:', slowResources);
+      }
+    }
+
+    // Track resource performance periodically
+    setInterval(trackResourcePerformance, 10000);
+
+    // Memory usage monitoring (if available)
+    function trackMemoryUsage() {
+      if ('memory' in performance) {
+        const memory = performance.memory;
+        const memoryInfo = {
+          usedJSHeapSize: memory.usedJSHeapSize,
+          totalJSHeapSize: memory.totalJSHeapSize,
+          jsHeapSizeLimit: memory.jsHeapSizeLimit,
+          timestamp: Date.now()
+        };
+        
+        // Track with AI Navigation
+        if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+          window.AINavigation.trackEvent('memory_usage', memoryInfo);
+        }
+        
+        if (window.performanceConfig.debug) {
+          console.log('Memory Usage:', memoryInfo);
+        }
+      }
+    }
+
+    // Track memory usage periodically
+    setInterval(trackMemoryUsage, window.performanceConfig.reportInterval);
+
+    // Error tracking
+    window.addEventListener('error', (event) => {
+      const errorInfo = {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error ? event.error.stack : null,
+        timestamp: Date.now(),
+        url: window.location.href
+      };
+      
+      // Track with AI Navigation
+      if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+        window.AINavigation.trackEvent('javascript_error', errorInfo);
+      }
+      
+      // Send to analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'exception', {
+          description: event.message,
+          fatal: false
+        });
+      }
+      
+      if (window.performanceConfig.debug) {
+        console.error('JavaScript Error:', errorInfo);
+      }
+    });
+
+    // Unhandled promise rejection tracking
+    window.addEventListener('unhandledrejection', (event) => {
+      const rejectionInfo = {
+        reason: event.reason,
+        promise: event.promise,
+        timestamp: Date.now(),
+        url: window.location.href
+      };
+      
+      // Track with AI Navigation
+      if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+        window.AINavigation.trackEvent('unhandled_rejection', rejectionInfo);
+      }
+      
+      if (window.performanceConfig.debug) {
+        console.error('Unhandled Promise Rejection:', rejectionInfo);
+      }
+    });
+
+    // Long task tracking
+    if ('PerformanceObserver' in window) {
+      const longTaskObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        
+        entries.forEach((entry) => {
+          const taskInfo = {
+            name: entry.name,
+            duration: entry.duration,
+            startTime: entry.startTime,
+            timestamp: Date.now()
+          };
+          
+          // Track with AI Navigation
+          if (window.AINavigation && window.performanceConfig.enableAINavigation) {
+            window.AINavigation.trackEvent('long_task', taskInfo);
+          }
+          
+          if (window.performanceConfig.debug) {
+            console.warn('Long Task:', taskInfo);
+          }
+        });
+      });
+      
+      try {
+        longTaskObserver.observe({ entryTypes: ['longtask'] });
+      } catch (e) {
+        // Long task API not supported
+        if (window.performanceConfig.debug) {
+          console.log('Long Task API not supported');
+        }
+      }
+    }
+  }
+
+  // Performance debugging utilities
+  if (window.performanceConfig.debug) {
+    // Add debug panel
+    document.addEventListener('DOMContentLoaded', () => {
+      const debugPanel = document.createElement('div');
+      debugPanel.id = 'performance-debug-panel';
+      debugPanel.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 10000;
+        display: none;
+      `;
+      
+      const toggleButton = document.createElement('button');
+      toggleButton.textContent = 'Perf Debug';
+      toggleButton.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 10001;
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+      `;
+      
+      toggleButton.addEventListener('click', () => {
+        debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+      });
+      
+      document.body.appendChild(debugPanel);
+      document.body.appendChild(toggleButton);
+      
+      // Update debug panel periodically
+      setInterval(() => {
+        if (debugPanel.style.display !== 'none') {
+          const perfData = performance.timing;
+          const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+          const memoryInfo = performance.memory ? performance.memory : { usedJSHeapSize: 'N/A' };
+          
+          debugPanel.innerHTML = `
+            <h4>Performance Debug</h4>
+            <p><strong>Load Time:</strong> ${loadTime}ms</p>
+            <p><strong>Memory Used:</strong> ${Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024)}MB</p>
+            <p><strong>Resources:</strong> ${performance.getEntriesByType('resource').length}</p>
+            <p><strong>Images Loaded:</strong> ${document.querySelectorAll('img.loaded').length}</p>
+            <p><strong>Videos Loaded:</strong> ${document.querySelectorAll('video.loaded').length}</p>
+            <p><strong>Connection:</strong> ${navigator.connection ? navigator.connection.effectiveType : 'Unknown'}</p>
+          `;
+        }
+      }, 1000);
+    });
+    
+    // Enable performance debugging CSS
+    document.documentElement.setAttribute('data-debug', 'performance');
+  }
+</script>
+
+{% comment %}
+  Performance optimization hints for the browser
+{% endcomment %}
+<link rel="dns-prefetch" href="//fonts.googleapis.com">
+<link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="dns-prefetch" href="//connect.facebook.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+{% comment %}
+  Resource hints for critical resources
+{% endcomment %}
+{% if settings.favicon %}
+  <link rel="preload" href="{{ settings.favicon | img_url: '32x32' }}" as="image" type="image/png">
+{% endif %}
+
+{% comment %}
+  Critical CSS for above-the-fold content
+{% endcomment %}
+<style>
+  /* Critical path CSS - inlined for faster rendering */
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+</style> 

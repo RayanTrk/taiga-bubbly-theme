@@ -1,0 +1,639 @@
+{{ 'section-testimonials-showcase.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .testimonials-showcase-{{ section.id }} {
+    {%- if section.settings.background_color != blank -%}
+      background: {{ section.settings.background_color }};
+    {%- else -%}
+      background: linear-gradient(135deg, {{ section.settings.gradient_start | default: '#667eea' }} 0%, {{ section.settings.gradient_end | default: '#764ba2' }} 100%);
+    {%- endif -%}
+    
+    {%- if section.settings.background_image != blank -%}
+      background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+    {%- endif -%}
+  }
+
+  .testimonials-showcase-{{ section.id }} .section-header {
+    {%- if section.settings.header_text_color != blank -%}
+      color: {{ section.settings.header_text_color }};
+    {%- else -%}
+      color: white;
+    {%- endif -%}
+  }
+
+  .testimonials-showcase-{{ section.id }} .testimonial-card {
+    {%- if section.settings.card_background_color != blank -%}
+      background: {{ section.settings.card_background_color }};
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign show_ratings = section.settings.show_ratings | default: true
+  assign show_photos = section.settings.show_photos | default: true
+  assign autoplay_carousel = section.settings.autoplay_carousel | default: true
+  assign testimonials_per_view = section.settings.testimonials_per_view | default: 3
+  assign show_navigation = section.settings.show_navigation | default: true
+  assign show_pagination = section.settings.show_pagination | default: true
+-%}
+
+<div class="testimonials-showcase testimonials-showcase-{{ section.id }} section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+     data-testimonials-showcase
+     data-testimonials-per-view="{{ testimonials_per_view }}"
+     data-autoplay="{{ autoplay_carousel }}"
+     data-show-navigation="{{ show_navigation }}"
+     data-show-pagination="{{ show_pagination }}">
+
+  {%- comment -%} Floating Bubble Effects {%- endcomment -%}
+  <div class="bubble-effects" data-bubble-effects>
+    {%- for i in (1..8) -%}
+      <div class="bubble bubble--{{ i }}" style="animation-delay: {{ i | times: 0.5 }}s;"></div>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Section Header {%- endcomment -%}
+  {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+    <div class="section-header" data-aos="fade-up">
+      <div class="page-width">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="testimonials-showcase__heading">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+        
+        {%- if section.settings.subheading != blank -%}
+          <div class="testimonials-showcase__subheading">
+            {{ section.settings.subheading }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_overall_rating -%}
+          <div class="testimonials-showcase__overall-rating" data-aos="fade-up" data-aos-delay="200">
+            <div class="overall-rating">
+              <div class="overall-rating__stars">
+                {%- for i in (1..5) -%}
+                  <span class="star star--filled">
+                    {%- render 'icon-star-filled' -%}
+                  </span>
+                {%- endfor -%}
+              </div>
+              <div class="overall-rating__text">
+                <span class="rating-score">4.9</span>
+                <span class="rating-count">{{ section.blocks.size }} reviews</span>
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Testimonials Carousel {%- endcomment -%}
+  <div class="testimonials-showcase__carousel" data-aos="fade-up" data-aos-delay="400">
+    <div class="page-width">
+      <div class="testimonials-carousel" data-testimonials-carousel>
+        
+        {%- comment -%} Carousel Track {%- endcomment -%}
+        <div class="testimonials-track" data-testimonials-track>
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'testimonial' -%}
+                <div class="testimonial-slide" 
+                     data-testimonial-slide
+                     data-block-id="{{ block.id }}"
+                     {{ block.shopify_attributes }}>
+                  
+                  <div class="testimonial-card">
+                    {%- comment -%} Card Background Decoration {%- endcomment -%}
+                    <div class="testimonial-card__decoration">
+                      <div class="decoration-bubble decoration-bubble--1"></div>
+                      <div class="decoration-bubble decoration-bubble--2"></div>
+                      <div class="decoration-bubble decoration-bubble--3"></div>
+                    </div>
+
+                    {%- comment -%} Quote Icon {%- endcomment -%}
+                    <div class="testimonial-card__quote-icon">
+                      {%- render 'icon-quote' -%}
+                    </div>
+
+                    {%- comment -%} Rating {%- endcomment -%}
+                    {%- if show_ratings and block.settings.rating != blank -%}
+                      <div class="testimonial-card__rating">
+                        <div class="rating-stars">
+                          {%- assign rating = block.settings.rating | times: 1 -%}
+                          {%- for i in (1..5) -%}
+                            <span class="star {% if i <= rating %}star--filled{% else %}star--empty{% endif %}">
+                              {%- if i <= rating -%}
+                                {%- render 'icon-star-filled' -%}
+                              {%- else -%}
+                                {%- render 'icon-star-empty' -%}
+                              {%- endif -%}
+                            </span>
+                          {%- endfor -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+
+                    {%- comment -%} Testimonial Content {%- endcomment -%}
+                    <div class="testimonial-card__content">
+                      {%- if block.settings.testimonial_text != blank -%}
+                        <blockquote class="testimonial-card__text">
+                          {{ block.settings.testimonial_text }}
+                        </blockquote>
+                      {%- endif -%}
+                    </div>
+
+                    {%- comment -%} Customer Information {%- endcomment -%}
+                    <div class="testimonial-card__customer">
+                      {%- if show_photos and block.settings.customer_photo != blank -%}
+                        <div class="customer__photo-wrapper">
+                          <img src="{{ block.settings.customer_photo | image_url: width: 120 }}"
+                               alt="{{ block.settings.customer_name | escape }}"
+                               class="customer__photo"
+                               loading="lazy"
+                               width="60"
+                               height="60">
+                        </div>
+                      {%- endif -%}
+                      
+                      <div class="customer__info">
+                        {%- if block.settings.customer_name != blank -%}
+                          <div class="customer__name">
+                            {{ block.settings.customer_name }}
+                          </div>
+                        {%- endif -%}
+                        
+                        {%- if block.settings.customer_location != blank -%}
+                          <div class="customer__location">
+                            {{ block.settings.customer_location }}
+                          </div>
+                        {%- endif -%}
+                        
+                        {%- if block.settings.customer_title != blank -%}
+                          <div class="customer__title">
+                            {{ block.settings.customer_title }}
+                          </div>
+                        {%- endif -%}
+
+                        {%- if block.settings.purchase_date != blank -%}
+                          <div class="customer__purchase-date">
+                            Verified Purchase • {{ block.settings.purchase_date }}
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+
+                    {%- comment -%} Product Reference {%- endcomment -%}
+                    {%- if block.settings.featured_product != blank -%}
+                      {%- assign featured_product = all_products[block.settings.featured_product] -%}
+                      {%- if featured_product != blank -%}
+                        <div class="testimonial-card__product">
+                          <a href="{{ featured_product.url }}" class="product-reference">
+                            <div class="product-reference__image">
+                              <img src="{{ featured_product.featured_image | image_url: width: 100 }}"
+                                   alt="{{ featured_product.title | escape }}"
+                                   loading="lazy"
+                                   width="40"
+                                   height="40">
+                            </div>
+                            <div class="product-reference__info">
+                              <div class="product-reference__title">{{ featured_product.title }}</div>
+                              <div class="product-reference__price">{{ featured_product.price | money }}</div>
+                            </div>
+                          </a>
+                        </div>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+                </div>
+            {%- endcase -%}
+          {%- else -%}
+            {%- comment -%} Default testimonials when no blocks are configured {%- endcomment -%}
+            {%- for i in (1..3) -%}
+              <div class="testimonial-slide" data-testimonial-slide>
+                <div class="testimonial-card">
+                  <div class="testimonial-card__decoration">
+                    <div class="decoration-bubble decoration-bubble--1"></div>
+                    <div class="decoration-bubble decoration-bubble--2"></div>
+                    <div class="decoration-bubble decoration-bubble--3"></div>
+                  </div>
+                  
+                  <div class="testimonial-card__quote-icon">
+                    {%- render 'icon-quote' -%}
+                  </div>
+                  
+                  <div class="testimonial-card__rating">
+                    <div class="rating-stars">
+                      {%- for star in (1..5) -%}
+                        <span class="star star--filled">
+                          {%- render 'icon-star-filled' -%}
+                        </span>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                  
+                  <div class="testimonial-card__content">
+                    <blockquote class="testimonial-card__text">
+                      "Amazing quality and incredible customer service. I couldn't be happier with my purchase!"
+                    </blockquote>
+                  </div>
+                  
+                  <div class="testimonial-card__customer">
+                    <div class="customer__info">
+                      <div class="customer__name">Sample Customer</div>
+                      <div class="customer__location">New York, NY</div>
+                      <div class="customer__purchase-date">Verified Purchase • March 2024</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Navigation Controls {%- endcomment -%}
+        {%- if show_navigation and section.blocks.size > testimonials_per_view -%}
+          <div class="testimonials-navigation">
+            <button type="button" 
+                    class="nav-button nav-button--prev" 
+                    data-testimonials-prev
+                    aria-label="Previous testimonials">
+              {%- render 'icon-arrow-left' -%}
+            </button>
+            <button type="button" 
+                    class="nav-button nav-button--next" 
+                    data-testimonials-next
+                    aria-label="Next testimonials">
+              {%- render 'icon-arrow-right' -%}
+            </button>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Pagination Dots {%- endcomment -%}
+        {%- if show_pagination and section.blocks.size > testimonials_per_view -%}
+          <div class="testimonials-pagination" data-testimonials-pagination>
+            {%- assign total_slides = section.blocks.size -%}
+            {%- assign pages = total_slides | divided_by: testimonials_per_view | plus: 1 -%}
+            {%- for i in (1..pages) -%}
+              <button type="button" 
+                      class="pagination-dot {% if forloop.first %}pagination-dot--active{% endif %}"
+                      data-pagination-dot
+                      data-slide-index="{{ forloop.index0 }}"
+                      aria-label="Go to testimonials group {{ forloop.index }}">
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Call to Action {%- endcomment -%}
+  {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+    <div class="testimonials-showcase__cta" data-aos="fade-up" data-aos-delay="600">
+      <div class="page-width">
+        <div class="testimonials-cta">
+          <a href="{{ section.settings.cta_url }}" class="button button--primary button--large">
+            {{ section.settings.cta_text }}
+            <span class="icon-wrap">
+              {%- render 'icon-arrow-right' -%}
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} AI Navigation Tracking {%- endcomment -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.aiNavigation !== 'undefined') {
+      const showcaseSection = document.querySelector('[data-testimonials-showcase]');
+      if (!showcaseSection) return;
+
+      // Track section view
+      window.aiNavigation.trackEvent('testimonials_showcase_viewed', {
+        section_id: '{{ section.id }}',
+        testimonials_count: {{ section.blocks.size }},
+        autoplay_enabled: {{ autoplay_carousel | json }},
+        testimonials_per_view: {{ testimonials_per_view }},
+        timestamp: Date.now()
+      });
+
+      // Track carousel interactions
+      showcaseSection.addEventListener('click', function(event) {
+        if (event.target.matches('[data-testimonials-prev]')) {
+          window.aiNavigation.trackEvent('testimonials_nav_prev_clicked', {
+            section_id: '{{ section.id }}',
+            timestamp: Date.now()
+          });
+        }
+
+        if (event.target.matches('[data-testimonials-next]')) {
+          window.aiNavigation.trackEvent('testimonials_nav_next_clicked', {
+            section_id: '{{ section.id }}',
+            timestamp: Date.now()
+          });
+        }
+
+        if (event.target.matches('[data-pagination-dot]')) {
+          const slideIndex = event.target.getAttribute('data-slide-index');
+          window.aiNavigation.trackEvent('testimonials_pagination_clicked', {
+            section_id: '{{ section.id }}',
+            slide_index: slideIndex,
+            timestamp: Date.now()
+          });
+        }
+
+        // Track product reference clicks
+        const productReference = event.target.closest('.product-reference');
+        if (productReference) {
+          window.aiNavigation.trackEvent('testimonial_product_clicked', {
+            section_id: '{{ section.id }}',
+            product_url: productReference.href,
+            timestamp: Date.now()
+          });
+        }
+      });
+    }
+  });
+</script>
+
+<script src="{{ 'section-testimonials-showcase.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Testimonials Showcase",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Join thousands of satisfied customers who love our products</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overall_rating",
+      "label": "Show overall rating",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Carousel settings"
+    },
+    {
+      "type": "range",
+      "id": "testimonials_per_view",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Testimonials per view",
+      "default": 3,
+      "info": "Number of testimonials visible at once on desktop"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_carousel",
+      "label": "Auto-play carousel",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Show pagination dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Testimonial display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ratings",
+      "label": "Show star ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_photos",
+      "label": "Show customer photos",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text",
+      "default": "Leave a Review"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Gradient start color",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Gradient end color",
+      "default": "#764ba2"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header text color"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        },
+        {
+          "value": "accent-2",
+          "label": "Accent 2"
+        },
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "testimonial_text",
+          "label": "Testimonial text",
+          "default": "<p>This product exceeded my expectations! The quality is amazing and shipping was super fast.</p>"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Rating",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer name",
+          "default": "Happy Customer"
+        },
+        {
+          "type": "text",
+          "id": "customer_location",
+          "label": "Customer location",
+          "default": "New York, NY"
+        },
+        {
+          "type": "text",
+          "id": "customer_title",
+          "label": "Customer title",
+          "info": "Optional job title or description"
+        },
+        {
+          "type": "image_picker",
+          "id": "customer_photo",
+          "label": "Customer photo"
+        },
+        {
+          "type": "text",
+          "id": "purchase_date",
+          "label": "Purchase date",
+          "default": "March 2024",
+          "info": "When the customer made their purchase"
+        },
+        {
+          "type": "product",
+          "id": "featured_product",
+          "label": "Featured product",
+          "info": "Optional product to reference in the testimonial"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials Showcase",
+      "blocks": [
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} 
