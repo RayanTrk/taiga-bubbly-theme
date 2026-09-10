@@ -1,289 +1,145 @@
-{% comment %} Cart Upsells and Recommendations for Taiga Theme - Bubbly Style {% endcomment %}
+Liquid syntax error (snippets/cart-upsells line 7): Expected end_of_string but found comparison in "has_free_shipping = remaining_for_free_shipping <= 0"{%- comment -%}
 
-{%- liquid
-  assign cart_total = cart.total_price
-  assign free_shipping_threshold = 20000
-  assign remaining_for_free_shipping = free_shipping_threshold | minus: cart_total
-  assign has_free_shipping = remaining_for_free_shipping <= 0
--%}
+This file has been rewritten to preserve the original behavior.
 
-<div class="cart-upsells" data-cart-upsells>
-  {%- comment -%} Free Shipping Progress Bar {%- endcomment -%}
-  {%- unless has_free_shipping -%}
-    <div class="cart-upsells__free-shipping">
-      <div class="free-shipping-indicator">
-        <div class="free-shipping-indicator__icon">
-          {%- render 'icon-truck' -%}
-        </div>
-        <div class="free-shipping-indicator__content">
-          <p class="free-shipping-indicator__text">
-            {% assign remaining_formatted = remaining_for_free_shipping | money %}
-            {{ 'cart.free_shipping.add_more' | t: amount: remaining_formatted }}
-          </p>
-          <div class="free-shipping-indicator__progress">
-            <div class="progress-bar">
-              {%- assign progress_percentage = cart_total | times: 100 | divided_by: free_shipping_threshold -%}
-              <div class="progress-bar__fill" style="width: {{ progress_percentage }}%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {%- else -%}
-    <div class="cart-upsells__free-shipping cart-upsells__free-shipping--achieved">
-      <div class="free-shipping-achieved">
-        <div class="free-shipping-achieved__icon">
-          {%- render 'icon-check-circle' -%}
-        </div>
-        <p class="free-shipping-achieved__text">
-          {{ 'cart.free_shipping.achieved' | t }}
-        </p>
-      </div>
-    </div>
-  {%- endunless -%}
-
-  {%- comment -%} Product Recommendations {%- endcomment -%}
-  {%- if recommendations.performed and recommendations.products_count > 0 -%}
-    <div class="cart-upsells__recommendations">
-      <div class="cart-recommendations">
-        <h3 class="cart-recommendations__title">
-          {{ 'cart.recommendations.title' | t }}
-        </h3>
-        
-        <div class="cart-recommendations__grid" data-recommendations-grid>
-          {%- for product in recommendations.products limit: 4 -%}
-            <div class="cart-recommendation-card" data-product-id="{{ product.id }}">
-              <div class="cart-recommendation-card__image">
-                <a href="{{ product.url }}" class="cart-recommendation-card__image-link">
-                  {%- if product.featured_media -%}
-                    <img 
-                      src="{{ product.featured_media | image_url: width: 300 }}"
-                      alt="{{ product.featured_media.alt | escape }}"
-                      loading="lazy"
-                      width="150"
-                      height="150"
-                      class="cart-recommendation-card__img"
-                    >
-                  {%- else -%}
-                    <div class="cart-recommendation-card__placeholder">
-                      {%- render 'icon-product' -%}
-                    </div>
-                  {%- endif -%}
-                </a>
-                
-                {%- if product.compare_at_price > product.price -%}
-                  <div class="cart-recommendation-card__badge">
-                    <span class="badge badge--sale">
-                      {{ 'product.badge.sale' | t }}
-                    </span>
-                  </div>
-                {%- endif -%}
-              </div>
-              
-              <div class="cart-recommendation-card__content">
-                <h4 class="cart-recommendation-card__title">
-                  <a href="{{ product.url }}" class="cart-recommendation-card__title-link">
-                    {{ product.title | escape }}
-                  </a>
-                </h4>
-                
-                <div class="cart-recommendation-card__price">
-                  {%- if product.compare_at_price > product.price -%}
-                    <span class="price price--on-sale">
-                      <span class="price__sale">{{ product.price | money }}</span>
-                      <span class="price__compare">{{ product.compare_at_price | money }}</span>
-                    </span>
-                  {%- else -%}
-                    <span class="price">{{ product.price | money }}</span>
-                  {%- endif -%}
-                </div>
-                
-                {%- if product.available -%}
-                  <div class="cart-recommendation-card__actions">
-                    {%- if product.has_only_default_variant -%}
-                      <button 
-                        type="button" 
-                        class="btn btn--secondary btn--small cart-recommendation__add-btn"
-                        data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                        data-product-title="{{ product.title | escape }}"
-                      >
-                        <span class="btn__text">{{ 'cart.recommendations.add_to_cart' | t }}</span>
-                        <span class="btn__loading-icon">
-                          {%- render 'icon-spinner' -%}
-                        </span>
-                      </button>
-                    {%- else -%}
-                      <a href="{{ product.url }}" class="btn btn--secondary btn--small">
-                        {{ 'cart.recommendations.view_options' | t }}
-                      </a>
-                    {%- endif -%}
-                  </div>
-                {%- else -%}
-                  <div class="cart-recommendation-card__unavailable">
-                    <span class="text--muted">{{ 'product.status.sold_out' | t }}</span>
-                  </div>
-                {%- endif -%}
-              </div>
-            </div>
-          {%- endfor -%}
-        </div>
-      </div>
-    </div>
-  {%- endif -%}
-
-  {%- comment -%} Frequently Bought Together {%- endcomment -%}
-  {%- assign bundle_products = collections['bundle-deals'].products -%}
-  {%- if bundle_products.size > 0 -%}
-    <div class="cart-upsells__bundle">
-      <div class="cart-bundle-offer">
-        <div class="cart-bundle-offer__header">
-          <h3 class="cart-bundle-offer__title">
-            {{ 'cart.bundle.title' | t }}
-          </h3>
-          <div class="cart-bundle-offer__discount">
-            <span class="bundle-discount">
-              {{ 'cart.bundle.save_percentage' | t: percentage: '15' }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="cart-bundle-offer__products">
-          {%- for product in bundle_products limit: 3 -%}
-            <div class="bundle-product">
-              <div class="bundle-product__image">
-                {%- if product.featured_media -%}
-                  <img 
-                    src="{{ product.featured_media | image_url: width: 100 }}"
-                    alt="{{ product.featured_media.alt | escape }}"
-                    loading="lazy"
-                    width="50"
-                    height="50"
-                    class="bundle-product__img"
-                  >
-                {%- endif -%}
-              </div>
-              <div class="bundle-product__details">
-                <span class="bundle-product__title">{{ product.title | truncate: 30 }}</span>
-                <span class="bundle-product__price">{{ product.price | money }}</span>
-              </div>
-              {%- unless forloop.last -%}
-                <div class="bundle-product__plus">+</div>
-              {%- endunless -%}
-            </div>
-          {%- endfor -%}
-        </div>
-        
-        <div class="cart-bundle-offer__action">
-          <button type="button" class="btn btn--primary cart-bundle__add-btn" data-bundle-collection="bundle-deals">
-            {{ 'cart.bundle.add_bundle' | t }}
-          </button>
-        </div>
-      </div>
-    </div>
-  {%- endif -%}
-
-  {%- comment -%} Gift Options {%- endcomment -%}
-  <div class="cart-upsells__gift-options">
-    <div class="cart-gift-options">
-      <h3 class="cart-gift-options__title">
-        {{ 'cart.gift_options.title' | t }}
-      </h3>
-      
-      <div class="gift-option">
-        <input 
-          type="checkbox" 
-          id="gift-wrapping" 
-          name="attributes[Gift Wrapping]" 
-          value="Yes"
-          class="gift-option__checkbox"
-          {% if cart.attributes['Gift Wrapping'] == 'Yes' %}checked{% endif %}
-        >
-        <label for="gift-wrapping" class="gift-option__label">
-          <div class="gift-option__icon">
-            {%- render 'icon-gift' -%}
-          </div>
-          <div class="gift-option__content">
-            <span class="gift-option__title">{{ 'cart.gift_options.gift_wrap' | t }}</span>
-            <span class="gift-option__price">{{ 500 | money }}</span>
-          </div>
-        </label>
-      </div>
-      
-      <div class="gift-option">
-        <input 
-          type="checkbox" 
-          id="gift-message" 
-          name="attributes[Gift Message]" 
-          value="Yes"
-          class="gift-option__checkbox"
-          {% if cart.attributes['Gift Message'] %}checked{% endif %}
-        >
-        <label for="gift-message" class="gift-option__label">
-          <div class="gift-option__icon">
-            {%- render 'icon-message' -%}
-          </div>
-          <div class="gift-option__content">
-            <span class="gift-option__title">{{ 'cart.gift_options.gift_message' | t }}</span>
-            <span class="gift-option__price">{{ 'cart.gift_options.free' | t }}</span>
-          </div>
-        </label>
-      </div>
-      
-      <div class="gift-message-input" style="display: {% if cart.attributes['Gift Message'] %}block{% else %}none{% endif %}">
-        <textarea 
-          name="attributes[Gift Message Text]" 
-          placeholder="{{ 'cart.gift_options.message_placeholder' | t }}"
-          class="gift-message-textarea"
-          maxlength="200"
-        >{{ cart.attributes['Gift Message Text'] }}</textarea>
-        <div class="gift-message-counter">
-          <span class="counter-text">0/200</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {%- comment -%} Cart Notes {%- endcomment -%}
-  <div class="cart-upsells__notes">
-    <div class="cart-notes">
-      <h3 class="cart-notes__title">
-        {{ 'cart.notes.title' | t }}
-      </h3>
-      <textarea 
-        name="note" 
-        placeholder="{{ 'cart.notes.placeholder' | t }}"
-        class="cart-notes__textarea"
-        maxlength="500"
-      >{{ cart.note }}</textarea>
-      <div class="cart-notes__counter">
-        <span class="counter-text">{{ cart.note.size | default: 0 }}/500</span>
-      </div>
-    </div>
-  </div>
-
-  {%- comment -%} Urgency Messaging {%- endcomment -%}
-  <div class="cart-upsells__urgency" data-urgency-messaging>
-    <div class="urgency-message">
-      <div class="urgency-message__icon">
-        {%- render 'icon-clock' -%}
-      </div>
-      <div class="urgency-message__content">
-        <p class="urgency-message__text">
-          {{ 'cart.urgency.limited_stock' | t }}
-        </p>
-        <p class="urgency-message__subtext">
-          {{ 'cart.urgency.order_soon' | t }}
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Initialize cart upsells functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    if (typeof CartUpsells !== 'undefined') {
-      new CartUpsells();
-    }
-  });
-</script> 
+---
+Changes:
+- from: "{% comment %} Cart Upsells and Recommendations for Taiga Theme - Bubbly Style
+    {% endcomment %}\n\n{%- liquid\n  assign cart_total = cart.total_price\n  assign
+    free_shipping_threshold = 20000\n  assign remaining_for_free_shipping = free_shipping_threshold
+    | minus: cart_total\n  assign has_free_shipping = remaining_for_free_shipping
+    <= 0\n-%}\n\n<div class=\"cart-upsells\" data-cart-upsells>\n  {%- comment -%}
+    Free Shipping Progress Bar {%- endcomment -%}\n  {%- unless has_free_shipping
+    -%}\n    <div class=\"cart-upsells__free-shipping\">\n      <div class=\"free-shipping-indicator\">\n
+    \       <div class=\"free-shipping-indicator__icon\">\n          {%- render 'icon-truck'
+    -%}\n        </div>\n        <div class=\"free-shipping-indicator__content\">\n
+    \         <p class=\"free-shipping-indicator__text\">\n            {% assign remaining_formatted
+    = remaining_for_free_shipping | money %}\n            {{ 'cart.free_shipping.add_more'
+    | t: amount: remaining_formatted }}\n          </p>\n          <div class=\"free-shipping-indicator__progress\">\n
+    \           <div class=\"progress-bar\">\n              {%- assign progress_percentage
+    = cart_total | times: 100 | divided_by: free_shipping_threshold -%}\n              <div
+    class=\"progress-bar__fill\" style=\"width: {{ progress_percentage }}%\"></div>\n
+    \           </div>\n          </div>\n        </div>\n      </div>\n    </div>\n
+    \ {%- else -%}\n    <div class=\"cart-upsells__free-shipping cart-upsells__free-shipping--achieved\">\n
+    \     <div class=\"free-shipping-achieved\">\n        <div class=\"free-shipping-achieved__icon\">\n
+    \         {%- render 'icon-check-circle' -%}\n        </div>\n        <p class=\"free-shipping-achieved__text\">\n
+    \         {{ 'cart.free_shipping.achieved' | t }}\n        </p>\n      </div>\n
+    \   </div>\n  {%- endunless -%}\n\n  {%- comment -%} Product Recommendations {%-
+    endcomment -%}\n  {%- if recommendations.performed and recommendations.products_count
+    > 0 -%}\n    <div class=\"cart-upsells__recommendations\">\n      <div class=\"cart-recommendations\">\n
+    \       <h3 class=\"cart-recommendations__title\">\n          {{ 'cart.recommendations.title'
+    | t }}\n        </h3>\n        \n        <div class=\"cart-recommendations__grid\"
+    data-recommendations-grid>\n          {%- for product in recommendations.products
+    limit: 4 -%}\n            <div class=\"cart-recommendation-card\" data-product-id=\"{{
+    product.id }}\">\n              <div class=\"cart-recommendation-card__image\">\n
+    \               <a href=\"{{ product.url }}\" class=\"cart-recommendation-card__image-link\">\n
+    \                 {%- if product.featured_media -%}\n                    <img
+    \n                      src=\"{{ product.featured_media | image_url: width: 300
+    }}\"\n                      alt=\"{{ product.featured_media.alt | escape }}\"\n
+    \                     loading=\"lazy\"\n                      width=\"150\"\n
+    \                     height=\"150\"\n                      class=\"cart-recommendation-card__img\"\n
+    \                   >\n                  {%- else -%}\n                    <div
+    class=\"cart-recommendation-card__placeholder\">\n                      {%- render
+    'icon-product' -%}\n                    </div>\n                  {%- endif -%}\n
+    \               </a>\n                \n                {%- if product.compare_at_price
+    > product.price -%}\n                  <div class=\"cart-recommendation-card__badge\">\n
+    \                   <span class=\"badge badge--sale\">\n                      {{
+    'product.badge.sale' | t }}\n                    </span>\n                  </div>\n
+    \               {%- endif -%}\n              </div>\n              \n              <div
+    class=\"cart-recommendation-card__content\">\n                <h4 class=\"cart-recommendation-card__title\">\n
+    \                 <a href=\"{{ product.url }}\" class=\"cart-recommendation-card__title-link\">\n
+    \                   {{ product.title | escape }}\n                  </a>\n                </h4>\n
+    \               \n                <div class=\"cart-recommendation-card__price\">\n
+    \                 {%- if product.compare_at_price > product.price -%}\n                    <span
+    class=\"price price--on-sale\">\n                      <span class=\"price__sale\">{{
+    product.price | money }}</span>\n                      <span class=\"price__compare\">{{
+    product.compare_at_price | money }}</span>\n                    </span>\n                  {%-
+    else -%}\n                    <span class=\"price\">{{ product.price | money }}</span>\n
+    \                 {%- endif -%}\n                </div>\n                \n                {%-
+    if product.available -%}\n                  <div class=\"cart-recommendation-card__actions\">\n
+    \                   {%- if product.has_only_default_variant -%}\n                      <button
+    \n                        type=\"button\" \n                        class=\"btn
+    btn--secondary btn--small cart-recommendation__add-btn\"\n                        data-variant-id=\"{{
+    product.selected_or_first_available_variant.id }}\"\n                        data-product-title=\"{{
+    product.title | escape }}\"\n                      >\n                        <span
+    class=\"btn__text\">{{ 'cart.recommendations.add_to_cart' | t }}</span>\n                        <span
+    class=\"btn__loading-icon\">\n                          {%- render 'icon-spinner'
+    -%}\n                        </span>\n                      </button>\n                    {%-
+    else -%}\n                      <a href=\"{{ product.url }}\" class=\"btn btn--secondary
+    btn--small\">\n                        {{ 'cart.recommendations.view_options'
+    | t }}\n                      </a>\n                    {%- endif -%}\n                  </div>\n
+    \               {%- else -%}\n                  <div class=\"cart-recommendation-card__unavailable\">\n
+    \                   <span class=\"text--muted\">{{ 'product.status.sold_out' |
+    t }}</span>\n                  </div>\n                {%- endif -%}\n              </div>\n
+    \           </div>\n          {%- endfor -%}\n        </div>\n      </div>\n    </div>\n
+    \ {%- endif -%}\n\n  {%- comment -%} Frequently Bought Together {%- endcomment
+    -%}\n  {%- assign bundle_products = collections['bundle-deals'].products -%}\n
+    \ {%- if bundle_products.size > 0 -%}\n    <div class=\"cart-upsells__bundle\">\n
+    \     <div class=\"cart-bundle-offer\">\n        <div class=\"cart-bundle-offer__header\">\n
+    \         <h3 class=\"cart-bundle-offer__title\">\n            {{ 'cart.bundle.title'
+    | t }}\n          </h3>\n          <div class=\"cart-bundle-offer__discount\">\n
+    \           <span class=\"bundle-discount\">\n              {{ 'cart.bundle.save_percentage'
+    | t: percentage: '15' }}\n            </span>\n          </div>\n        </div>\n
+    \       \n        <div class=\"cart-bundle-offer__products\">\n          {%- for
+    product in bundle_products limit: 3 -%}\n            <div class=\"bundle-product\">\n
+    \             <div class=\"bundle-product__image\">\n                {%- if product.featured_media
+    -%}\n                  <img \n                    src=\"{{ product.featured_media
+    | image_url: width: 100 }}\"\n                    alt=\"{{ product.featured_media.alt
+    | escape }}\"\n                    loading=\"lazy\"\n                    width=\"50\"\n
+    \                   height=\"50\"\n                    class=\"bundle-product__img\"\n
+    \                 >\n                {%- endif -%}\n              </div>\n              <div
+    class=\"bundle-product__details\">\n                <span class=\"bundle-product__title\">{{
+    product.title | truncate: 30 }}</span>\n                <span class=\"bundle-product__price\">{{
+    product.price | money }}</span>\n              </div>\n              {%- unless
+    forloop.last -%}\n                <div class=\"bundle-product__plus\">+</div>\n
+    \             {%- endunless -%}\n            </div>\n          {%- endfor -%}\n
+    \       </div>\n        \n        <div class=\"cart-bundle-offer__action\">\n
+    \         <button type=\"button\" class=\"btn btn--primary cart-bundle__add-btn\"
+    data-bundle-collection=\"bundle-deals\">\n            {{ 'cart.bundle.add_bundle'
+    | t }}\n          </button>\n        </div>\n      </div>\n    </div>\n  {%- endif
+    -%}\n\n  {%- comment -%} Gift Options {%- endcomment -%}\n  <div class=\"cart-upsells__gift-options\">\n
+    \   <div class=\"cart-gift-options\">\n      <h3 class=\"cart-gift-options__title\">\n
+    \       {{ 'cart.gift_options.title' | t }}\n      </h3>\n      \n      <div class=\"gift-option\">\n
+    \       <input \n          type=\"checkbox\" \n          id=\"gift-wrapping\"
+    \n          name=\"attributes[Gift Wrapping]\" \n          value=\"Yes\"\n          class=\"gift-option__checkbox\"\n
+    \         {% if cart.attributes['Gift Wrapping'] == 'Yes' %}checked{% endif %}\n
+    \       >\n        <label for=\"gift-wrapping\" class=\"gift-option__label\">\n
+    \         <div class=\"gift-option__icon\">\n            {%- render 'icon-gift'
+    -%}\n          </div>\n          <div class=\"gift-option__content\">\n            <span
+    class=\"gift-option__title\">{{ 'cart.gift_options.gift_wrap' | t }}</span>\n
+    \           <span class=\"gift-option__price\">{{ 500 | money }}</span>\n          </div>\n
+    \       </label>\n      </div>\n      \n      <div class=\"gift-option\">\n        <input
+    \n          type=\"checkbox\" \n          id=\"gift-message\" \n          name=\"attributes[Gift
+    Message]\" \n          value=\"Yes\"\n          class=\"gift-option__checkbox\"\n
+    \         {% if cart.attributes['Gift Message'] %}checked{% endif %}\n        >\n
+    \       <label for=\"gift-message\" class=\"gift-option__label\">\n          <div
+    class=\"gift-option__icon\">\n            {%- render 'icon-message' -%}\n          </div>\n
+    \         <div class=\"gift-option__content\">\n            <span class=\"gift-option__title\">{{
+    'cart.gift_options.gift_message' | t }}</span>\n            <span class=\"gift-option__price\">{{
+    'cart.gift_options.free' | t }}</span>\n          </div>\n        </label>\n      </div>\n
+    \     \n      <div class=\"gift-message-input\" style=\"display: {% if cart.attributes['Gift
+    Message'] %}block{% else %}none{% endif %}\">\n        <textarea \n          name=\"attributes[Gift
+    Message Text]\" \n          placeholder=\"{{ 'cart.gift_options.message_placeholder'
+    | t }}\"\n          class=\"gift-message-textarea\"\n          maxlength=\"200\"\n
+    \       >{{ cart.attributes['Gift Message Text'] }}</textarea>\n        <div class=\"gift-message-counter\">\n
+    \         <span class=\"counter-text\">0/200</span>\n        </div>\n      </div>\n
+    \   </div>\n  </div>\n\n  {%- comment -%} Cart Notes {%- endcomment -%}\n  <div
+    class=\"cart-upsells__notes\">\n    <div class=\"cart-notes\">\n      <h3 class=\"cart-notes__title\">\n
+    \       {{ 'cart.notes.title' | t }}\n      </h3>\n      <textarea \n        name=\"note\"
+    \n        placeholder=\"{{ 'cart.notes.placeholder' | t }}\"\n        class=\"cart-notes__textarea\"\n
+    \       maxlength=\"500\"\n      >{{ cart.note }}</textarea>\n      <div class=\"cart-notes__counter\">\n
+    \       <span class=\"counter-text\">{{ cart.note.size | default: 0 }}/500</span>\n
+    \     </div>\n    </div>\n  </div>\n\n  {%- comment -%} Urgency Messaging {%-
+    endcomment -%}\n  <div class=\"cart-upsells__urgency\" data-urgency-messaging>\n
+    \   <div class=\"urgency-message\">\n      <div class=\"urgency-message__icon\">\n
+    \       {%- render 'icon-clock' -%}\n      </div>\n      <div class=\"urgency-message__content\">\n
+    \       <p class=\"urgency-message__text\">\n          {{ 'cart.urgency.limited_stock'
+    | t }}\n        </p>\n        <p class=\"urgency-message__subtext\">\n          {{
+    'cart.urgency.order_soon' | t }}\n        </p>\n      </div>\n    </div>\n  </div>\n</div>\n\n<script>\n
+    \ // Initialize cart upsells functionality\n  document.addEventListener('DOMContentLoaded',
+    function() {\n    if (typeof CartUpsells !== 'undefined') {\n      new CartUpsells();\n
+    \   }\n  });\n</script> "
+  to: 'Liquid syntax error (snippets/cart-upsells line 7): Expected end_of_string
+    but found comparison in "has_free_shipping = remaining_for_free_shipping <= 0"'
+  position: 0..153
+{%- endcomment -%}

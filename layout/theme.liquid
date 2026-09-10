@@ -32,7 +32,7 @@
     
     <title>
       {{ page_title }}
-      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags.join(', ') }}{% endif -%}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags.join }}{% endif -%}
       {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
@@ -328,4 +328,13 @@
     {% endif %}
     
   </body>
-</html> 
+</html> {%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{{ 'general.meta.tags' | t: tags: current_tags.join(', ') }}"
+  to: "{{ 'general.meta.tags' | t: tags: current_tags.join }}"
+  position: 1580..1634
+{%- endcomment -%}
